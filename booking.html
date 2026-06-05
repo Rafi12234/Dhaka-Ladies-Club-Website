@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Information - Dhaka Ladies Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    :root {
+      --gold:        #b8860b;
+      --gold-light:  #d4a017;
+      --gold-dark:   #8f6908;
+      --gold-pale:   #fdf6e3;
+      --gold-border: #ead7a6;
+      --bg:          #faf7f2;
+      --white:       #ffffff;
+      --text:        #1a1a2e;
+      --text-muted:  #6b7280;
+      --success:     #198754;
+      --danger:      #dc3545;
+      --shadow-sm:   0 2px 10px rgba(0,0,0,0.06);
+      --shadow-md:   0 8px 30px rgba(0,0,0,0.10);
+      --shadow-lg:   0 20px 60px rgba(0,0,0,0.14);
+      --radius:      16px;
+      --radius-lg:   24px;
+      --transition:  0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    .container { width: 90%; max-width: 1200px; margin: auto; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+    /* ======================== */
+    /* NAVBAR */
+    /* ======================== */
+    nav {
+      width: 100%; position: fixed;
+      top: 0; left: 0; z-index: 1000;
+      transition: var(--transition);
+    }
+
+    nav.scrolled .nav-inner {
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 4px 30px rgba(184,134,11,0.12);
+      border-bottom-color: var(--gold-border);
+    }
+
+    .nav-inner {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(234,215,166,0.3);
+      transition: var(--transition);
+    }
+
+    .nav-wrapper {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 16px 0;
+    }
+
+    .logo img {
+      height: 38px; width: auto; max-width: 160px;
+      object-fit: contain; display: block;
+      transition: var(--transition);
+    }
+    .logo img:hover { transform: scale(1.04); }
+
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--text);
+      padding: 8px 18px; border-radius: 50px;
+      transition: var(--transition); position: relative;
+    }
+
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px; background: var(--gold);
+      border-radius: 2px; transition: var(--transition);
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 40%; }
+
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--gold-pale); border: 1px solid var(--gold-border);
+      color: var(--gold-dark); padding: 8px 18px; border-radius: 50px;
+      font-size: 14px; font-weight: 600; transition: var(--transition);
+    }
+
+    .nav-back:hover {
+      background: var(--gold); color: white;
+      border-color: var(--gold); transform: translateX(-3px);
+    }
+
+    .nav-back svg { transition: var(--transition); }
+    .nav-back:hover svg { transform: translateX(-3px); }
+
+    /* ======================== */
+    /* PAGE HERO */
+    /* ======================== */
+    .page-hero {
+      min-height: 52vh; padding-top: 90px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+      text-align: center; color: white;
+    }
+
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background: url('assets/img/BG-01.jpeg') center/cover no-repeat;
+      transform: scale(1.06);
+      animation: heroZoom 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.06); }
+      to   { transform: scale(1.12); }
+    }
+
+    .page-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0,0,0,0.72) 0%,
+        rgba(184,134,11,0.28) 50%,
+        rgba(0,0,0,0.72) 100%
+      );
+    }
+
+    .page-hero .container { position: relative; z-index: 2; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(184,134,11,0.22);
+      border: 1px solid rgba(212,160,23,0.45);
+      color: #f0d080; padding: 7px 20px; border-radius: 50px;
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 22px;
+      backdrop-filter: blur(8px);
+      animation: fadeSlideDown 0.9s ease both;
+    }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(35px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-hero h1 {
+      font-size: clamp(34px, 6vw, 58px);
+      font-weight: 800; margin-bottom: 16px;
+      line-height: 1.15;
+      animation: fadeSlideUp 0.9s ease 0.15s both;
+    }
+
+    .page-hero h1 span { color: #f0d080; }
+
+    .page-hero p {
+      max-width: 680px; margin: 0 auto;
+      color: rgba(255,255,255,0.84);
+      line-height: 1.85; font-size: 16px;
+      animation: fadeSlideUp 0.9s ease 0.3s both;
+    }
+
+    .hero-steps {
+      display: flex; justify-content: center;
+      gap: 0; margin-top: 36px;
+      animation: fadeSlideUp 0.9s ease 0.45s both;
+      flex-wrap: wrap;
+    }
+
+    .hero-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .hero-step.active { color: white; }
+    .hero-step.done   { color: #f0d080; }
+
+    .hero-step-num {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      transition: var(--transition); flex-shrink: 0;
+    }
+
+    .hero-step.done .hero-step-num {
+      background: #f0d080; border-color: #f0d080; color: #7a5000;
+    }
+
+    .hero-step.active .hero-step-num {
+      background: var(--gold); border-color: var(--gold); color: white;
+      box-shadow: 0 0 0 4px rgba(184,134,11,0.3);
+    }
+
+    .hero-step-line {
+      width: 60px; height: 2px;
+      background: rgba(255,255,255,0.2); margin: 0 6px;
+    }
+
+    .hero-step-line.done { background: rgba(240,208,128,0.5); }
+
+    /* ======================== */
+    /* FORM SECTION */
+    /* ======================== */
+    .form-page-section {
+      background: var(--bg); padding: 70px 0 100px;
+    }
+
+    .form-layout-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 32px; align-items: start;
+      max-width: 1100px; margin: auto;
+    }
+
+    /* ======================== */
+    /* FORM CARD */
+    /* ======================== */
+    .form-card {
+      background: white; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); overflow: hidden;
+      border: 1px solid rgba(234,215,166,0.4);
+      animation: cardSlideUp 0.7s ease both;
+    }
+
+    @keyframes cardSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-card-header {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+      padding: 28px 35px; position: relative; overflow: hidden;
+    }
+
+    .form-card-header::before {
+      content: ''; position: absolute;
+      top: -50px; right: -50px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.08); border-radius: 50%;
+    }
+
+    .form-card-header::after {
+      content: ''; position: absolute;
+      bottom: -70px; left: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.05); border-radius: 50%;
+    }
+
+    .form-card-header h2 {
+      font-size: 22px; font-weight: 800;
+      color: white; position: relative; z-index: 1; margin-bottom: 5px;
+    }
+
+    .form-card-header p {
+      color: rgba(255,255,255,0.82);
+      font-size: 13.5px; position: relative; z-index: 1;
+    }
+
+    .form-card-body { padding: 35px; }
+
+    /* ======================== */
+    /* FORM GROUPS */
+    /* ======================== */
+    .form-section-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px; margin-top: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .form-section-label:first-of-type { margin-top: 0; }
+
+    .form-section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--gold-border);
+    }
+
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex; flex-direction: column;
+      gap: 6px; margin-bottom: 16px; position: relative;
+    }
+
+    .form-group:last-child { margin-bottom: 0; }
+
+    .form-group label {
+      font-size: 12.5px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: 0.3px; padding-left: 2px;
+    }
+
+    .form-group .input-wrap { position: relative; }
+
+    .input-icon-box {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 44px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); pointer-events: none;
+      transition: var(--transition); z-index: 1;
+    }
+
+    .input-icon-box.top { align-items: flex-start; padding-top: 14px; }
+
+    .input-icon-box svg { width: 16px; height: 16px; stroke-width: 2; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 13px 16px 13px 44px;
+      border: 1.5px solid #e5e7eb; border-radius: 12px;
+      outline: none; font-size: 14.5px;
+      font-family: 'Poppins', sans-serif; color: var(--text);
+      background: #fafafa; transition: var(--transition);
+      appearance: none; -webkit-appearance: none;
+    }
+
+    .form-group select { padding-right: 40px; }
+
+    .form-group textarea {
+      resize: vertical; min-height: 110px; padding-top: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      background: var(--gold-pale);
+      box-shadow: 0 0 0 3px rgba(184,134,11,0.12);
+    }
+
+    .form-group input:focus ~ .input-icon-box,
+    .form-group select:focus ~ .input-icon-box,
+    .form-group textarea:focus ~ .input-icon-box {
+      color: var(--gold);
+    }
+
+    /* Fix icon z-order for textarea */
+    .form-group .input-wrap { display: flex; flex-direction: column; position: relative; }
+    .form-group .input-wrap input,
+    .form-group .input-wrap select,
+    .form-group .input-wrap textarea { position: relative; z-index: 0; }
+
+    .form-group input[readonly],
+    .form-group input[readonly]:focus {
+      background: #f3f4f6; border-color: #e5e7eb;
+      color: var(--text-muted); cursor: not-allowed; box-shadow: none;
+    }
+
+    .readonly-badge {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px; background: #e5e7eb; color: var(--text-muted);
+      padding: 2px 8px; border-radius: 20px;
+      font-weight: 700; letter-spacing: 0.5px; z-index: 2;
+    }
+
+    .select-arrow-icon {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; color: var(--text-muted); z-index: 2;
+    }
+
+    .select-arrow-icon svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+    /* ======================== */
+    /* FORM ACTIONS */
+    /* ======================== */
+    .form-actions {
+      display: flex; flex-direction: column; gap: 12px; margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px;
+      background: var(--gold); color: white;
+      padding: 15px 32px; border-radius: 50px;
+      font-weight: 700; font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition); cursor: pointer;
+      border: none; position: relative; overflow: hidden;
+      letter-spacing: 0.3px; text-align: center;
+    }
+
+    .btn svg { width: 18px; height: 18px; stroke-width: 2.2; flex-shrink: 0; }
+
+    .btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+      opacity: 0; transition: var(--transition);
+    }
+
+    .btn:hover::before { opacity: 1; }
+    .btn:hover { background: var(--gold-dark); transform: translateY(-3px); box-shadow: 0 12px 35px rgba(184,134,11,0.4); }
+
+    .btn-secondary {
+      background: transparent; color: var(--gold);
+      border: 2px solid var(--gold-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gold-pale); border-color: var(--gold);
+      transform: translateY(-3px); box-shadow: var(--shadow-sm);
+    }
+
+    .btn.loading {
+      pointer-events: none; opacity: 0.88; padding-right: 52px;
+    }
+
+    .btn.loading::after {
+      content: ''; position: absolute; right: 18px; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    /* ======================== */
+    /* MESSAGE */
+    /* ======================== */
+    .booking-message {
+      min-height: 22px; font-size: 13.5px;
+      font-weight: 600; text-align: center;
+      transition: var(--transition); border-radius: 10px;
+    }
+
+    .booking-message:not(:empty) { padding: 12px 16px; margin-top: 4px; }
+
+    .booking-message.success {
+      color: var(--success);
+      background: rgba(25,135,84,0.08);
+      border: 1px solid rgba(25,135,84,0.2);
+    }
+
+    .booking-message.error {
+      color: var(--danger);
+      background: rgba(220,53,69,0.08);
+      border: 1px solid rgba(220,53,69,0.2);
+    }
+
+    /* ======================== */
+    /* SIDEBAR */
+    /* ======================== */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+    .summary-card {
+      background: white; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); overflow: hidden;
+      border: 1px solid var(--gold-border);
+      animation: cardSlideUp 0.7s ease 0.15s both;
+    }
+
+    .summary-card-header {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+      padding: 20px 24px; position: relative; overflow: hidden;
+    }
+
+    .summary-card-header::before {
+      content: ''; position: absolute;
+      right: -20px; top: -20px;
+      width: 100px; height: 100px;
+      background: rgba(255,255,255,0.1); border-radius: 50%;
+    }
+
+    .summary-card-header h3 {
+      font-size: 15px; font-weight: 700;
+      color: white; position: relative; z-index: 1;
+    }
+
+    .summary-card-header p {
+      font-size: 12px; color: rgba(255,255,255,0.78);
+      position: relative; z-index: 1; margin-top: 3px;
+    }
+
+    .summary-card-body { padding: 22px 24px; }
+
+    .summary-row {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6; gap: 12px;
+    }
+
+    .summary-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .summary-label {
+      font-size: 12.5px; color: var(--text-muted);
+      font-weight: 500; flex-shrink: 0;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .summary-label svg { width: 13px; height: 13px; stroke-width: 2; }
+
+    .summary-value {
+      font-size: 13px; font-weight: 700;
+      color: var(--text); text-align: right;
+    }
+
+    .summary-amount-box {
+      background: var(--gold-pale); border: 1px solid var(--gold-border);
+      border-radius: 12px; padding: 16px;
+      text-align: center; margin-top: 16px;
+    }
+
+    .summary-amount-label {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--gold-dark);
+      font-weight: 600; margin-bottom: 4px;
+    }
+
+    .summary-amount-value {
+      font-size: 28px; font-weight: 800;
+      color: var(--gold); line-height: 1;
+    }
+
+    /* Change Slot Card */
+    .change-slot-card {
+      background: white; border: 1px solid var(--gold-border);
+      border-radius: var(--radius-lg); padding: 22px 24px;
+      animation: cardSlideUp 0.7s ease 0.3s both;
+    }
+
+    .change-slot-card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .change-slot-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gold-pale); border: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); flex-shrink: 0;
+    }
+
+    .change-slot-icon svg { width: 18px; height: 18px; stroke-width: 2; }
+
+    .change-slot-card h4 { font-size: 14px; font-weight: 700; color: var(--text); }
+
+    .change-slot-card p {
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: 16px; line-height: 1.6;
+    }
+
+    /* Help Card */
+    .help-card {
+      background: white; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm); padding: 24px;
+      border: 1px solid #f3f4f6;
+      animation: cardSlideUp 0.7s ease 0.45s both;
+    }
+
+    .help-card h4 {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+
+    .help-card h4 svg { width: 16px; height: 16px; stroke-width: 2; color: var(--gold); }
+
+    .help-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid #f9fafb;
+      font-size: 13px; color: var(--text-muted); line-height: 1.6;
+    }
+
+    .help-item:last-child { border-bottom: none; }
+
+    .help-item-num {
+      width: 22px; height: 22px;
+      background: var(--gold-pale); border: 1px solid var(--gold-border);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 11px;
+      font-weight: 800; color: var(--gold); flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ======================== */
+    /* CALENDAR MODAL */
+    /* ======================== */
+    .cal-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,10,30,0.65);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 9998; justify-content: center;
+      align-items: center; padding: 20px;
+    }
+
+    .cal-modal-overlay.open { display: flex; animation: overlayFadeIn 0.3s ease; }
+
+    @keyframes overlayFadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    .cal-modal {
+      background: white; border-radius: 28px;
+      width: 100%; max-width: 920px;
+      max-height: 92vh; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.28);
+      animation: modalSlideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column;
+    }
+
+    @keyframes modalSlideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .cal-modal-header {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+      padding: 24px 30px; flex-shrink: 0;
+      display: flex; align-items: center;
+      justify-content: space-between; position: relative; overflow: hidden;
+    }
+
+    .cal-modal-header::before {
+      content: ''; position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.08); border-radius: 50%;
+    }
+
+    .cal-modal-header-left { position: relative; z-index: 1; }
+
+    .cal-modal-header h3 {
+      font-size: 20px; font-weight: 800; color: white; margin-bottom: 4px;
+    }
+
+    .cal-modal-header p {
+      font-size: 13px; color: rgba(255,255,255,0.8);
+    }
+
+    .cal-modal-close {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.2);
+      border: none; border-radius: 50%; color: white;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: var(--transition);
+      position: relative; z-index: 1; flex-shrink: 0;
+    }
+
+    .cal-modal-close svg { width: 18px; height: 18px; stroke-width: 2.5; }
+
+    .cal-modal-close:hover {
+      background: rgba(255,255,255,0.35);
+      transform: rotate(90deg);
+    }
+
+    .cal-modal-body {
+      padding: 28px; overflow-y: auto; flex: 1;
+    }
+
+    /* Calendar legend inside modal */
+    .cal-legend {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 22px;
+    }
+
+    .cal-legend-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12.5px; font-weight: 600; color: var(--text-muted);
+    }
+
+    .cal-legend-dot {
+      width: 12px; height: 12px; border-radius: 4px;
+    }
+
+    /* FullCalendar inside modal */
+    #inPageCalendar {
+      width: 100%;
+    }
+
+    #inPageCalendar .fc { width: 100% !important; }
+
+    #inPageCalendar table { table-layout: fixed !important; }
+
+    .fc-toolbar-title {
+      font-size: 22px !important; color: var(--text) !important;
+      font-weight: 800 !important; font-family: 'Poppins', sans-serif !important;
+    }
+
+    .fc-button-primary {
+      background: var(--gold) !important; border-color: var(--gold) !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important; border-radius: 10px !important;
+      padding: 7px 14px !important; transition: var(--transition) !important;
+      font-size: 13px !important;
+    }
+
+    .fc-button-primary:hover {
+      background: var(--gold-dark) !important;
+      border-color: var(--gold-dark) !important;
+    }
+
+    .fc-button-primary:not(:disabled).fc-button-active {
+      background: var(--gold-dark) !important;
+      border-color: var(--gold-dark) !important;
+    }
+
+    .fc-col-header-cell {
+      background: var(--gold-pale) !important;
+      color: var(--gold-dark) !important;
+      font-weight: 700 !important; font-size: 12px !important;
+      text-transform: uppercase !important; letter-spacing: 1px !important;
+      padding: 10px 0 !important;
+    }
+
+    .fc .fc-daygrid-day-frame { min-height: 90px; }
+
+    .fc .fc-daygrid-event {
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; font-size: 11px;
+      padding: 3px 7px; border-radius: 7px !important;
+      font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer;
+    }
+
+    .fc .fc-daygrid-day-number {
+      font-size: 14px; font-weight: 600; padding: 7px;
+    }
+
+    .fc .fc-daygrid-day.fc-day-today { background: rgba(184,134,11,0.06) !important; }
+
+    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+      background: var(--gold); color: white;
+      border-radius: 50%; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ======================== */
+    /* SLOT SELECTION POPUP (inside modal) */
+    /* ======================== */
+    .slot-popup-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,10,30,0.55);
+      backdrop-filter: blur(5px);
+      z-index: 10000; justify-content: center;
+      align-items: center; padding: 20px;
+    }
+
+    .slot-popup-overlay.open {
+      display: flex; animation: overlayFadeIn 0.25s ease;
+    }
+
+    .slot-popup-box {
+      background: white; border-radius: 24px;
+      width: 100%; max-width: 480px;
+      max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      animation: modalSlideUp 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .slot-popup-header {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+      padding: 24px 26px; border-radius: 24px 24px 0 0;
+      position: relative; overflow: hidden;
+    }
+
+    .slot-popup-header::before {
+      content: ''; position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.08); border-radius: 50%;
+    }
+
+    .slot-popup-header-content { position: relative; z-index: 1; }
+
+    .slot-popup-header h3 {
+      font-size: 19px; font-weight: 800; color: white; margin-bottom: 6px;
+    }
+
+    .slot-popup-date-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.22); color: white;
+      padding: 5px 13px; border-radius: 50px;
+      font-size: 12.5px; font-weight: 600;
+    }
+
+    .slot-popup-date-badge svg { width: 13px; height: 13px; stroke-width: 2; }
+
+    .slot-popup-close {
+      position: absolute; top: 18px; right: 18px;
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.2); border: none;
+      border-radius: 50%; color: white; font-size: 16px;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: var(--transition); z-index: 2;
+    }
+
+    .slot-popup-close svg { width: 16px; height: 16px; stroke-width: 2.5; }
+    .slot-popup-close:hover { background: rgba(255,255,255,0.35); transform: rotate(90deg); }
+
+    .slot-popup-body { padding: 24px 26px; }
+
+    .slot-popup-subtitle {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px;
+    }
+
+    .slot-radio-group { display: flex; flex-direction: column; gap: 12px; }
+
+    .slot-radio-item { position: relative; }
+
+    .slot-radio-item input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+
+    .slot-radio-label {
+      display: flex; align-items: center; gap: 13px;
+      padding: 15px 16px; border: 2px solid #e5e7eb;
+      border-radius: 14px; cursor: pointer;
+      transition: var(--transition); background: #fafafa; user-select: none;
+    }
+
+    .slot-radio-item input[type="radio"]:checked + .slot-radio-label {
+      border-color: var(--gold); background: var(--gold-pale);
+    }
+
+    .slot-radio-label:hover { border-color: var(--gold-border); background: var(--gold-pale); }
+
+    .slot-radio-label.disabled { cursor: not-allowed; opacity: 0.55; pointer-events: none; }
+
+    .slot-radio-custom {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid #d1d5db;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: var(--transition);
+    }
+
+    .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom {
+      border-color: var(--gold); background: var(--gold);
+    }
+
+    .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom::after {
+      content: ''; width: 7px; height: 7px;
+      background: white; border-radius: 50%;
+    }
+
+    .slot-info { flex: 1; }
+
+    .slot-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+
+    .slot-time {
+      font-size: 12.5px; color: var(--text-muted);
+      font-weight: 500; display: flex; align-items: center; gap: 5px;
+    }
+
+    .slot-time svg { width: 12px; height: 12px; stroke-width: 2; }
+
+    .slot-price { font-size: 13.5px; font-weight: 700; color: var(--gold); margin-top: 3px; }
+
+    .slot-status-badge {
+      padding: 4px 11px; border-radius: 20px;
+      font-size: 11.5px; font-weight: 700; letter-spacing: 0.3px; flex-shrink: 0;
+    }
+
+    .badge-available { background: #dcfce7; color: #166534; }
+    .badge-booked    { background: #fee2e2; color: #991b1b; }
+    .badge-blocked   { background: #f1f5f9; color: #475569; }
+    .badge-progress  { background: #fff3e0; color: #e65100; }
+
+    .slot-popup-footer { padding: 0 26px 24px; display: flex; flex-direction: column; gap: 10px; }
+
+    .slot-proceed-btn { width: 100%; font-size: 15px; font-weight: 700; border-radius: 13px; padding: 14px; }
+
+    .slot-cancel-btn {
+      width: 100%; font-size: 14px; font-weight: 600;
+      background: #f1f5f9; color: var(--text-muted);
+      border-radius: 13px; padding: 12px; border: none;
+      cursor: pointer; font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+
+    .slot-cancel-btn:hover { background: #e2e8f0; }
+
+    .slot-popup-empty {
+      text-align: center; padding: 20px 0;
+      color: var(--text-muted); font-size: 14.5px;
+    }
+
+    .slot-popup-empty-icon {
+      width: 56px; height: 56px; margin: 0 auto 14px;
+      background: var(--gold-pale); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+    }
+
+    .slot-popup-empty-icon svg { width: 26px; height: 26px; stroke-width: 1.8; }
+
+    /* ======================== */
+    /* FOOTER */
+    /* ======================== */
+    footer {
+      background: #0f0f1a; color: white; padding: 55px 0 35px;
+    }
+
+    .footer-inner {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 20px;
+      padding-bottom: 30px; border-bottom: 1px solid #1f2937;
+      margin-bottom: 28px;
+    }
+
+    .footer-brand img { height: 32px; filter: brightness(10); display: block; margin-bottom: 8px; }
+    .footer-brand p { font-size: 13px; color: #9ca3af; }
+
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+
+    .footer-links a { font-size: 13px; color: #9ca3af; transition: var(--transition); }
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+
+    .footer-bottom p { font-size: 13px; color: #6b7280; }
+    .footer-gold { color: var(--gold); }
+
+    /* ======================== */
+    /* RESPONSIVE */
+    /* ======================== */
+    @media(max-width: 992px) {
+      .form-layout-wrapper { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+    }
+
+    @media(max-width: 768px) {
+      .nav-links { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-card-body { padding: 24px 20px; }
+      .hero-steps { gap: 6px; flex-wrap: wrap; justify-content: center; }
+      .hero-step-line { width: 30px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .cal-modal-body { padding: 18px; }
+    }
+
+    @media(max-width: 480px) {
+      .hero-steps { flex-direction: column; align-items: center; gap: 8px; }
+      .hero-step-line { display: none; }
+      #inPageCalendar .fc { min-width: 600px; }
+      .cal-modal-body { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="container nav-wrapper">
+        <div class="logo">
+          <a href="index.html#top">
+            <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club Logo">
+          </a>
+        </div>
+        <div class="nav-links">
+          <a href="index.html#calendar-booking">Calendar</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#gallery">Gallery</a>
+          <a href="index.html#features">Features</a>
+          <a href="index.html" class="nav-back">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;stroke-width:2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="container">
+      <div class="hero-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;stroke-width:2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Secure Booking Process
+      </div>
+      <h1>Booking <span>Information</span></h1>
+      <p>Complete your event and contact details. Your selected hall, date, shift, and amount are pre-filled from the calendar.</p>
+      <div class="hero-steps">
+        <div class="hero-step done">
+          <div class="hero-step-num">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;stroke-width:3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span>Select Slot</span>
+        </div>
+        <div class="hero-step-line done"></div>
+        <div class="hero-step active">
+          <div class="hero-step-num">2</div>
+          <span>Booking Info</span>
+        </div>
+        <div class="hero-step-line"></div>
+        <div class="hero-step">
+          <div class="hero-step-num">3</div>
+          <span>Payment</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM SECTION -->
+  <section class="form-page-section" id="booking-page">
+    <div class="container">
+      <div class="form-layout-wrapper">
+
+        <!-- Main Form -->
+        <div class="form-card" data-aos="fade-right">
+          <div class="form-card-header">
+            <h2>Event &amp; Contact Details</h2>
+            <p>All fields marked with * are required to proceed</p>
+          </div>
+          <div class="form-card-body">
+            <form id="bookingForm" novalidate>
+
+              <input type="hidden" id="bookingSlotId">
+
+              <!-- Personal Info -->
+              <div class="form-section-label">Personal Information</div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customerName">Full Name *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="customerName" placeholder="Enter full name" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="customerEmail">Email Address *</label>
+                  <div class="input-wrap">
+                    <input type="email" id="customerEmail" placeholder="your@email.com" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customerPhone">Phone Number *</label>
+                  <div class="input-wrap">
+                    <input type="tel" id="customerPhone" placeholder="+880 1X00-000000" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.58 3.37 2 2 0 0 1 3.55 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.5a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="customerAddress">Address *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="customerAddress" placeholder="Your full address" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Booking Details -->
+              <div class="form-section-label">Booking Details</div>
+
+              <div class="form-group">
+                <label for="hallSelect">Select Hall *</label>
+                <div class="input-wrap">
+                  <select id="hallSelect" required></select>
+                  <span class="input-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  </span>
+                  <span class="select-arrow-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="bookingDate">Booking Date *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="bookingDate" placeholder="Auto-filled from calendar" readonly required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </span>
+                    <span class="readonly-badge">AUTO</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="bookingSlotLabel">Selected Shift *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="bookingSlotLabel" placeholder="Auto-filled from calendar" readonly required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </span>
+                    <span class="readonly-badge">AUTO</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event Info -->
+              <div class="form-section-label">Event Information</div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="eventTitle">Event Title *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="eventTitle" placeholder="e.g. Rahman-Hasan Wedding" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="8 6 21 6"/><polyline points="8 12 21 12"/><polyline points="8 18 21 18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="eventType">Event Type *</label>
+                  <div class="input-wrap">
+                    <input type="text" id="eventType" placeholder="e.g. Wedding, Reception" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="guestCount">Number of Guests *</label>
+                  <div class="input-wrap">
+                    <input type="number" id="guestCount" placeholder="Estimated guest count" min="1" required>
+                    <span class="input-icon-box">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="totalAmount">Total Amount (৳) *</label>
+                  <div class="input-wrap">
+                    <input type="number" id="totalAmount" placeholder="Auto-filled" min="0" step="0.01" readonly required>
+                    <span class="input-icon-box">
+                      <span style="font-size:18px;font-weight:700;line-height:1;">৳</span>
+                    </span>
+                    <span class="readonly-badge">AUTO</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="eventDetails">Event Details *</label>
+                <div class="input-wrap">
+                  <textarea id="eventDetails" rows="5" placeholder="Describe your event requirements, special requests, decoration preferences..." required></textarea>
+                  <span class="input-icon-box top">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn" type="submit" id="bookingSubmitButton">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  Proceed to Payment
+                </button>
+                <div id="bookingMessage" class="booking-message"></div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" data-aos="fade-left" data-aos-delay="150">
+
+          <!-- Summary Card -->
+          <div class="summary-card">
+            <div class="summary-card-header">
+              <h3>Your Booking Summary</h3>
+              <p>Pre-filled from your calendar selection</p>
+            </div>
+            <div class="summary-card-body">
+              <div class="summary-row">
+                <span class="summary-label">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  Hall
+                </span>
+                <span class="summary-value" id="sumHall">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Date
+                </span>
+                <span class="summary-value" id="sumDate">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Shift
+                </span>
+                <span class="summary-value" id="sumShift">—</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                  Status
+                </span>
+                <span class="summary-value" style="color:var(--success);">Available</span>
+              </div>
+              <div class="summary-amount-box">
+                <div class="summary-amount-label">Total Booking Amount</div>
+                <div class="summary-amount-value" id="sumAmount">৳ 0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Change Slot Card -->
+          <div class="change-slot-card">
+            <div class="change-slot-card-header">
+              <div class="change-slot-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <h4>Change Your Slot</h4>
+            </div>
+            <p>Need a different date or shift? Open the calendar below and choose another available slot from here</p>
+            <button class="btn btn-secondary" id="openCalendarModalBtn" type="button" style="width:100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Open Booking Calendar
+            </button>
+          </div>
+
+          <!-- Help Card -->
+          <div class="help-card">
+            <h4>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              How It Works
+            </h4>
+            <div class="help-item">
+              <div class="help-item-num">1</div>
+              <span>Fill in your personal and event details accurately.</span>
+            </div>
+            <div class="help-item">
+              <div class="help-item-num">2</div>
+              <span>Click <strong>Proceed to Payment</strong> to hold your slot for 10 minutes.</span>
+            </div>
+            <div class="help-item">
+              <div class="help-item-num">3</div>
+              <span>Complete the payment to confirm your booking permanently.</span>
+            </div>
+            <div class="help-item">
+              <div class="help-item-num">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:11px;height:11px;stroke-width:2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <span>A confirmation email will be sent to your registered address.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== -->
+  <!-- CALENDAR MODAL -->
+  <!-- ======================== -->
+  <div class="cal-modal-overlay" id="calModalOverlay">
+    <div class="cal-modal">
+      <div class="cal-modal-header">
+        <div class="cal-modal-header-left">
+          <h3>Select a New Slot</h3>
+          <p>Click any date or event to view available shifts</p>
+        </div>
+        <button class="cal-modal-close" id="closeCalModalBtn" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="cal-modal-body">
+        <div class="cal-legend">
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#198754;"></div> Available
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#dc3545;"></div> Booked
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#fd7e14;"></div> In Progress
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#6c757d;"></div> Blocked
+          </div>
+        </div>
+        <div id="inPageCalendar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== -->
+  <!-- SLOT SELECTION POPUP -->
+  <!-- ======================== -->
+  <div class="slot-popup-overlay" id="slotPopupOverlay">
+    <div class="slot-popup-box">
+      <div class="slot-popup-header">
+        <button class="slot-popup-close" id="closeSlotPopupBtn" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="slot-popup-header-content">
+          <h3>Select Your Shift</h3>
+          <div class="slot-popup-date-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="slotPopupDateText">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="slot-popup-body">
+        <p class="slot-popup-subtitle">Available Shifts for This Date</p>
+        <div id="slotRadioGroup" class="slot-radio-group"></div>
+      </div>
+      <div class="slot-popup-footer">
+        <button type="button" class="btn slot-proceed-btn" id="slotProceedBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+          Confirm This Slot
+        </button>
+        <button type="button" class="slot-cancel-btn" id="closeSlotPopupBtn2">Back to Calendar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
+          <p>Premium Convention &amp; Party Venue in Dhaka</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#calendar-booking">Calendar</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#gallery">Gallery</a>
+          <a href="index.html#features">Features</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 <span class="footer-gold">Dhaka Ladies Club</span>. All Rights Reserved.</p>
+        <p>Dhaka, Bangladesh</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================== -->
+  <!-- SCRIPTS -->
+  <!-- ======================== -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script>
+    /* ====================== BASE CONFIG ====================== */
+    window.API_BASE_URL    = 'http://127.0.0.1:8000/api';
+    window.DEFAULT_HALL_ID = 1;
+
+    const SELECTED_SLOT_KEY = 'dlc_selected_slot_v2';
+    const BOOKING_DRAFT_KEY = 'dlc_booking_draft_v2';
+    const ACTIVE_HOLD_KEY   = 'dlc_active_hold_v2';
+
+    /* ====================== AOS ====================== */
+    function initAOS() {
+      if (window.AOS) AOS.init({ duration: 900, once: false, offset: 60 });
+    }
+
+    /* ====================== NAVBAR SCROLL ====================== */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    /* ====================== STORAGE ====================== */
+    function saveJson(key, value)  { sessionStorage.setItem(key, JSON.stringify(value)); }
+    function readJson(key) {
+      try { const r = sessionStorage.getItem(key); return r ? JSON.parse(r) : null; }
+      catch(e) { return null; }
+    }
+    function removeJson(key) { sessionStorage.removeItem(key); }
+
+    /* ====================== TIME HELPERS ====================== */
+    function formatCountdown(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+    }
+
+    function parseServerDateTime(v) {
+      if (!v) return null;
+      const t = String(v);
+      return new Date(t.includes('T') ? t : t.replace(' ','T')).getTime();
+    }
+
+    function getSlotExpiryTime(slot) {
+      return parseServerDateTime(slot.hold_expires_at_iso || slot.hold_expires_at);
+    }
+
+    function getRemainingText(slot) {
+      const exp = getSlotExpiryTime(slot);
+      if (!exp) return '';
+      const rem = exp - Date.now();
+      return rem <= 0 ? '00:00' : formatCountdown(rem);
+    }
+
+    function formatSlotLabel(slot) {
+      return `${slot.shift_name} (${slot.start_time} - ${slot.end_time})`;
+    }
+
+    function calculateAmount(slot) {
+      return Number(slot.price || slot.shift_price || slot.total_amount || 0);
+    }
+
+    async function releaseActiveHold() {
+      const hold = readJson(ACTIVE_HOLD_KEY);
+      if (!hold?.booking_id || !hold?.hold_token) return false;
+      try {
+        await fetch(`${window.API_BASE_URL}/booking-holds/release`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ booking_id: hold.booking_id, hold_token: hold.hold_token })
+        });
+        removeJson(ACTIVE_HOLD_KEY);
+        return true;
+      } catch { removeJson(ACTIVE_HOLD_KEY); return false; }
+    }
+
+    function setButtonLoading(btn, isLoading, text) {
+      if (!btn) return;
+      if (isLoading) {
+        btn.dataset.originalText = btn.innerHTML;
+        btn.disabled = true; btn.classList.add('loading');
+        if (text) btn.textContent = text;
+      } else {
+        btn.disabled = false; btn.classList.remove('loading');
+        btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+      }
+    }
+  </script>
+
+  <script>
+    /* ====================== BOOKING FORM LOGIC ====================== */
+    window.bookingState = { context: null };
+
+    function setBookingMessage(msg, type) {
+      const box = document.getElementById('bookingMessage');
+      if (!box) return;
+      box.textContent = msg;
+      box.className   = `booking-message ${type || ''}`.trim();
+    }
+
+    /* -- Sidebar summary -- */
+    function updateSidebar(selected) {
+      if (!selected) return;
+      const amount = calculateAmount(selected);
+      const h = document.getElementById('sumHall');
+      const d = document.getElementById('sumDate');
+      const s = document.getElementById('sumShift');
+      const a = document.getElementById('sumAmount');
+      if (h) h.textContent = selected.hall_name || 'Main Hall';
+      if (d) d.textContent = selected.booking_date || '—';
+      if (s) s.textContent = selected.booking_slot_label || '—';
+      if (a) a.textContent = `৳ ${Number(amount).toLocaleString()}`;
+    }
+
+    /* -- Load halls -- */
+    async function loadBookingContext() {
+      const res = await fetch(`${window.API_BASE_URL}/booking-context`);
+      if (!res.ok) throw new Error('Failed to load booking context');
+      const payload = await res.json();
+      window.bookingState.context = payload.data;
+
+      const hallSelect = document.getElementById('hallSelect');
+      hallSelect.innerHTML = '';
+      payload.data.halls.forEach(hall => {
+        const opt = document.createElement('option');
+        opt.value = hall.id; opt.textContent = hall.name;
+        hallSelect.appendChild(opt);
+      });
+      hallSelect.value = String(payload.data.default_hall_id || window.DEFAULT_HALL_ID);
+    }
+
+    /* -- Draft -- */
+    function collectBookingDraftFromForm() {
+      return {
+        customer_name:      document.getElementById('customerName').value,
+        customer_email:     document.getElementById('customerEmail').value,
+        customer_phone:     document.getElementById('customerPhone').value,
+        customer_address:   document.getElementById('customerAddress').value,
+        hall_id:            document.getElementById('hallSelect').value,
+        booking_slot_id:    document.getElementById('bookingSlotId').value,
+        booking_date:       document.getElementById('bookingDate').value,
+        booking_slot_label: document.getElementById('bookingSlotLabel').value,
+        event_title:        document.getElementById('eventTitle').value,
+        event_type:         document.getElementById('eventType').value,
+        guest_count:        document.getElementById('guestCount').value,
+        total_amount:       document.getElementById('totalAmount').value,
+        event_details:      document.getElementById('eventDetails').value
+      };
+    }
+
+    function saveBookingDraftToStorage() {
+      saveJson(BOOKING_DRAFT_KEY, collectBookingDraftFromForm());
+    }
+
+    function restoreBookingDraftToForm(draft) {
+      if (!draft) return;
+      document.getElementById('customerName').value    = draft.customer_name      || '';
+      document.getElementById('customerEmail').value   = draft.customer_email     || '';
+      document.getElementById('customerPhone').value   = draft.customer_phone     || '';
+      document.getElementById('customerAddress').value = draft.customer_address   || '';
+      if (draft.hall_id) document.getElementById('hallSelect').value = String(draft.hall_id);
+      document.getElementById('bookingDate').value       = draft.booking_date       || '';
+      document.getElementById('bookingSlotLabel').value  = draft.booking_slot_label || '';
+      document.getElementById('bookingSlotId').value     = draft.booking_slot_id    || '';
+      document.getElementById('eventTitle').value        = draft.event_title        || '';
+      document.getElementById('eventType').value         = draft.event_type         || '';
+      document.getElementById('guestCount').value        = draft.guest_count        || '';
+      document.getElementById('totalAmount').value       = draft.total_amount       || '';
+      document.getElementById('eventDetails').value      = draft.event_details      || '';
+    }
+
+    function populateSelectedSlot() {
+      const selected = readJson(SELECTED_SLOT_KEY);
+      const draft    = readJson(BOOKING_DRAFT_KEY) || {};
+
+      if (!selected?.booking_slot_id) {
+        setBookingMessage('No slot selected. Use the calendar to select a slot.', 'error');
+        document.getElementById('bookingSubmitButton').disabled = true;
+        return;
+      }
+
+      const amount = calculateAmount(selected);
+      const slotDraft = {
+        ...draft,
+        hall_id:            selected.hall_id,
+        booking_slot_id:    selected.booking_slot_id,
+        booking_date:       selected.booking_date,
+        booking_slot_label: selected.booking_slot_label,
+        price:              selected.price       || amount,
+        shift_price:        selected.shift_price || amount,
+        total_amount:       amount
+      };
+
+      restoreBookingDraftToForm(slotDraft);
+      saveJson(BOOKING_DRAFT_KEY, slotDraft);
+      updateSidebar(selected);
+
+      // Enable submit
+      const submitBtn = document.getElementById('bookingSubmitButton');
+      if (submitBtn) submitBtn.disabled = false;
+      setBookingMessage('', '');
+    }
+
+    function enableBookingDraftAutosave() {
+      [
+        'customerName','customerEmail','customerPhone','customerAddress',
+        'hallSelect','bookingDate','bookingSlotLabel','bookingSlotId',
+        'eventTitle','eventType','guestCount','totalAmount','eventDetails'
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input',  saveBookingDraftToStorage);
+        el.addEventListener('change', saveBookingDraftToStorage);
+      });
+    }
+
+    /* -- Submit -- */
+    async function submitBooking(event) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        setBookingMessage('Please complete all required fields before continuing.', 'error');
+        return;
+      }
+
+      if (!document.getElementById('bookingSlotId').value) {
+        setBookingMessage('Please select a free slot from the calendar first.', 'error');
+        return;
+      }
+
+      if (
+        !document.getElementById('bookingDate').value ||
+        !document.getElementById('bookingSlotLabel').value ||
+        !document.getElementById('totalAmount').value
+      ) {
+        setBookingMessage('Slot information is missing. Please select a slot again.', 'error');
+        return;
+      }
+
+      const payload = {
+        customer_name:      document.getElementById('customerName').value.trim(),
+        customer_email:     document.getElementById('customerEmail').value.trim(),
+        customer_phone:     document.getElementById('customerPhone').value.trim(),
+        customer_address:   document.getElementById('customerAddress').value.trim(),
+        hall_id:            Number(document.getElementById('hallSelect').value),
+        booking_slot_id:    Number(document.getElementById('bookingSlotId').value),
+        booking_date:       document.getElementById('bookingDate').value,
+        booking_slot_label: document.getElementById('bookingSlotLabel').value,
+        event_title:        document.getElementById('eventTitle').value.trim(),
+        event_type:         document.getElementById('eventType').value.trim(),
+        guest_count:        document.getElementById('guestCount').value
+                              ? Number(document.getElementById('guestCount').value) : null,
+        total_amount:       Number(document.getElementById('totalAmount').value),
+        event_details:      document.getElementById('eventDetails').value.trim()
+      };
+
+      saveJson(BOOKING_DRAFT_KEY, payload);
+
+      const button = document.getElementById('bookingSubmitButton');
+      setButtonLoading(button, true, 'Creating Payment Session...');
+
+      try {
+        const res = await fetch(`${window.API_BASE_URL}/booking-holds`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || result.message || 'Unable to hold this slot.');
+
+        saveJson(ACTIVE_HOLD_KEY, {
+          ...payload,
+          booking_id:      result.data.booking_id,
+          hold_token:      result.data.hold_token,
+          hold_expires_at: result.data.hold_expires_at
+        });
+
+        setBookingMessage(result.message || 'Slot held for payment.', 'success');
+        window.location.href = 'payment.html';
+      } catch (error) {
+        setBookingMessage(error.message || 'Unable to hold this slot.', 'error');
+      } finally {
+        setButtonLoading(button, false);
+      }
+    }
+  </script>
+
+  <script>
+    /* ====================== IN-PAGE CALENDAR + SLOT POPUP ====================== */
+    window.inPageCalState = {
+      calInstance:   null,
+      slotsByDate:   {},
+      initialized:   false,
+      selectedSlotId: null,
+      selectedSlot:   null
+    };
+
+    /* -- Build FullCalendar event objects -- */
+    function buildCalEvent(slot) {
+      const colorMap = {
+        available:           '#198754',
+        booked:              '#dc3545',
+        blocked:             '#6c757d',
+        payment_in_progress: '#fd7e14'
+      };
+      const color = colorMap[slot.slot_status] || '#6c757d';
+      return {
+        id: String(slot.slot_id),
+        title: slot.calendar_title || `${slot.shift_name} · ${slot.slot_status}`,
+        start: slot.slot_date, allDay: true,
+        backgroundColor: color, borderColor: color,
+        extendedProps: { slot }
+      };
+    }
+
+    /* -- Load slots from API -- */
+    async function loadCalSlots(fetchInfo, successCallback, failureCallback) {
+      try {
+        const hallId = String(
+          window.bookingState.context?.default_hall_id || window.DEFAULT_HALL_ID
+        );
+        const url = new URL(`${window.API_BASE_URL}/calendar-slots`);
+        url.searchParams.set('hall_id', hallId);
+        url.searchParams.set('from', fetchInfo.startStr.slice(0,10));
+        url.searchParams.set('to',   fetchInfo.endStr.slice(0,10));
+
+        const res     = await fetch(url.toString());
+        if (!res.ok) throw new Error('Failed to load calendar slots');
+        const payload = await res.json();
+        const slots   = payload.data || [];
+
+        window.inPageCalState.slotsByDate = slots.reduce((acc, slot) => {
+          if (!acc[slot.slot_date]) acc[slot.slot_date] = [];
+          acc[slot.slot_date].push(slot);
+          return acc;
+        }, {});
+
+        successCallback(slots.map(buildCalEvent));
+      } catch(err) { failureCallback(err); }
+    }
+
+    /* -- Force resize -- */
+    function forceCalResize() {
+      if (!window.inPageCalState.calInstance) return;
+      window.inPageCalState.calInstance.updateSize();
+      setTimeout(() => {
+        if (window.inPageCalState.calInstance)
+          window.inPageCalState.calInstance.updateSize();
+      }, 200);
+    }
+
+    /* -- Init calendar (lazy, only once) -- */
+    function initInPageCalendar() {
+      if (window.inPageCalState.initialized) {
+        forceCalResize();
+        window.inPageCalState.calInstance?.refetchEvents();
+        return;
+      }
+
+      const el = document.getElementById('inPageCalendar');
+      if (!el) return;
+
+      window.inPageCalState.calInstance = new FullCalendar.Calendar(el, {
+        initialView: 'dayGridMonth',
+        height: 'auto',
+        navLinks: true,
+        editable: false,
+        selectable: true,
+        dayMaxEvents: true,
+        handleWindowResize: true,
+        headerToolbar: {
+          left:   'prev,next today',
+          center: 'title',
+          right:  'dayGridMonth,listMonth'
+        },
+        buttonText: { today: 'Today', month: 'Month', listMonth: 'List' },
+        events: loadCalSlots,
+        viewDidMount() { forceCalResize(); },
+        datesSet()     { forceCalResize(); },
+        eventsSet()    { forceCalResize(); },
+        dateClick(info) {
+          info.jsEvent.preventDefault();
+          openSlotPopup(info.dateStr, window.inPageCalState.slotsByDate[info.dateStr] || []);
+        },
+        eventClick(info) {
+          const slot = info.event.extendedProps.slot;
+          openSlotPopup(slot.slot_date, window.inPageCalState.slotsByDate[slot.slot_date] || [slot]);
+        }
+      });
+
+      window.inPageCalState.calInstance.render();
+      window.inPageCalState.initialized = true;
+      forceCalResize();
+    }
+
+    /* ======================== */
+    /* CALENDAR MODAL */
+    /* ======================== */
+    const calModalOverlay = document.getElementById('calModalOverlay');
+
+    function openCalendarModal() {
+      calModalOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => {
+        initInPageCalendar();
+        forceCalResize();
+      }, 80);
+    }
+
+    function closeCalendarModal() {
+      calModalOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('openCalendarModalBtn')
+      .addEventListener('click', openCalendarModal);
+
+    document.getElementById('closeCalModalBtn')
+      .addEventListener('click', closeCalendarModal);
+
+    calModalOverlay.addEventListener('click', function(e) {
+      if (e.target === calModalOverlay) closeCalendarModal();
+    });
+
+    /* ======================== */
+    /* SLOT SELECTION POPUP */
+    /* ======================== */
+    const slotPopupOverlay = document.getElementById('slotPopupOverlay');
+
+    function getStatusBadge(status) {
+      const map = {
+        available:           { label: 'Available',   cls: 'badge-available' },
+        booked:              { label: 'Booked',       cls: 'badge-booked'   },
+        blocked:             { label: 'Blocked',      cls: 'badge-blocked'  },
+        payment_in_progress: { label: 'In Progress', cls: 'badge-progress' }
+      };
+      const cfg = map[status] || { label: status, cls: 'badge-blocked' };
+      return `<span class="slot-status-badge ${cfg.cls}">${cfg.label}</span>`;
+    }
+
+    function updateSlotProceedBtn() {
+      const btn = document.getElementById('slotProceedBtn');
+      if (!btn) return;
+      btn.disabled      = !window.inPageCalState.selectedSlotId;
+      btn.style.opacity = window.inPageCalState.selectedSlotId ? '1' : '0.5';
+      btn.style.cursor  = window.inPageCalState.selectedSlotId ? 'pointer' : 'not-allowed';
+    }
+
+    function openSlotPopup(dateStr, slots) {
+      const dateEl  = document.getElementById('slotPopupDateText');
+      const groupEl = document.getElementById('slotRadioGroup');
+
+      const formatted = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+      dateEl.textContent = formatted;
+
+      groupEl.innerHTML = '';
+      window.inPageCalState.selectedSlotId = null;
+      window.inPageCalState.selectedSlot   = null;
+      updateSlotProceedBtn();
+
+      if (!slots.length) {
+        groupEl.innerHTML = `
+          <div class="slot-popup-empty">
+            <div class="slot-popup-empty-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <p>No slots available for this date yet.</p>
+          </div>`;
+      } else {
+        slots.forEach((slot, idx) => {
+          const isAvailable = slot.slot_status === 'available';
+          const uid    = `slot_r_${idx}_${slot.slot_id}`;
+          const amount = calculateAmount(slot);
+          const priceHtml = amount > 0
+            ? `<div class="slot-price">৳ ${Number(amount).toLocaleString()}</div>` : '';
+          const expHtml = slot.slot_status === 'payment_in_progress'
+            ? `<div class="slot-time" style="color:#e65100;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Expires: ${getRemainingText(slot)}
+               </div>` : '';
+
+          const item = document.createElement('div');
+          item.className = 'slot-radio-item';
+          item.innerHTML = `
+            <input type="radio" name="inPageSlotChoice" id="${uid}" value="${slot.slot_id}"
+              ${!isAvailable ? 'disabled' : ''}>
+            <label for="${uid}" class="slot-radio-label ${!isAvailable ? 'disabled' : ''}">
+              <div class="slot-radio-custom"></div>
+              <div class="slot-info">
+                <div class="slot-name">${slot.shift_name}</div>
+                <div class="slot-time">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  ${slot.start_time} – ${slot.end_time}
+                </div>
+                ${expHtml}
+                ${priceHtml}
+              </div>
+              ${getStatusBadge(slot.slot_status)}
+            </label>`;
+
+          if (isAvailable) {
+            item.querySelector('input').addEventListener('change', () => {
+              window.inPageCalState.selectedSlotId = slot.slot_id;
+              window.inPageCalState.selectedSlot   = slot;
+              updateSlotProceedBtn();
+            });
+          }
+          groupEl.appendChild(item);
+        });
+      }
+
+      slotPopupOverlay.classList.add('open');
+    }
+
+    function closeSlotPopup() {
+      slotPopupOverlay.classList.remove('open');
+    }
+
+    /* Confirm selected slot from popup -> update form fields */
+    document.getElementById('slotProceedBtn').addEventListener('click', function () {
+      const slot = window.inPageCalState.selectedSlot;
+      if (!slot) return;
+
+      const amount = calculateAmount(slot);
+      const label  = formatSlotLabel(slot);
+
+      /* Update sessionStorage */
+      const selected = {
+        ...slot,
+        booking_slot_id:    slot.slot_id,
+        booking_date:       slot.slot_date,
+        booking_slot_label: label,
+        total_amount:       amount,
+        selected_at:        new Date().toISOString()
+      };
+
+      saveJson(SELECTED_SLOT_KEY, selected);
+
+      const existingDraft = readJson(BOOKING_DRAFT_KEY) || {};
+      saveJson(BOOKING_DRAFT_KEY, {
+        ...existingDraft,
+        hall_id:            slot.hall_id,
+        booking_slot_id:    slot.slot_id,
+        booking_date:       slot.slot_date,
+        booking_slot_label: label,
+        total_amount:       amount
+      });
+
+      /* Update form fields directly */
+      document.getElementById('bookingDate').value      = slot.slot_date;
+      document.getElementById('bookingSlotLabel').value = label;
+      document.getElementById('bookingSlotId').value    = slot.slot_id;
+      document.getElementById('totalAmount').value      = amount;
+      if (slot.hall_id) document.getElementById('hallSelect').value = String(slot.hall_id);
+
+      /* Update sidebar */
+      updateSidebar(selected);
+
+      /* Enable submit */
+      const submitBtn = document.getElementById('bookingSubmitButton');
+      if (submitBtn) submitBtn.disabled = false;
+      setBookingMessage('Slot updated successfully. Please review and proceed.', 'success');
+
+      /* Close both popups */
+      closeSlotPopup();
+      closeCalendarModal();
+    });
+
+    document.getElementById('closeSlotPopupBtn').addEventListener('click',  closeSlotPopup);
+    document.getElementById('closeSlotPopupBtn2').addEventListener('click', closeSlotPopup);
+
+    slotPopupOverlay.addEventListener('click', function(e) {
+      if (e.target === slotPopupOverlay) closeSlotPopup();
+    });
+
+    /* ESC key */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (slotPopupOverlay.classList.contains('open')) { closeSlotPopup(); return; }
+        if (calModalOverlay.classList.contains('open'))  { closeCalendarModal(); }
+      }
+    });
+
+    /* ====================== DOM READY ====================== */
+    document.addEventListener('DOMContentLoaded', async function () {
+      initAOS();
+
+      /* Initialize Lucide icons */
+      if (window.lucide) lucide.createIcons();
+
+      try {
+        await loadBookingContext();
+      } catch (error) {
+        const hallSelect = document.getElementById('hallSelect');
+        if (hallSelect && hallSelect.options.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = String(window.DEFAULT_HALL_ID || 1);
+          opt.textContent = 'Main Hall';
+          hallSelect.appendChild(opt);
+        }
+        setBookingMessage(error.message || 'Backend connection not ready.', 'error');
+      }
+
+      populateSelectedSlot();
+      enableBookingDraftAutosave();
+
+      const form = document.getElementById('bookingForm');
+      if (form) form.addEventListener('submit', submitBooking);
+    });
+  </script>
+
+</body>
+</html>
