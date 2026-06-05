@@ -72,3 +72,4 @@
 - Docs: update changelog - iteration 21 - 2026-06-06T00:06:32.7210044+06:00
 - Fix: tweak layout in styles - iteration 22 - 2026-06-06T00:06:33.0334527+06:00
 - Feat: add placeholder content - iteration 23 - 2026-06-06T00:06:33.3156628+06:00
+- Refactor: restructure sample notes - iteration 24 - 2026-06-06T00:06:33.5947876+06:00
