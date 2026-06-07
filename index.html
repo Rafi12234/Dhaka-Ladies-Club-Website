@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  
 
   <style>
     *, *::before, *::after {
@@ -147,6 +148,24 @@
     }
 
     .nav-cta::after { display: none !important; }
+
+    .logout-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background: #b02a37;
+  transform: translateY(-2px);
+}
 
     /* ======================== */
     /* HERO */
@@ -1290,6 +1309,9 @@
           <a href="index.html#gallery">Gallery</a>
           <a href="index.html#features">Features</a>
           <a href="#calendar-booking" class="btn nav-cta">Book Now</a>
+          <button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()" style="display:none;">
+  Logout
+</button>
         </div>
       </div>
     </div>
@@ -1706,7 +1728,7 @@
       counters.forEach(el => observer.observe(el));
     }
   </script>
-
+  <script src="assets/js/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   <script>
     /* ======================== */
@@ -1910,7 +1932,13 @@
         total_amount:       calculateAmount(slot)
       });
 
-      window.location.href = 'booking.html';
+      const loggedIn = typeof isLoggedIn === 'function' && isLoggedIn();
+
+if (loggedIn) {
+  window.location.href = 'booking.html';
+} else {
+  window.location.href = 'login.html?redirect=booking.html';
+}
     }
 
     function openPopup(date, slots) {
@@ -2000,6 +2028,11 @@
       createParticles();
       animateCounters();
 
+       const logoutBtn = document.getElementById('logoutBtn');
+
+  if (logoutBtn && typeof isLoggedIn === 'function' && isLoggedIn()) {
+    logoutBtn.style.display = 'inline-flex';
+  }
       /* Popup close on backdrop click */
       const popup = document.getElementById('popup');
       if (popup) {
