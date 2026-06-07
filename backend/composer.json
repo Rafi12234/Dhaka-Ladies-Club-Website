@@ -49,9 +49,9 @@
             "h:/Rafi/DLCwebsite2/website/.tools/php/php.exe -c h:/Rafi/DLCwebsite2/website/.tools/php/php.ini artisan test"
         ],
         "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "h:/Rafi/DLCwebsite2/website/.tools/php/php.exe -c h:/Rafi/DLCwebsite2/website/.tools/php/php.ini artisan package:discover --ansi"
-        ],
+    "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+    "@php artisan package:discover --ansi"
+],
         "post-update-cmd": [
             "h:/Rafi/DLCwebsite2/website/.tools/php/php.exe -c h:/Rafi/DLCwebsite2/website/.tools/php/php.ini artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
