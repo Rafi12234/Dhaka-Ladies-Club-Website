@@ -134,6 +134,22 @@
     .nav-links a:hover { color: var(--gold); }
     .nav-links a:hover::after { width: 40%; }
 
+    .login-link {
+  background: var(--gold);
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(184,134,11,0.25);
+}
+
+.login-link:hover {
+  background: var(--gold-dark);
+  transform: translateY(-2px);
+}
+
+.login-link::after {
+  display: none !important;
+}
+
     .nav-cta {
       background: var(--gold) !important;
       color: white !important;
@@ -1324,8 +1340,15 @@
           <a href="index.html#gallery">Gallery</a>
           <a href="index.html#features">Features</a>
           <a href="#calendar-booking" class="btn nav-cta">Book Now</a>
-          <button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()">Logout</button>
-          <a href="admin-login.html" class="admin-login-link">Admin Login</a>
+          <a href="login.html?redirect=booking.html" id="loginBtn" class="login-link" style="display:none;">Login</a>
+
+<button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()" style="display:none;">
+  Logout
+</button>
+
+<a href="admin-login.html" id="adminLoginLink" class="admin-login-link" style="display:none;">
+  Admin Login
+</a>
         </div>
       </div>
     </div>
@@ -1922,38 +1945,50 @@
       }
     }
 
-    function proceedWithSelected() {
-      const slot = window.bookingState.selectedSlot;
-      if (!slot) return;
+async function proceedWithSelected() {
+  const slot = window.bookingState.selectedSlot;
+  if (!slot) return;
 
-      const selected = {
-        ...slot,
-        booking_slot_id:    slot.slot_id,
-        booking_date:       slot.slot_date,
-        booking_slot_label: formatSlotLabel(slot),
-        total_amount:       calculateAmount(slot),
-        selected_at:        new Date().toISOString()
-      };
-      saveJson(SELECTED_SLOT_KEY, selected);
+  const selected = {
+    ...slot,
+    booking_slot_id: slot.slot_id,
+    booking_date: slot.slot_date,
+    booking_slot_label: formatSlotLabel(slot),
+    total_amount: calculateAmount(slot),
+    selected_at: new Date().toISOString()
+  };
 
-      const existingDraft = readJson(BOOKING_DRAFT_KEY) || {};
-      saveJson(BOOKING_DRAFT_KEY, {
-        ...existingDraft,
-        hall_id:            slot.hall_id,
-        booking_slot_id:    slot.slot_id,
-        booking_date:       slot.slot_date,
-        booking_slot_label: formatSlotLabel(slot),
-        total_amount:       calculateAmount(slot)
-      });
+  saveJson(SELECTED_SLOT_KEY, selected);
 
-      const loggedIn = typeof isLoggedIn === 'function' && isLoggedIn();
+  const existingDraft = readJson(BOOKING_DRAFT_KEY) || {};
+  saveJson(BOOKING_DRAFT_KEY, {
+    ...existingDraft,
+    hall_id: slot.hall_id,
+    booking_slot_id: slot.slot_id,
+    booking_date: slot.slot_date,
+    booking_slot_label: formatSlotLabel(slot),
+    total_amount: calculateAmount(slot)
+  });
 
-if (loggedIn) {
+  const user = typeof fetchLoggedInUser === 'function'
+    ? await fetchLoggedInUser()
+    : null;
+
+  if (!user) {
+    window.location.href = 'login.html?redirect=booking.html';
+    return;
+  }
+
+  if (user.user_type !== 'customer') {
+    clearAuthSession();
+
+    alert('Only customer accounts can place bookings. Please login with a customer account.');
+    window.location.href = 'login.html?redirect=booking.html';
+    return;
+  }
+
   window.location.href = 'booking.html';
-} else {
-  window.location.href = 'login.html?redirect=booking.html';
 }
-    }
 
     function openPopup(date, slots) {
       const popup  = document.getElementById('popup');
@@ -2034,6 +2069,31 @@ if (loggedIn) {
       }, 15000);
     }
 
+    async function updateNavbarAuthState() {
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const adminLoginLink = document.getElementById('adminLoginLink');
+
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (logoutBtn) logoutBtn.style.display = 'none';
+  if (adminLoginLink) adminLoginLink.style.display = 'none';
+
+  const user = typeof fetchLoggedInUser === 'function'
+    ? await fetchLoggedInUser()
+    : null;
+
+  if (user && user.user_type === 'customer') {
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+    return;
+  }
+
+  if (user && user.user_type !== 'customer') {
+    clearAuthSession();
+  }
+
+  if (loginBtn) loginBtn.style.display = 'inline-flex';
+  if (adminLoginLink) adminLoginLink.style.display = 'inline-flex';
+}
     /* ======================== */
     /* DOM READY */
     /* ======================== */
@@ -2042,11 +2102,7 @@ if (loggedIn) {
       createParticles();
       animateCounters();
 
-       const logoutBtn = document.getElementById('logoutBtn');
-
-  if (logoutBtn && typeof isLoggedIn === 'function' && isLoggedIn()) {
-    logoutBtn.style.display = 'inline-flex';
-  }
+       await updateNavbarAuthState();
       /* Popup close on backdrop click */
       const popup = document.getElementById('popup');
       if (popup) {
