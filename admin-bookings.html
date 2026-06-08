@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Completed Bookings - Dhaka Ladies Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #faf7f2;
+      color: #1a1a2e;
+    }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #ead7a6;
+      padding: 16px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo img {
+      height: 38px;
+      max-width: 180px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-actions a,
+    .nav-actions button {
+      border: none;
+      text-decoration: none;
+      background: #b8860b;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s ease;
+    }
+
+    .nav-actions a:hover {
+      background: #8f6908;
+      transform: translateY(-2px);
+    }
+
+    .nav-actions button {
+      background: #dc3545;
+    }
+
+    .nav-actions button:hover {
+      background: #b02a37;
+      transform: translateY(-2px);
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1350px;
+      margin: auto;
+      padding: 36px 0;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      color: #b8860b;
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .filter-box {
+      background: white;
+      border: 1px solid #ead7a6;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    }
+
+    input,
+    select {
+      padding: 11px 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      outline: none;
+      font-size: 14px;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #b8860b;
+      box-shadow: 0 0 0 3px rgba(184,134,11,0.12);
+    }
+
+    .filter-btn {
+      padding: 11px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #b8860b;
+      color: white;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .filter-btn:hover {
+      background: #8f6908;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #ead7a6;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      color: #b8860b;
+      line-height: 1;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #ead7a6;
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #f1e2b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      font-size: 20px;
+      color: #1a1a2e;
+      font-weight: 800;
+    }
+
+    .search-box {
+      min-width: 260px;
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1200px;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #fdf6e3;
+      color: #8f6908;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    td {
+      color: #1a1a2e;
+    }
+
+    tr:hover td {
+      background: #fffaf0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-warning {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-muted {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .money {
+      font-weight: 800;
+      color: #b8860b;
+      white-space: nowrap;
+    }
+
+    .message {
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.error {
+      display: block;
+      background: rgba(220,53,69,0.08);
+      border: 1px solid rgba(220,53,69,0.22);
+      color: #dc3545;
+    }
+
+    .message.success {
+      display: block;
+      background: rgba(25,135,84,0.08);
+      border: 1px solid rgba(25,135,84,0.22);
+      color: #198754;
+    }
+
+    .empty-state {
+      padding: 34px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 15px;
+    }
+
+    .small-text {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media(max-width: 768px) {
+      nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .nav-actions {
+        width: 100%;
+      }
+
+      .nav-actions a,
+      .nav-actions button {
+        flex: 1;
+        text-align: center;
+      }
+
+      .page-header {
+        align-items: flex-start;
+      }
+
+      .filter-box {
+        width: 100%;
+      }
+
+      input,
+      select,
+      .filter-btn {
+        width: 100%;
+      }
+
+      .search-box {
+        max-width: none;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">
+      <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
+    </a>
+
+    <div class="nav-actions">
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-bookings.html">Completed Bookings</a>
+      <button type="button" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="page-header">
+      <div>
+        <h1>Completed Bookings</h1>
+        <p class="muted" id="adminInfo">Loading admin...</p>
+        <p class="muted" id="filterInfo">Filter loading...</p>
+      </div>
+
+      <div class="filter-box">
+        <span class="muted">Show last</span>
+
+        <input type="number" id="filterCount" value="1" min="1">
+
+        <select id="filterUnit">
+          <option value="days">Days</option>
+          <option value="weeks">Weeks</option>
+          <option value="months">Months</option>
+          <option value="years">Years</option>
+        </select>
+
+        <button class="filter-btn" type="button" onclick="loadCompletedBookings()">
+          Apply Filter
+        </button>
+      </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Completed Bookings</div>
+        <div class="stat-value" id="totalBookings">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value" id="totalRevenue">৳ 0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total Guests</div>
+        <div class="stat-value" id="totalGuests">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Unique Customers</div>
+        <div class="stat-value" id="uniqueCustomers">0</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Completed Booking Users</h2>
+          <p class="muted">Information loaded from bookings, customers, users, booking_slots, halls, and shifts.</p>
+        </div>
+
+        <input
+          type="text"
+          id="searchInput"
+          class="search-box"
+          placeholder="Search by booking no, name, email, phone, event..."
+          oninput="renderBookingsTable()"
+        >
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Booking Info</th>
+              <th>Customer Info</th>
+              <th>Address</th>
+              <th>Event Info</th>
+              <th>Slot Info</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Booked At</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTableBody">
+            <tr>
+              <td colspan="8">
+                <div class="empty-state">Loading completed bookings...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    window.API_BASE_URL = 'http://127.0.0.1:8000/api';
+  </script>
+
+  <script src="assets/js/admin-auth.js"></script>
+
+  <script>
+    let completedBookings = [];
+
+    function showMessage(message, type = 'error') {
+      const box = document.getElementById('message');
+      box.textContent = message || '';
+      box.className = `message ${type}`;
+    }
+
+    function clearMessage() {
+      const box = document.getElementById('message');
+      box.textContent = '';
+      box.className = 'message';
+    }
+
+    function money(value) {
+      return `৳ ${Number(value || 0).toLocaleString()}`;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+
+      const date = new Date(String(value).replace(' ', 'T'));
+
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return date.toLocaleString();
+    }
+
+    function getStatusBadge(status) {
+      const normalized = String(status || '').toLowerCase();
+
+      if (normalized === 'booked' || normalized === 'confirmed' || normalized === 'paid' || normalized === 'completed') {
+        return `<span class="badge badge-success">${status}</span>`;
+      }
+
+      if (normalized === 'pending' || normalized === 'payment_in_progress') {
+        return `<span class="badge badge-warning">${status}</span>`;
+      }
+
+      if (normalized === 'cancelled' || normalized === 'failed') {
+        return `<span class="badge badge-danger">${status}</span>`;
+      }
+
+      return `<span class="badge badge-muted">${status || '—'}</span>`;
+    }
+
+    function calculateSummary(rows) {
+      const totalBookings = rows.length;
+
+      const totalRevenue = rows.reduce((sum, row) => {
+        return sum + Number(row.total_amount || 0);
+      }, 0);
+
+      const totalGuests = rows.reduce((sum, row) => {
+        return sum + Number(row.guest_count || 0);
+      }, 0);
+
+      const uniqueCustomers = new Set(
+        rows
+          .map(row => row.user_id || row.customer_email || row.customer_phone)
+          .filter(Boolean)
+      ).size;
+
+      document.getElementById('totalBookings').textContent = totalBookings;
+      document.getElementById('totalRevenue').textContent = money(totalRevenue);
+      document.getElementById('totalGuests').textContent = totalGuests.toLocaleString();
+      document.getElementById('uniqueCustomers').textContent = uniqueCustomers;
+    }
+
+    function getFilteredRows() {
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      if (!keyword) {
+        return completedBookings;
+      }
+
+      return completedBookings.filter(row => {
+        const searchable = [
+          row.booking_no,
+          row.booking_status,
+          row.booking_source,
+          row.customer_name,
+          row.customer_email,
+          row.customer_phone,
+          row.customer_address,
+          row.event_title,
+          row.event_type,
+          row.event_details,
+          row.slot_date,
+          row.hall_name,
+          row.shift_name,
+          row.total_amount,
+          row.booked_at
+        ].join(' ').toLowerCase();
+
+        return searchable.includes(keyword);
+      });
+    }
+
+    function renderBookingsTable() {
+      const rows = getFilteredRows();
+      const body = document.getElementById('bookingsTableBody');
+
+      calculateSummary(rows);
+
+      if (!rows.length) {
+        body.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">No completed bookings found for this filter.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      body.innerHTML = rows.map(row => {
+        return `
+          <tr>
+            <td>
+              <strong>${row.booking_no || '—'}</strong>
+              <div class="small-text">ID: ${row.id || '—'}</div>
+              <div class="small-text">Source: ${row.booking_source || '—'}</div>
+            </td>
+
+            <td>
+              <strong>${row.customer_name || '—'}</strong>
+              <div class="small-text">Email: ${row.customer_email || '—'}</div>
+              <div class="small-text">Phone: ${row.customer_phone || '—'}</div>
+              <div class="small-text">User ID: ${row.user_id || '—'}</div>
+            </td>
+
+            <td>
+              ${row.customer_address || '—'}
+            </td>
+
+            <td>
+              <strong>${row.event_title || '—'}</strong>
+              <div class="small-text">Type: ${row.event_type || '—'}</div>
+              <div class="small-text">Guests: ${row.guest_count || '—'}</div>
+              <div class="small-text">Details: ${row.event_details || '—'}</div>
+            </td>
+
+            <td>
+              <strong>${row.slot_date || '—'}</strong>
+              <div class="small-text">Hall: ${row.hall_name || '—'}</div>
+              <div class="small-text">Shift: ${row.shift_name || '—'}</div>
+              <div class="small-text">${row.start_time || ''} - ${row.end_time || ''}</div>
+              <div class="small-text">Slot Status: ${row.slot_status || '—'}</div>
+            </td>
+
+            <td>
+              <span class="money">${money(row.total_amount)}</span>
+            </td>
+
+            <td>
+              ${getStatusBadge(row.booking_status)}
+              <div class="small-text">User: ${row.user_status || '—'}</div>
+            </td>
+
+            <td>
+              ${formatDateTime(row.booked_at)}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadCompletedBookings() {
+      clearMessage();
+
+      const count = document.getElementById('filterCount').value || 1;
+      const unit = document.getElementById('filterUnit').value || 'days';
+
+      const body = document.getElementById('bookingsTableBody');
+      body.innerHTML = `
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">Loading completed bookings...</div>
+          </td>
+        </tr>
+      `;
+
+      try {
+        const response = await fetch(`${window.API_BASE_URL}/admin/completed-bookings?count=${count}&unit=${unit}`, {
+          headers: {
+            Accept: 'application/json',
+            ...adminHeaders()
+          }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || result.error || 'Unable to load completed bookings.');
+        }
+
+        completedBookings = result.data.bookings || [];
+
+        document.getElementById('filterInfo').textContent =
+          `${result.data.filter.label} · ${result.data.filter.start_date} to ${result.data.filter.end_date}`;
+
+        renderBookingsTable();
+      } catch (error) {
+        completedBookings = [];
+        calculateSummary([]);
+        body.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">Unable to load completed bookings.</div>
+            </td>
+          </tr>
+        `;
+        showMessage(error.message || 'Unable to load completed bookings.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      const admin = await requireAdmin();
+
+      if (!admin) {
+        return;
+      }
+
+      document.getElementById('adminInfo').textContent =
+        `${admin.name} · ${admin.email} · ${admin.user_type}`;
+
+      await loadCompletedBookings();
+    });
+  </script>
+
+</body>
+</html>
