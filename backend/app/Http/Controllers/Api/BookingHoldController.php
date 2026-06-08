@@ -228,19 +228,20 @@ class BookingHoldController extends Controller
         }
     }
 
-    private function authenticatedUser(Request $request): ?object
-    {
-        $token = $request->bearerToken();
+private function authenticatedUser(Request $request): ?object
+{
+    $token = $request->bearerToken();
 
-        if (! $token) {
-            return null;
-        }
-
-        return DB::table('users')
-            ->where('api_token_hash', hash('sha256', $token))
-            ->where('status', 'active')
-            ->first();
+    if (! $token) {
+        return null;
     }
+
+    return DB::table('users')
+        ->where('api_token_hash', hash('sha256', $token))
+        ->where('user_type', 'customer')
+        ->where('status', 'active')
+        ->first();
+}
 
     private function upsertCustomer(array $validated, object $authUser): int
     {
