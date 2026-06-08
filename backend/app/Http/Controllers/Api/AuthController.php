@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,49 +22,69 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
-        $existingUser = DB::table('users')
+        $existingEmail = DB::table('users')
             ->where('email', $validated['email'])
             ->first();
 
-        if ($existingUser) {
+        if ($existingEmail) {
             return response()->json([
                 'message' => 'Registration failed.',
-                'error' => 'This email is already registered.',
+                'error' => 'This email is already registered. Please login instead.',
             ], 422);
         }
 
-        $now = now();
+        $existingPhone = DB::table('users')
+            ->where('phone', $validated['phone'])
+            ->first();
 
-        $userData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'password_hash' => Hash::make($validated['password']),
-            'user_type' => 'customer',
-            'status' => 'active',
-        ];
-
-        if (Schema::hasColumn('users', 'created_at')) {
-            $userData['created_at'] = $now;
+        if ($existingPhone) {
+            return response()->json([
+                'message' => 'Registration failed.',
+                'error' => 'This phone number is already registered. Please login instead.',
+            ], 422);
         }
 
-        if (Schema::hasColumn('users', 'updated_at')) {
-            $userData['updated_at'] = $now;
+        try {
+            $now = now();
+
+            $userData = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'password_hash' => Hash::make($validated['password']),
+                'user_type' => 'customer',
+                'status' => 'active',
+            ];
+
+            if (Schema::hasColumn('users', 'created_at')) {
+                $userData['created_at'] = $now;
+            }
+
+            if (Schema::hasColumn('users', 'updated_at')) {
+                $userData['updated_at'] = $now;
+            }
+
+            $userId = DB::table('users')->insertGetId($userData);
+
+            $user = DB::table('users')->where('id', $userId)->first();
+
+            $token = $this->issueToken((int) $user->id);
+
+            $freshUser = DB::table('users')->where('id', $userId)->first();
+
+            return response()->json([
+                'message' => 'Registration successful.',
+                'data' => [
+                    'token' => $token,
+                    'user' => $this->publicUser($freshUser),
+                ],
+            ], 201);
+        } catch (QueryException $exception) {
+            return response()->json([
+                'message' => 'Registration failed.',
+                'error' => 'Unable to create account. Please check email and phone number.',
+            ], 422);
         }
-
-        $userId = DB::table('users')->insertGetId($userData);
-
-        $user = DB::table('users')->where('id', $userId)->first();
-
-        $token = $this->issueToken($user->id);
-
-        return response()->json([
-            'message' => 'Registration successful.',
-            'data' => [
-                'token' => $token,
-                'user' => $this->publicUser($user),
-            ],
-        ], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -91,7 +112,19 @@ class AuthController extends Controller
             ], 403);
         }
 
-        $token = $this->issueToken($user->id);
+        /*
+         * Important:
+         * Normal website login is only for customers.
+         * Super Admin must login from admin-login.html only.
+         */
+        if (($user->user_type ?? '') !== 'customer') {
+            return response()->json([
+                'message' => 'Login failed.',
+                'error' => 'Only customer accounts can login here.',
+            ], 403);
+        }
+
+        $token = $this->issueToken((int) $user->id);
 
         $freshUser = DB::table('users')->where('id', $user->id)->first();
 
@@ -127,12 +160,17 @@ class AuthController extends Controller
         $user = $this->authenticatedUser($request);
 
         if ($user) {
+            $updateData = [
+                'api_token_hash' => null,
+            ];
+
+            if (Schema::hasColumn('users', 'updated_at')) {
+                $updateData['updated_at'] = now();
+            }
+
             DB::table('users')
                 ->where('id', $user->id)
-                ->update([
-                    'api_token_hash' => null,
-                    'updated_at' => now(),
-                ]);
+                ->update($updateData);
         }
 
         return response()->json([
@@ -144,12 +182,17 @@ class AuthController extends Controller
     {
         $plainToken = Str::random(80);
 
+        $updateData = [
+            'api_token_hash' => hash('sha256', $plainToken),
+        ];
+
+        if (Schema::hasColumn('users', 'updated_at')) {
+            $updateData['updated_at'] = now();
+        }
+
         DB::table('users')
             ->where('id', $userId)
-            ->update([
-                'api_token_hash' => hash('sha256', $plainToken),
-                'updated_at' => now(),
-            ]);
+            ->update($updateData);
 
         return $plainToken;
     }
@@ -164,6 +207,7 @@ class AuthController extends Controller
 
         return DB::table('users')
             ->where('api_token_hash', hash('sha256', $token))
+            ->where('user_type', 'customer')
             ->where('status', 'active')
             ->first();
     }
