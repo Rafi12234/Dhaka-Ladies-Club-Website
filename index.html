@@ -146,6 +146,21 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(184,134,11,0.4) !important;
     }
+    .admin-login-link {
+  background: #1a1a2e;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(26,26,46,0.25);
+}
+
+.admin-login-link:hover {
+  background: #b8860b;
+  transform: translateY(-2px);
+}
+
+.admin-login-link::after {
+  display: none !important;
+}
 
     .nav-cta::after { display: none !important; }
 
@@ -1309,9 +1324,8 @@
           <a href="index.html#gallery">Gallery</a>
           <a href="index.html#features">Features</a>
           <a href="#calendar-booking" class="btn nav-cta">Book Now</a>
-          <button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()" style="display:none;">
-  Logout
-</button>
+          <button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()">Logout</button>
+          <a href="admin-login.html" class="admin-login-link">Admin Login</a>
         </div>
       </div>
     </div>
