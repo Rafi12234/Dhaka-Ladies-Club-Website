@@ -169,63 +169,30 @@ class PaymentController extends Controller
                 }
 
                 DB::table('bookings')
-                    ->where('id', $validated['booking_id'])
-                    ->update([
-                        'booking_status' => 'confirmed',
-                        'booked_at' => $now,
-                        'updated_at' => $now,
-                    ]);
+                ->where('id', $validated['booking_id'])
+                ->update([
+                'booking_status' => 'pending',
+                'booked_at' => null,
+                'updated_at' => $now,
+    ]);
 
-                DB::table('booking_slots')
-                    ->where('id', $slot->id)
-                    ->where('hold_token', $validated['hold_token'])
-                    ->update([
-                        'slot_status' => 'booked',
-                        'hold_token' => null,
-                        'hold_expires_at' => null,
-                        'hold_booking_id' => null,
-                        'updated_at' => $now,
-                    ]);
-
-                $confirmedBooking = DB::table('bookings')
-                    ->where('id', $validated['booking_id'])
-                    ->select([
-                        'id',
-                        'booking_no',
-                        'booking_status',
-                        'booking_source',
-                        'event_title',
-                        'event_type',
-                        'guest_count',
-                        'total_amount',
-                        'booked_at',
-                    ])
-                    ->first();
+DB::table('booking_slots')
+    ->where('id', $slot->id)
+    ->where('hold_token', $validated['hold_token'])
+    ->update([
+        'slot_status' => 'pending_approval',
+        'hold_token' => null,
+        'hold_expires_at' => null,
+        'hold_booking_id' => null,
+        'updated_at' => $now,
+    ]);
 
                 return response()->json([
-                    'message' => 'Payment processed successfully. Your booking is confirmed.',
-                    'data' => [
-                        'booking_id' => $confirmedBooking->id,
-                        'transaction_id' => $transactionId,
-                        'status' => 'completed',
-                        'amount' => $amount,
-
-                        /*
-                         * Use this confirmation object for congratulations.html.
-                         * Do not expose customer/payment sensitive information here.
-                         */
-                        'confirmation' => [
-                            'booking_id' => $confirmedBooking->booking_no,
-                            'booking_status' => $confirmedBooking->booking_status,
-                            'booking_source' => $confirmedBooking->booking_source,
-                            'event_title' => $confirmedBooking->event_title,
-                            'event_type' => $confirmedBooking->event_type,
-                            'guest_count' => $confirmedBooking->guest_count,
-                            'paid_amount' => (float) $confirmedBooking->total_amount,
-                            'booked_at' => $confirmedBooking->booked_at,
-                        ],
-                    ],
-                ], 201);
+    'message' => 'Your booking request has been submitted and is pending admin approval.',
+    'data' => [
+        'status' => 'pending',
+    ],
+], 201);
             });
         } catch (QueryException $exception) {
             return response()->json([
