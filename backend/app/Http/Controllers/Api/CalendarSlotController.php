@@ -7,13 +7,10 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class CalendarSlotController extends Controller
 {
     private string $timezone = 'Asia/Dhaka';
-
-    private float $defaultShiftPrice = 125000.00;
 
     public function index(Request $request): JsonResponse
     {
@@ -50,16 +47,11 @@ class CalendarSlotController extends Controller
             $toDate
         );
 
-        /*
-         * Default false so calendar can show available/booked/blocked/payment_in_progress.
-         * If needed, frontend can call ?only_available=1.
-         */
         $onlyAvailable = $request->has('only_available')
             ? $request->boolean('only_available')
             : false;
 
         $slots = DB::table('booking_slots as bs')
-            ->select($this->calendarSlotSelectColumns())
             ->join('halls as h', 'h.id', '=', 'bs.hall_id')
             ->join('shifts as s', 's.id', '=', 'bs.shift_id')
             ->where('bs.hall_id', $validated['hall_id'])
@@ -69,6 +61,7 @@ class CalendarSlotController extends Controller
             })
             ->orderBy('bs.slot_date')
             ->orderBy('s.sort_order')
+            ->select($this->calendarSlotSelectColumns())
             ->get()
             ->map(fn ($slot) => $this->formatSlotForCalendar($slot));
 
@@ -78,9 +71,6 @@ class CalendarSlotController extends Controller
         ]);
     }
 
-    /**
-     * Return date-wise counts of available slots for the calendar.
-     */
     public function availability(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -133,44 +123,46 @@ class CalendarSlotController extends Controller
 
     private function calendarSlotSelectColumns(): array
     {
-        $columns = [
+        return [
             'bs.id as slot_id',
             'bs.slot_date',
             'bs.slot_status',
             'bs.hold_expires_at',
+
             'h.id as hall_id',
             'h.name as hall_name',
             'h.slug as hall_slug',
+
             's.id as shift_id',
             's.name as shift_name',
             's.start_time',
             's.end_time',
             's.sort_order',
+
+            // Price comes directly from database shifts.price
+            's.price as price',
+            's.price as shift_price',
         ];
-
-        if (Schema::hasColumn('shifts', 'price')) {
-            $columns[] = 's.price as shift_price';
-        } else {
-            $columns[] = DB::raw($this->defaultShiftPrice . ' as shift_price');
-        }
-
-        return $columns;
     }
 
     private function formatSlotForCalendar(object $slot): object
     {
         $statusText = match ($slot->slot_status) {
-            'available' => 'Available',
-            'booked' => 'Booked',
-            'blocked' => 'Blocked',
-            'payment_in_progress' => 'Booking In Progress',
-            default => ucfirst(str_replace('_', ' ', $slot->slot_status)),
-        };
+    'available' => 'Available',
+    'booked' => 'Booked',
+    'blocked' => 'Blocked',
+    'payment_in_progress' => 'Booking In Progress',
+    'pending_approval' => 'Pending Approval',
+    default => ucfirst(str_replace('_', ' ', $slot->slot_status)),
+};
 
-        $price = (float) ($slot->shift_price ?? $this->defaultShiftPrice);
+        $price = $slot->shift_price === null ? 0 : (float) $slot->shift_price;
 
         $slot->price = $price;
+        $slot->shift_price = $price;
         $slot->total_amount = $price;
+        $slot->price_label = '৳ ' . number_format($price, 0);
+
         $slot->hold_expires_at_iso = null;
         $slot->hold_remaining_seconds = null;
 
@@ -186,7 +178,6 @@ class CalendarSlotController extends Controller
 
         $slot->calendar_title = "{$slot->shift_name} {$statusText}";
         $slot->popup_title = "{$slot->shift_name} ({$slot->start_time} - {$slot->end_time}) - {$statusText}";
-        $slot->price_label = '৳' . number_format($price, 2);
 
         return $slot;
     }
