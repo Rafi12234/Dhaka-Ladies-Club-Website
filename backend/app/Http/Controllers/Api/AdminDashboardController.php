@@ -27,7 +27,7 @@ class AdminDashboardController extends Controller
         $completedBase = DB::table('bookings as b')
             ->join('booking_slots as bs', 'bs.id', '=', 'b.booking_slot_id')
             ->whereNotNull('b.booked_at')
-            ->whereNotIn('b.booking_status', ['pending', 'cancelled'])
+            ->where('b.booking_status', 'confirmed')
             ->whereBetween('b.booked_at', [$startDate, $endDate]);
 
         $filteredBookings = (clone $completedBase)->count();
@@ -79,7 +79,7 @@ class AdminDashboardController extends Controller
             ->leftJoin('halls as h', 'h.id', '=', 'bs.hall_id')
             ->leftJoin('shifts as s', 's.id', '=', 'bs.shift_id')
             ->whereNotNull('b.booked_at')
-            ->whereNotIn('b.booking_status', ['pending', 'cancelled'])
+            ->where('b.booking_status', 'confirmed')
             ->orderByDesc('b.booked_at')
             ->limit(8)
             ->select([
@@ -133,72 +133,188 @@ class AdminDashboardController extends Controller
         ]);
     }
 
-    public function completedBookings(Request $request): JsonResponse
-    {
-        $admin = $this->authenticatedAdmin($request);
+public function bookings(Request $request): JsonResponse
+{
+    $admin = $this->authenticatedAdmin($request);
 
-        if (! $admin) {
-            return response()->json([
-                'message' => 'Unauthenticated admin.',
-            ], 401);
-        }
+    if (! $admin) {
+        return response()->json([
+            'message' => 'Unauthenticated admin.',
+        ], 401);
+    }
 
-        [$startDate, $endDate, $label] = $this->resolveDateRange($request);
+    [$startDate, $endDate, $label] = $this->resolveDateRange($request);
 
-        $bookings = DB::table('bookings as b')
-            ->join('customers as c', 'c.id', '=', 'b.customer_id')
-            ->join('users as u', 'u.id', '=', 'c.user_id')
-            ->join('booking_slots as bs', 'bs.id', '=', 'b.booking_slot_id')
-            ->leftJoin('halls as h', 'h.id', '=', 'bs.hall_id')
-            ->leftJoin('shifts as s', 's.id', '=', 'bs.shift_id')
-            ->whereNotNull('b.booked_at')
-            ->whereNotIn('b.booking_status', ['pending', 'cancelled'])
-            ->whereBetween('b.booked_at', [$startDate, $endDate])
-            ->orderByDesc('b.booked_at')
-            ->select([
-                'b.id',
-                'b.booking_no',
-                'b.booking_status',
-                'b.booking_source',
-                'b.event_title',
-                'b.event_type',
-                'b.event_details',
-                'b.guest_count',
-                'b.total_amount',
-                'b.booked_at',
+    $bookings = DB::table('bookings as b')
+        ->join('customers as c', 'c.id', '=', 'b.customer_id')
+        ->join('users as u', 'u.id', '=', 'c.user_id')
+        ->join('booking_slots as bs', 'bs.id', '=', 'b.booking_slot_id')
+        ->leftJoin('halls as h', 'h.id', '=', 'bs.hall_id')
+        ->leftJoin('shifts as s', 's.id', '=', 'bs.shift_id')
+        ->whereBetween('b.created_at', [$startDate, $endDate])
+        ->orderByRaw("FIELD(b.booking_status, 'pending', 'confirmed', 'rejected', 'cancelled')")
+        ->orderByDesc('b.created_at')
+        ->select([
+            'b.id',
+            'b.booking_no',
+            'b.booking_status',
+            'b.booking_source',
+            'b.event_title',
+            'b.event_type',
+            'b.event_details',
+            'b.guest_count',
+            'b.total_amount',
+            'b.booked_at',
+            'b.created_at',
 
-                'u.id as user_id',
-                'u.name as customer_name',
-                'u.email as customer_email',
-                'u.phone as customer_phone',
-                'u.status as user_status',
+            'u.id as user_id',
+            'u.name as customer_name',
+            'u.email as customer_email',
+            'u.phone as customer_phone',
+            'u.status as user_status',
 
-                'c.id as customer_id',
-                'c.address as customer_address',
+            'c.id as customer_id',
+            'c.address as customer_address',
 
-                'bs.id as booking_slot_id',
-                'bs.slot_date',
-                'bs.slot_status',
+            'bs.id as booking_slot_id',
+            'bs.slot_date',
+            'bs.slot_status',
 
-                'h.name as hall_name',
-                's.name as shift_name',
-                's.start_time',
-                's.end_time',
-            ])
-            ->get();
+            'h.name as hall_name',
+            's.name as shift_name',
+            's.start_time',
+            's.end_time',
+        ])
+        ->get();
+
+    return response()->json([
+        'message' => 'Bookings loaded successfully.',
+        'data' => [
+            'filter' => [
+                'label' => $label,
+                'start_date' => $startDate->toDateTimeString(),
+                'end_date' => $endDate->toDateTimeString(),
+            ],
+            'bookings' => $bookings,
+        ],
+    ]);
+}
+public function approveBooking(Request $request, int $id): JsonResponse
+{
+    $admin = $this->authenticatedAdmin($request);
+
+    if (! $admin) {
+        return response()->json([
+            'message' => 'Unauthenticated admin.',
+        ], 401);
+    }
+
+    try {
+        DB::transaction(function () use ($id) {
+            $booking = DB::table('bookings')
+                ->where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $booking) {
+                throw new \RuntimeException('Booking not found.');
+            }
+
+            if ($booking->booking_source !== 'online') {
+                throw new \RuntimeException('Only online customer bookings need admin approval.');
+            }
+
+            if ($booking->booking_status !== 'pending') {
+                throw new \RuntimeException('Only pending bookings can be approved.');
+            }
+
+            DB::table('bookings')
+                ->where('id', $id)
+                ->update([
+                    'booking_status' => 'confirmed',
+                    'booked_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            DB::table('booking_slots')
+                ->where('id', $booking->booking_slot_id)
+                ->update([
+                    'slot_status' => 'booked',
+                    'hold_token' => null,
+                    'hold_expires_at' => null,
+                    'hold_booking_id' => null,
+                    'updated_at' => now(),
+                ]);
+        });
 
         return response()->json([
-            'message' => 'Completed bookings loaded successfully.',
-            'data' => [
-                'filter' => [
-                    'label' => $label,
-                    'start_date' => $startDate->toDateTimeString(),
-                    'end_date' => $endDate->toDateTimeString(),
-                ],
-                'bookings' => $bookings,
-            ],
+            'message' => 'Booking approved successfully.',
         ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => $e->getMessage(),
+        ], 422);
     }
+}
+public function rejectBooking(Request $request, int $id): JsonResponse
+{
+    $admin = $this->authenticatedAdmin($request);
+
+    if (! $admin) {
+        return response()->json([
+            'message' => 'Unauthenticated admin.',
+        ], 401);
+    }
+
+    try {
+        DB::transaction(function () use ($id) {
+            $booking = DB::table('bookings')
+                ->where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $booking) {
+                throw new \RuntimeException('Booking not found.');
+            }
+
+            if ($booking->booking_source !== 'online') {
+                throw new \RuntimeException('Only online customer bookings can be rejected from approval panel.');
+            }
+
+            if ($booking->booking_status !== 'pending') {
+                throw new \RuntimeException('Only pending bookings can be rejected.');
+            }
+
+            DB::table('bookings')
+                ->where('id', $id)
+                ->update([
+                    'booking_status' => 'rejected',
+                    'booked_at' => null,
+                    'updated_at' => now(),
+                ]);
+
+            DB::table('booking_slots')
+                ->where('id', $booking->booking_slot_id)
+                ->update([
+                    'slot_status' => 'available',
+                    'hold_token' => null,
+                    'hold_expires_at' => null,
+                    'hold_booking_id' => null,
+                    'updated_at' => now(),
+                ]);
+        });
+
+        return response()->json([
+            'message' => 'Booking rejected successfully.',
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => $e->getMessage(),
+        ], 422);
+    }
+}
 
     private function authenticatedAdmin(Request $request): ?object
     {
@@ -253,7 +369,7 @@ class AdminDashboardController extends Controller
     {
         return DB::table('bookings')
             ->whereNotNull('booked_at')
-            ->whereNotIn('booking_status', ['pending', 'cancelled'])
+            ->where('booking_status', 'confirmed')
             ->whereBetween('booked_at', [$startDate, $endDate])
             ->count();
     }
