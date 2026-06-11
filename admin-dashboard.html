@@ -685,71 +685,243 @@
       .filter-box { padding: 12px; }
       .container { padding: 24px 0 40px; }
     }
+
+    /* ══════════════════════════════════════
+       ADMIN SIDEBAR LAYOUT
+    ══════════════════════════════════════ */
+    body.admin-layout {
+      overflow-x: hidden;
+    }
+
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 286px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-right: 1px solid var(--gold-border);
+      box-shadow: 8px 0 32px rgba(0,0,0,0.06);
+      z-index: 500;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      padding: 8px 8px 18px;
+      border-bottom: 1px solid var(--gold-border);
+    }
+
+    .sidebar-brand img {
+      width: 154px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sidebar-title {
+      display: block;
+      margin-top: 6px;
+      color: var(--gold-dark);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-admin-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
+      border: 1px solid var(--gold-border);
+    }
+
+    .sidebar-admin-meta { min-width: 0; }
+
+    .sidebar-admin-label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .sidebar-admin-name {
+      display: block;
+      color: var(--gold-dark);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .sidebar-section-title {
+      margin: 8px 10px 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    .sidebar-link,
+    .sidebar-logout {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link {
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .sidebar-link svg,
+    .sidebar-logout svg { flex-shrink: 0; }
+
+    .sidebar-link:hover {
+      color: var(--gold-dark);
+      background: var(--gold-pale);
+      border-color: var(--gold-border);
+      transform: translateX(3px);
+    }
+
+    .sidebar-link.active {
+      color: white;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      box-shadow: 0 10px 26px rgba(184,134,11,0.26);
+    }
+
+    .sidebar-link.disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .sidebar-link small {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold-dark);
+      background: var(--gold-pale);
+      border: 1px solid var(--gold-border);
+      border-radius: 999px;
+      padding: 3px 7px;
+    }
+
+    .sidebar-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--gold-border);
+    }
+
+    .sidebar-logout {
+      cursor: pointer;
+      justify-content: center;
+      color: white;
+      background: linear-gradient(135deg, #c0392b, var(--red));
+      box-shadow: 0 8px 22px rgba(220,53,69,0.2);
+    }
+
+    .sidebar-logout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(220,53,69,0.32);
+    }
+
+    .admin-main {
+      margin-left: 286px;
+      min-height: 100vh;
+      transition: margin-left var(--transition);
+    }
+
+    .admin-mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 450;
+      height: 64px;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--gold-border);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    }
+
+    .sidebar-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-border);
+      background: var(--gold-pale);
+      color: var(--gold-dark);
+      font-size: 22px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .admin-mobile-topbar img { height: 36px; }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 480;
+    }
+
+    @media (max-width: 980px) {
+      .admin-sidebar {
+        transform: translateX(-105%);
+        transition: transform var(--transition);
+      }
+
+      body.sidebar-open .admin-sidebar { transform: translateX(0); }
+      body.sidebar-open .sidebar-backdrop { display: block; }
+      .admin-main { margin-left: 0; }
+      .admin-mobile-topbar { display: flex; }
+    }
+
   </style>
 </head>
 
-<body>
-
-  <!-- ══════════════════════════════════════
-       NAV
-  ══════════════════════════════════════ -->
-  <nav>
-    <a class="nav-logo" href="index.html">
-      <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
-    </a>
-
-    <div class="nav-actions">
-      <!-- Admin info pill -->
-      <div class="admin-pill">
-        <div class="admin-avatar" id="adminAvatar">A</div>
-        <span class="admin-pill-text" id="adminPillText">Loading…</span>
-      </div>
-
-      <a href="admin-dashboard.html" class="nav-link active">
-        <!-- Grid icon -->
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round"
-             style="display:inline;vertical-align:middle;margin-right:5px;">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        Dashboard
-      </a>
-
-      <a href="admin-bookings.html" class="nav-link">
-        <!-- List icon -->
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round"
-             style="display:inline;vertical-align:middle;margin-right:5px;">
-          <line x1="8" y1="6" x2="21" y2="6"/>
-          <line x1="8" y1="12" x2="21" y2="12"/>
-          <line x1="8" y1="18" x2="21" y2="18"/>
-          <line x1="3" y1="6"  x2="3.01" y2="6"/>
-          <line x1="3" y1="12" x2="3.01" y2="12"/>
-          <line x1="3" y1="18" x2="3.01" y2="18"/>
-        </svg>
-        Bookings
-      </a>
-
-      <button class="btn-logout" id="logoutBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Logout
-      </button>
-    </div>
-  </nav>
-
+<body class="admin-layout">
+  <div id="adminSidebarMount"></div>
   <!-- ══════════════════════════════════════
        MAIN
   ══════════════════════════════════════ -->
-  <div class="container">
+  <main class="admin-main">
+<div class="container">
 
     <!-- Page header -->
     <div class="page-header">
@@ -956,7 +1128,7 @@
               <polyline points="14 2 14 8 20 8"/>
             </svg>
           </div>
-          <h2>Recent Completed Bookings</h2>
+          <h2>Recent Confirmed Bookings</h2>
         </div>
         <span class="record-count" id="recentCount">0 records</span>
       </div>
@@ -980,14 +1152,18 @@
     </div>
 
   </div><!-- /container -->
+  </main>
 
 <script>
   window.API_BASE_URL = 'http://127.0.0.1:8000/api';
 </script>
-
 <script src="assets/js/admin-auth.js"></script>
-
+<script src="assets/js/admin-sidebar.js"></script>
 <script>
+  const API_BASE_URL = window.API_BASE_URL;
+
+    /* ═══════════════════════════════════════
+       Formatters
     /* ═══════════════════════════════════════
        Formatters
     ═══════════════════════════════════════ */
@@ -1121,7 +1297,7 @@
 
       try {
         const res = await fetch(
-          `${window.API_BASE_URL}/admin/dashboard?count=${count}&unit=${unit}`,
+          `${API_BASE_URL}/admin/dashboard?count=${count}&unit=${unit}`,
           { headers: { Accept: 'application/json', ...adminHeaders() } }
         );
 
@@ -1135,8 +1311,6 @@
         /* Admin info */
         const infoText = `${admin.name || ''} · ${admin.email || ''} · ${admin.user_type || ''}`;
         document.getElementById('adminInfo').textContent     = infoText;
-        document.getElementById('adminPillText').textContent = admin.name || 'Admin';
-        document.getElementById('adminAvatar').textContent   = (admin.name || 'A')[0].toUpperCase();
 
         /* Stat cards with counter animation */
         animateCount(document.getElementById('bookedToday'),     cards.booked_today     || 0);
@@ -1161,15 +1335,24 @@
        Init
     ═══════════════════════════════════════ */
     document.addEventListener('DOMContentLoaded', async () => {
-  const admin = await requireAdmin();
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
+      }
+      if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+      }
 
-  if (!admin) return;
+      const admin = await requireAdmin();
+if (!admin) return;
 
-  document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-  document.getElementById('applyFilter').addEventListener('click', loadDashboard);
+await loadAdminSidebar('dashboard', admin);
 
-  await loadDashboard();
-});
+document.getElementById('applyFilter').addEventListener('click', loadDashboard);
+
+await loadDashboard();
+    });
   </script>
 </body>
 </html>

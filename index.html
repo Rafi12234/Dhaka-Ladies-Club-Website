@@ -45,6 +45,17 @@
 
     a { text-decoration: none; color: inherit; }
 
+
+    .badge-pending {
+  background: rgba(184, 134, 11, 0.12);
+  color: #8f6908;
+  border: 1px solid rgba(184, 134, 11, 0.28);
+}
+
+.slot-pending_approval {
+  opacity: 0.95;
+}
+
     .container {
       width: 90%;
       max-width: 1200px;
@@ -1782,19 +1793,25 @@
 
     /* -------- Calendar Helpers -------- */
     function getCalendarSlotTitle(slot) {
-      if (slot.slot_status === 'payment_in_progress') {
-        return `${slot.shift_name} · In Progress ${getRemainingText(slot)}`;
-      }
-      return slot.calendar_title || `${slot.shift_name} · ${slot.slot_status}`;
-    }
+  if (slot.slot_status === 'payment_in_progress') {
+    return `${slot.shift_name} · In Progress ${getRemainingText(slot)}`;
+  }
+
+  if (slot.slot_status === 'pending_approval') {
+    return `${slot.shift_name} · Pending Approval`;
+  }
+
+  return slot.calendar_title || `${slot.shift_name} · ${slot.slot_status}`;
+}
 
     function buildSlotEvent(slot) {
       const colorMap = {
-        available:           '#198754',
-        booked:              '#dc3545',
-        blocked:             '#6c757d',
-        payment_in_progress: '#fd7e14'
-      };
+  available:           '#198754',
+  booked:              '#dc3545',
+  blocked:             '#6c757d',
+  payment_in_progress: '#fd7e14',
+  pending_approval:    '#b8860b'
+};
       const color = colorMap[slot.slot_status] || '#6c757d';
       return {
         id: String(slot.slot_id),
@@ -1864,15 +1881,17 @@
     }
 
     function getStatusBadge(status) {
-      const map = {
-        available:           { label: 'Available',    cls: 'badge-available' },
-        booked:              { label: 'Booked',        cls: 'badge-booked'    },
-        blocked:             { label: 'Blocked',       cls: 'badge-blocked'   },
-        payment_in_progress: { label: 'In Progress',  cls: 'badge-progress'  }
-      };
-      const cfg = map[status] || { label: status, cls: 'badge-blocked' };
-      return `<span class="slot-status-badge ${cfg.cls}">${cfg.label}</span>`;
-    }
+  const map = {
+    available:           { label: 'Available',        cls: 'badge-available' },
+    booked:              { label: 'Booked',           cls: 'badge-booked' },
+    blocked:             { label: 'Blocked',          cls: 'badge-blocked' },
+    payment_in_progress: { label: 'In Progress',      cls: 'badge-progress' },
+    pending_approval:    { label: 'Pending Approval', cls: 'badge-pending' }
+  };
+
+  const cfg = map[status] || { label: status, cls: 'badge-blocked' };
+  return `<span class="slot-status-badge ${cfg.cls}">${cfg.label}</span>`;
+}
 
     function buildRadioSlots(slots) {
       const container = document.getElementById('slotButtons');
