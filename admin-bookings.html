@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Completed Bookings - Dhaka Ladies Club Admin</title>
+<title>Bookings - Dhaka Ladies Club Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -53,6 +53,56 @@
       from { opacity: 0; }
       to   { opacity: 1; }
     }
+
+
+
+    .action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  border: none;
+  border-radius: 10px;
+  padding: 7px 11px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn-approve {
+  background: rgba(25, 135, 84, 0.12);
+  color: #166534;
+  border: 1px solid rgba(25, 135, 84, 0.25);
+}
+
+.btn-approve:hover {
+  background: #198754;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-reject {
+  background: rgba(220, 53, 69, 0.10);
+  color: #991b1b;
+  border: 1px solid rgba(220, 53, 69, 0.22);
+}
+
+.btn-reject:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
 
     /* ══════════════════════════════════════
        NAV
@@ -822,72 +872,249 @@
       .stats-row { grid-template-columns: 1fr 1fr; }
       .page-title h1 { font-size: 26px; }
     }
+
+    /* ══════════════════════════════════════
+       ADMIN SIDEBAR LAYOUT
+    ══════════════════════════════════════ */
+    body.admin-layout {
+      overflow-x: hidden;
+    }
+
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 286px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-right: 1px solid var(--gold-border);
+      box-shadow: 8px 0 32px rgba(0,0,0,0.06);
+      z-index: 500;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      padding: 8px 8px 18px;
+      border-bottom: 1px solid var(--gold-border);
+    }
+
+    .sidebar-brand img {
+      width: 154px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sidebar-title {
+      display: block;
+      margin-top: 6px;
+      color: var(--gold-dark);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-admin-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
+      border: 1px solid var(--gold-border);
+    }
+
+    .sidebar-admin-meta { min-width: 0; }
+
+    .sidebar-admin-label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .sidebar-admin-name {
+      display: block;
+      color: var(--gold-dark);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .sidebar-section-title {
+      margin: 8px 10px 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+    }
+
+    .sidebar-link,
+    .sidebar-logout {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link {
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .sidebar-link svg,
+    .sidebar-logout svg { flex-shrink: 0; }
+
+    .sidebar-link:hover {
+      color: var(--gold-dark);
+      background: var(--gold-pale);
+      border-color: var(--gold-border);
+      transform: translateX(3px);
+    }
+
+    .sidebar-link.active {
+      color: white;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      box-shadow: 0 10px 26px rgba(184,134,11,0.26);
+    }
+
+    .sidebar-link.disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .sidebar-link small {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold-dark);
+      background: var(--gold-pale);
+      border: 1px solid var(--gold-border);
+      border-radius: 999px;
+      padding: 3px 7px;
+    }
+
+    .sidebar-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--gold-border);
+    }
+
+    .sidebar-logout {
+      cursor: pointer;
+      justify-content: center;
+      color: white;
+      background: linear-gradient(135deg, #c0392b, var(--red));
+      box-shadow: 0 8px 22px rgba(220,53,69,0.2);
+    }
+
+    .sidebar-logout:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(220,53,69,0.32);
+    }
+
+    .admin-main {
+      margin-left: 286px;
+      min-height: 100vh;
+      transition: margin-left var(--transition);
+    }
+
+    .admin-mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 450;
+      height: 64px;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--gold-border);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    }
+
+    .sidebar-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-border);
+      background: var(--gold-pale);
+      color: var(--gold-dark);
+      font-size: 22px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .admin-mobile-topbar img { height: 36px; }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 480;
+    }
+
+    @media (max-width: 980px) {
+      .admin-sidebar {
+        transform: translateX(-105%);
+        transition: transform var(--transition);
+      }
+
+      body.sidebar-open .admin-sidebar { transform: translateX(0); }
+      body.sidebar-open .sidebar-backdrop { display: block; }
+      .admin-main { margin-left: 0; }
+      .admin-mobile-topbar { display: flex; }
+    }
+
   </style>
 </head>
 
-<body>
+<body class="admin-layout">
+  <div id="adminSidebarMount"></div>
 
-  <!-- ══════════════════════════════
-       NAV
-  ══════════════════════════════ -->
-  <nav>
-    <a class="nav-logo" href="index.html">
-      <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
-    </a>
-
-    <div class="nav-actions">
-      <div class="admin-pill">
-        <div class="admin-avatar" id="adminAvatar">A</div>
-        <span class="admin-pill-text" id="adminPillText">Loading…</span>
-      </div>
-
-      <a href="admin-dashboard.html" class="nav-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"/>
-          <rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        Dashboard
-      </a>
-
-      <a href="admin-bookings.html" class="nav-link active">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-        Completed Bookings
-      </a>
-
-      <button class="btn-logout" id="logoutBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Logout
-      </button>
-    </div>
-  </nav>
-
-  <!-- ══════════════════════════
+  <!-- ══════════════════════════════════════
        MAIN
-  ══════════════════════════ -->
-  <div class="container">
+  ══════════════════════════════════════ -->
+  <main class="admin-main">
+<div class="container">
 
     <!-- Page header -->
     <div class="page-header">
       <div class="page-title">
-        <h1>Completed Bookings</h1>
+        <h1>Bookings</h1>
         <p class="muted" id="adminInfo">Loading admin information…</p>
         <p class="muted" id="filterInfo">Filter loading…</p>
       </div>
@@ -993,8 +1220,8 @@
             </svg>
           </div>
           <div>
-            <h2>Completed Booking Users</h2>
-            <p class="muted">Bookings, customers, users, slots, halls and shifts</p>
+            <h2>All Booking Records</h2>
+<p class="muted">Pending, confirmed, rejected and cancelled bookings</p>
           </div>
         </div>
 
@@ -1033,6 +1260,7 @@
               <th>Payment</th>
               <th>Status</th>
               <th>Booked At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -1063,14 +1291,15 @@
     </div>
 
   </div><!-- /container -->
+  </main>
 
 <script>
   window.API_BASE_URL = 'http://127.0.0.1:8000/api';
 </script>
-
 <script src="assets/js/admin-auth.js"></script>
-
+<script src="assets/js/admin-sidebar.js"></script>
 <script>
+  const API_BASE_URL = window.API_BASE_URL;
 
     /* ═══════════════════════════════════════
        Formatters
@@ -1086,12 +1315,22 @@
     }
 
     function badgeClass(status) {
-      const s = String(status || '').toLowerCase();
-      if (['booked','confirmed','paid','completed'].includes(s)) return 'badge-success';
-      if (['pending','payment_in_progress'].includes(s))         return 'badge-warning';
-      if (['cancelled','failed'].includes(s))                    return 'badge-danger';
-      return 'badge-muted';
-    }
+  const s = String(status || '').toLowerCase();
+
+  if (['booked', 'confirmed', 'paid', 'completed'].includes(s)) {
+    return 'badge-success';
+  }
+
+  if (['pending', 'payment_in_progress', 'pending_approval'].includes(s)) {
+    return 'badge-warning';
+  }
+
+  if (['cancelled', 'failed', 'rejected'].includes(s)) {
+    return 'badge-danger';
+  }
+
+  return 'badge-muted';
+}
 
     function statusBadge(status) {
       const cls = badgeClass(status);
@@ -1167,6 +1406,29 @@
       animateValue(document.getElementById('statUniqueCustomers'),  s.uniqueCustomers);
     }
 
+    function bookingActionButtons(row) {
+  const status = String(row.booking_status || '').toLowerCase();
+  const source = String(row.booking_source || '').toLowerCase();
+
+  if (status === 'pending' && source === 'online') {
+    return `
+      <div class="action-buttons">
+        <button class="btn-action btn-approve" type="button" onclick="approveBooking(${row.id})">
+          Approve
+        </button>
+        <button class="btn-action btn-reject" type="button" onclick="rejectBooking(${row.id})">
+          Reject
+        </button>
+      </div>
+    `;
+  }
+
+  if (source === 'offline') {
+    return `<span class="cell-sub">Office booking</span>`;
+  }
+
+  return `<span class="cell-sub">No action</span>`;
+}
     function renderTable(rows) {
       const body  = document.getElementById('tableBody');
       const badge = document.getElementById('recordBadge');
@@ -1176,7 +1438,7 @@
       if (!rows.length) {
         body.innerHTML = `
           <tr>
-            <td colspan="8">
+            <td colspan="9">
               <div class="empty-state">
                 <div class="empty-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -1186,7 +1448,7 @@
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   </svg>
                 </div>
-                <p>${searchKeyword ? 'No results match your search.' : 'No completed bookings found for this filter.'}</p>
+                <p>${searchKeyword ? 'No results match your search.' : 'No bookings found for this filter.'}</p>
                 <small>${searchKeyword ? 'Try different keywords.' : 'Try adjusting the date filter above.'}</small>
               </div>
             </td>
@@ -1241,8 +1503,11 @@
             </div>
           </td>
           <td>
-            <div class="cell-sub"><span>${fmtDateTime(r.booked_at)}</span></div>
-          </td>
+  <div class="cell-sub"><span>${fmtDateTime(r.booked_at || r.created_at)}</span></div>
+</td>
+<td>
+  ${bookingActionButtons(r)}
+</td>
         </tr>`).join('');
     }
 
@@ -1255,7 +1520,7 @@
     /* ═══════════════════════════════════════
        Load bookings
     ═══════════════════════════════════════ */
-    async function loadCompletedBookings() {
+    async function loadBookings() {
       clearMessage();
 
       const btn   = document.getElementById('applyFilter');
@@ -1268,17 +1533,17 @@
       /* Skeleton */
       document.getElementById('tableBody').innerHTML = [1,2,3].map(() => `
         <tr class="skeleton-row">
-          ${Array(8).fill('<td><div class="skeleton-line"></div><div class="skeleton-line"></div></td>').join('')}
+          ${Array(9).fill('<td><div class="skeleton-line"></div><div class="skeleton-line"></div></td>').join('')}
         </tr>`).join('');
 
       try {
         const res = await fetch(
-          `${window.API_BASE_URL}/admin/completed-bookings?count=${count}&unit=${unit}`,
+          `${API_BASE_URL}/admin/bookings?count=${count}&unit=${unit}`,
           { headers: { Accept: 'application/json', ...adminHeaders() } }
         );
 
         const result = await res.json();
-        if (!res.ok) throw new Error(result.message || result.error || 'Unable to load completed bookings.');
+        if (!res.ok) throw new Error(result.message || result.error || 'Unable to load bookings.');
 
         allBookings = result.data.bookings || [];
 
@@ -1315,21 +1580,70 @@
       renderAll();
     });
 
+    async function updateBookingApproval(bookingId, action) {
+  clearMessage();
+
+  const actionText = action === 'approve' ? 'approve' : 'reject';
+  const confirmText = action === 'approve'
+    ? 'Are you sure you want to approve this booking?'
+    : 'Are you sure you want to reject this booking?';
+
+  if (!confirm(confirmText)) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/bookings/${bookingId}/${action}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        ...adminHeaders()
+      }
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.message || `Unable to ${actionText} booking.`);
+    }
+
+    showMessage(result.message || `Booking ${actionText}d successfully.`, 'success');
+
+    await loadBookings();
+
+  } catch (err) {
+    showMessage(err.message || `Unable to ${actionText} booking.`, 'error');
+  }
+}
+
+function approveBooking(bookingId) {
+  updateBookingApproval(bookingId, 'approve');
+}
+
+function rejectBooking(bookingId) {
+  updateBookingApproval(bookingId, 'reject');
+}
     /* ═══════════════════════════════════════
        Init
     ═══════════════════════════════════════ */
     document.addEventListener('DOMContentLoaded', async () => {
-  const admin = await requireAdmin();
-  if (!admin) return;
+
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
+      }
+      if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+      }
+
+      const admin = await requireAdmin();
+      if (!admin) return;
+      await loadAdminSidebar('bookings', admin);
+      
       document.getElementById('adminInfo').textContent =
         `${admin.name || 'Admin'} · ${admin.email || '—'} · ${admin.user_type || '—'}`;
-      document.getElementById('adminPillText').textContent = admin.name || 'Admin';
-      document.getElementById('adminAvatar').textContent   = (admin.name || 'A')[0].toUpperCase();
+      document.getElementById('applyFilter').addEventListener('click', loadBookings);
 
-      document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-      document.getElementById('applyFilter').addEventListener('click', loadCompletedBookings);
-
-      await loadCompletedBookings();
+await loadBookings();
     });
   </script>
 </body>

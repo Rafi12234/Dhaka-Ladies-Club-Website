@@ -1,0 +1,346 @@
+<style>
+  body.admin-layout {
+    overflow-x: hidden;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 286px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-right: 1px solid var(--gold-border);
+    box-shadow: 8px 0 32px rgba(0,0,0,0.06);
+    z-index: 500;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 8px 8px 18px;
+    border-bottom: 1px solid var(--gold-border);
+  }
+
+  .sidebar-brand img {
+    width: 154px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .sidebar-title {
+    display: block;
+    margin-top: 6px;
+    color: var(--gold-dark);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+
+  .sidebar-admin-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
+    border: 1px solid var(--gold-border);
+  }
+
+  .sidebar-admin-meta {
+    min-width: 0;
+  }
+
+  .admin-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .sidebar-admin-label {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .sidebar-admin-name {
+    display: block;
+    color: var(--gold-dark);
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .sidebar-section-title {
+    margin: 8px 10px 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+  }
+
+  .sidebar-link,
+  .sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 16px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all var(--transition);
+  }
+
+  .sidebar-link {
+    color: var(--muted);
+    background: transparent;
+  }
+
+  .sidebar-link svg,
+  .sidebar-logout svg {
+    flex-shrink: 0;
+  }
+
+  .sidebar-link:hover {
+    color: var(--gold-dark);
+    background: var(--gold-pale);
+    border-color: var(--gold-border);
+    transform: translateX(3px);
+  }
+
+  .sidebar-link.active {
+    color: white;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    box-shadow: 0 10px 26px rgba(184,134,11,0.26);
+  }
+
+  .sidebar-link.disabled {
+    opacity: 0.58;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .sidebar-link small {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--gold-dark);
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-border);
+    border-radius: 999px;
+    padding: 3px 7px;
+  }
+
+  .sidebar-footer {
+    padding-top: 14px;
+    border-top: 1px solid var(--gold-border);
+  }
+
+  .sidebar-logout {
+    cursor: pointer;
+    justify-content: center;
+    color: white;
+    background: linear-gradient(135deg, #c0392b, var(--red));
+    box-shadow: 0 8px 22px rgba(220,53,69,0.2);
+  }
+
+  .sidebar-logout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(220,53,69,0.32);
+  }
+
+  .admin-main {
+    margin-left: 286px;
+    min-height: 100vh;
+    transition: margin-left var(--transition);
+  }
+
+  .admin-mobile-topbar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 450;
+    height: 64px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--gold-border);
+    padding: 0 16px;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+  }
+
+  .sidebar-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--gold-border);
+    background: var(--gold-pale);
+    color: var(--gold-dark);
+    font-size: 22px;
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .admin-mobile-topbar img {
+    height: 36px;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 480;
+  }
+
+  @media (max-width: 980px) {
+    .admin-sidebar {
+      transform: translateX(-105%);
+      transition: transform var(--transition);
+    }
+
+    body.sidebar-open .admin-sidebar {
+      transform: translateX(0);
+    }
+
+    body.sidebar-open .sidebar-backdrop {
+      display: block;
+    }
+
+    .admin-main {
+      margin-left: 0;
+    }
+
+    .admin-mobile-topbar {
+      display: flex;
+    }
+  }
+</style>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<aside class="admin-sidebar" id="adminSidebar">
+  <a class="sidebar-brand" href="admin-dashboard.html">
+    <div>
+      <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
+      <span class="sidebar-title">Admin Panel</span>
+    </div>
+  </a>
+
+  <div class="sidebar-admin-card">
+    <div class="admin-avatar" id="sidebarAdminAvatar">A</div>
+    <div class="sidebar-admin-meta">
+      <span class="sidebar-admin-label">Signed in as</span>
+      <span class="sidebar-admin-name" id="sidebarAdminName">Loading…</span>
+    </div>
+  </div>
+
+  <div class="sidebar-menu" aria-label="Admin menu">
+    <div class="sidebar-section-title">Main</div>
+
+    <a href="admin-dashboard.html" class="sidebar-link" data-sidebar-page="dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"/>
+        <rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="admin-manual-booking.html" class="sidebar-link" data-sidebar-page="manual-booking">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+        <rect x="8" y="2" width="8" height="4" rx="1"/>
+        <line x1="12" y1="11" x2="12" y2="17"/>
+        <line x1="9" y1="14" x2="15" y2="14"/>
+      </svg>
+      <span>Manual Booking</span>
+    </a>
+
+    <a href="admin-bookings.html" class="sidebar-link" data-sidebar-page="bookings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <span>Completed Bookings</span>
+    </a>
+
+    <div class="sidebar-section-title">Future Options</div>
+
+    <a href="#" class="sidebar-link disabled" aria-disabled="true">
+      <span>Calendar Slots</span>
+      <small>Soon</small>
+    </a>
+
+    <a href="#" class="sidebar-link disabled" aria-disabled="true">
+      <span>Customers</span>
+      <small>Soon</small>
+    </a>
+
+    <a href="#" class="sidebar-link disabled" aria-disabled="true">
+      <span>Reports</span>
+      <small>Soon</small>
+    </a>
+
+    <a href="#" class="sidebar-link disabled" aria-disabled="true">
+      <span>Settings</span>
+      <small>Soon</small>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="sidebar-logout" id="sidebarLogoutBtn" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>
+
+<header class="admin-mobile-topbar">
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Open admin menu">☰</button>
+  <img src="assets/img/dlclogo_long.png" alt="Dhaka Ladies Club">
+</header>

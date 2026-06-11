@@ -556,12 +556,12 @@
             </div>
           </div>
           <h1>
-            Congratulations!
-            <span>Your booking is confirmed</span>
-          </h1>
+  Booking Request Submitted
+  <span>Pending admin approval</span>
+</h1>
           <div class="card-hero-badge">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Payment Successful
+            Pending Approval
           </div>
         </div>
 
@@ -593,8 +593,7 @@
         <div class="card-body">
 
           <p class="subtitle">
-            Your payment has been processed and your venue booking is permanently confirmed at Dhaka Ladies Club. A confirmation email has been sent to your registered address.
-          </p>
+            Your booking request has been submitted successfully. It is now pending admin approval. The admin will review your booking information and confirm or reject the booking.          </p>
 
           <!-- Missing Data Alert -->
           <div id="missingBox" class="missing-box">
@@ -603,7 +602,21 @@
           </div>
 
           <!-- Booking Details -->
-          <div id="bookingDetails" class="details-box"></div>
+          <div id="bookingDetails" class="details-box">
+       <div class="details-box-header">
+    <h3>Booking Status</h3>
+  </div>
+  <div class="details-inner">
+    <div class="detail-row">
+      <div class="label">Current Status</div>
+      <div class="value highlight">Pending Admin Approval</div>
+    </div>
+    <div class="detail-row">
+      <div class="label">Next Step</div>
+      <div class="value">Admin will review your booking request and update the status.</div>
+    </div>
+  </div>
+</div>
 
           <!-- Info Strip -->
           <div class="info-strip">
@@ -745,7 +758,7 @@
     /* ======================== */
     /* CONFIRMATION LOGIC — UNCHANGED */
     /* ======================== */
-    const CONFIRMATION_KEY = 'dlc_booking_confirmation_v1';
+    const PENDING_CONFIRMATION_KEY = 'dlc_booking_pending_v1';
 
     function formatMoney(amount) {
       return `৳${Number(amount || 0).toLocaleString()}`;
@@ -780,42 +793,42 @@
         </div>`;
     }
 
-    function renderConfirmation() {
-      const confirmation = getConfirmation();
-      const detailsBox   = document.getElementById('bookingDetails');
-      const missingBox   = document.getElementById('missingBox');
+function renderConfirmation() {
+  const raw = sessionStorage.getItem(PENDING_CONFIRMATION_KEY);
+  const detailsBox = document.getElementById('bookingDetails');
+  const missingBox = document.getElementById('missingBox');
 
-      if (!confirmation) {
-        missingBox.style.display = 'flex';
-        detailsBox.style.display = 'none';
-        return;
-      }
+  if (!raw) {
+    missingBox.style.display = 'flex';
+    detailsBox.style.display = 'none';
+    return;
+  }
 
-      const statusValue = confirmation.booking_status
-        ? `<span class="status-confirmed">${confirmation.booking_status}</span>`
-        : 'N/A';
-
-      detailsBox.innerHTML = `
-        <div class="details-box-header">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <h3>Booking Confirmation Details</h3>
-        </div>
-        <div class="details-inner">
-          ${makeRow('<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', 'Booking ID', confirmation.booking_id || 'N/A')}
-          ${makeRow('<polyline points="20 6 9 17 4 12"/>', 'Booking Status', statusValue)}
-          ${makeRow('<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>', 'Booking Source', confirmation.booking_source || 'N/A')}
-          ${makeRow('<polyline points="8 6 21 6"/><polyline points="8 12 21 12"/><polyline points="8 18 21 18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>', 'Event Title', confirmation.event_title || 'N/A')}
-          ${makeRow('<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>', 'Event Type', confirmation.event_type || 'N/A')}
-          ${makeRow('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>', 'Guest Count', confirmation.guest_count || 'N/A')}
-          ${makeRow('<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', 'Paid Amount', formatMoney(confirmation.paid_amount), 'highlight')}
-          ${makeRow('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>', 'Booking Date &amp; Time', formatDateTime(confirmation.booked_at))}
-        </div>`;
-    }
+  detailsBox.innerHTML = `
+    <div class="details-box-header">
+      <h3>Booking Status</h3>
+    </div>
+    <div class="details-inner">
+      <div class="detail-row">
+        <div class="label">Current Status</div>
+        <div class="value highlight">Pending Admin Approval</div>
+      </div>
+      <div class="detail-row">
+        <div class="label">Message</div>
+        <div class="value">Your booking request has been submitted successfully. Admin will review it soon.</div>
+      </div>
+      <div class="detail-row">
+        <div class="label">Next Step</div>
+        <div class="value">Please wait for admin approval.</div>
+      </div>
+    </div>
+  `;
+}
 
     /* Attach both "Return Home" click handlers — same logic as original */
     function attachReturnHandlers() {
       const handler = function() {
-        sessionStorage.removeItem(CONFIRMATION_KEY);
+        sessionStorage.removeItem(PENDING_CONFIRMATION_KEY);
       };
       const btn1 = document.getElementById('returnHomeButton');
       const btn2 = document.getElementById('returnHomeButtonMain');

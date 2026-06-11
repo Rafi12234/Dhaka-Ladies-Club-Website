@@ -849,7 +849,7 @@
         Secure Payment Gateway
       </div>
       <h1>Complete Your <span>Payment</span></h1>
-      <p>Your slot is temporarily held. Finalize your payment to permanently confirm your booking at Dhaka Ladies Club.</p>
+      <p>Your slot is temporarily held. Submit your payment information to complete your booking request</p>
       <div class="hero-steps">
         <div class="hero-step done">
           <div class="hero-step-num">
@@ -1109,7 +1109,7 @@
             </div>
             <div class="help-item">
               <div class="help-item-num">3</div>
-              <span>On success, your booking is permanently confirmed and the slot is locked.</span>
+              <span>After submission, your booking will be pending admin approval. and the slot is locked.</span>
             </div>
             <div class="help-item">
               <div class="help-item-num">
@@ -1157,6 +1157,7 @@
     const SELECTED_SLOT_KEY = 'dlc_selected_slot_v2';
     const BOOKING_DRAFT_KEY = 'dlc_booking_draft_v2';
     const ACTIVE_HOLD_KEY   = 'dlc_active_hold_v2';
+    const PENDING_CONFIRMATION_KEY = 'dlc_booking_pending_v1';
 
     /* ====================== AOS ====================== */
     function initAOS() {
@@ -1373,15 +1374,24 @@
 
         stopPaymentTimer();
 
-        const confirmation = result.data?.confirmation;
-        if (confirmation) sessionStorage.setItem('dlc_booking_confirmation_v1', JSON.stringify(confirmation));
+sessionStorage.setItem(PENDING_CONFIRMATION_KEY, JSON.stringify({
+  status: 'pending',
+  message: result.message || 'Your booking request is pending admin approval.',
+  submitted_at: new Date().toISOString()
+}));
 
-        clearAllBookingStorage();
-        setPaymentMessage(result.message, 'success');
-        document.getElementById('paymentForm').reset();
+clearAllBookingStorage();
 
-        setTimeout(() => { window.location.href = 'congratulations.html'; }, 1000);
+setPaymentMessage(
+  result.message || 'Your booking request is pending admin approval.',
+  'success'
+);
 
+document.getElementById('paymentForm').reset();
+
+setTimeout(() => {
+  window.location.href = 'congratulations.html';
+}, 1000);
       } catch (error) {
         setPaymentMessage(error.message || 'Payment failed.', 'error');
       } finally {

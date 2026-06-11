@@ -595,13 +595,13 @@
 
       <!-- Email -->
       <div class="input-group">
-        <label for="email">Email Address</label>
+        <label for="email">Email or Phone</label>
         <div class="input-wrapper">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
             <polyline points="22,6 12,13 2,6"/>
           </svg>
-          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+          <input type="text" id="email" placeholder="Email or phone number" required autocomplete="username">
         </div>
       </div>
 
@@ -670,10 +670,39 @@
 
   <script>
     /* ── Redirect helpers ── */
-    function getRedirectUrl() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('redirect') || 'booking.html';
-    }
+    const SELECTED_SLOT_KEY = 'dlc_selected_slot_v2';
+const BOOKING_DRAFT_KEY = 'dlc_booking_draft_v2';
+
+function readJsonFromSession(key) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function hasValidSelectedSlot() {
+  const selected = readJsonFromSession(SELECTED_SLOT_KEY);
+
+  return !!(
+    selected &&
+    selected.booking_slot_id &&
+    selected.booking_date &&
+    selected.booking_slot_label
+  );
+}
+
+function getRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get('redirect');
+
+  if (redirect === 'booking.html' && hasValidSelectedSlot()) {
+    return 'booking.html';
+  }
+
+  return 'index.html';
+}
 
     document.getElementById('registerLink').href =
       `register.html?redirect=${encodeURIComponent(getRedirectUrl())}`;
@@ -712,58 +741,95 @@
     }
 
     /* ── Form submit ── */
-    document.getElementById('loginForm').addEventListener('submit', async function (event) {
-      event.preventDefault();
+/* ── Form submit ── */
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
+  event.preventDefault();
 
-      const button = document.getElementById('loginButton');
-      hideMessage();
+  const button = document.getElementById('loginButton');
+  hideMessage();
 
-      button.disabled = true;
-      button.classList.add('loading');
+  button.disabled = true;
+  button.classList.add('loading');
 
-      try {
-        const response = await fetch(`${window.API_BASE_URL}/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            email:    document.getElementById('email').value.trim(),
-            password: document.getElementById('password').value
-          })
-        });
+  try {
+    const loginValue = document.getElementById('email').value.trim();
+    const passwordValue = document.getElementById('password').value;
 
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || result.message || 'Login failed');
-        }
-
-        saveAuthSession(result.data);
-
-        showMessage('✓ Login successful — redirecting…', 'success');
-
-        setTimeout(() => {
-          window.location.href = getRedirectUrl();
-        }, 900);
-
-      } catch (error) {
-        showMessage(error.message || 'Login failed. Please try again.', 'error');
-
-        /* Shake animation */
-        const card = document.querySelector('.auth-card');
-        card.style.animation = 'none';
-        card.offsetHeight; /* reflow */
-        card.style.animation = 'shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both';
-
-        setTimeout(() => { card.style.animation = ''; }, 500);
-
-      } finally {
-        button.disabled = false;
-        button.classList.remove('loading');
-      }
+    const response = await fetch(`${window.API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        login: loginValue,
+        password: passwordValue
+      })
     });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      const validationErrors = result.errors
+        ? Object.values(result.errors).flat().join('\n')
+        : '';
+
+      throw new Error(result.error || validationErrors || result.message || 'Login failed');
+    }
+
+    /*
+      Keep your existing auth.js session system.
+      This should save token + user information.
+    */
+    saveAuthSession(result.data);
+
+    /*
+      Extra safety:
+      Save using the same keys used by change-password.html.
+    */
+    if (result.data.token) {
+      localStorage.setItem('dlc_customer_token_v1', result.data.token);
+    }
+
+    if (result.data.user) {
+      localStorage.setItem('dlc_customer_user_v1', JSON.stringify(result.data.user));
+    }
+
+   if (result.data.must_change_password) {
+  showMessage('Password change required — redirecting…', 'success');
+
+  const redirectUrl = getRedirectUrl();
+
+  setTimeout(() => {
+    window.location.href = `change-password.html?redirect=${encodeURIComponent(redirectUrl)}`;
+  }, 700);
+
+  return;
+}
+
+    showMessage('✓ Login successful — redirecting…', 'success');
+
+    setTimeout(() => {
+      window.location.href = getRedirectUrl();
+    }, 900);
+
+  } catch (error) {
+    showMessage(error.message || 'Login failed. Please try again.', 'error');
+
+    const card = document.querySelector('.auth-card');
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = 'shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both';
+
+    setTimeout(() => {
+      card.style.animation = '';
+    }, 500);
+
+  } finally {
+    button.disabled = false;
+    button.classList.remove('loading');
+  }
+});
   </script>
 
   <!-- Shake keyframe injected via JS to avoid overriding card entrance -->
