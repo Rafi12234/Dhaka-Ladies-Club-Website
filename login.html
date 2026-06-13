@@ -670,8 +670,8 @@
 
   <script>
     /* ── Redirect helpers ── */
-    const SELECTED_SLOT_KEY = 'dlc_selected_slot_v2';
-const BOOKING_DRAFT_KEY = 'dlc_booking_draft_v2';
+    /* ── Redirect helpers ── */
+const SELECTED_SLOT_KEY = 'dlc_selected_slot_v2';
 
 function readJsonFromSession(key) {
   try {
@@ -693,12 +693,40 @@ function hasValidSelectedSlot() {
   );
 }
 
+function normalizeRedirect(value) {
+  const allowed = [
+    'booking.html',
+    'customer-panel.html',
+    'index.html'
+  ];
+
+  if (!value || typeof value !== 'string') {
+    return '';
+  }
+
+  const clean = value.trim();
+
+  return allowed.includes(clean) ? clean : '';
+}
+
 function getRedirectUrl() {
   const params = new URLSearchParams(window.location.search);
   const redirect = params.get('redirect');
 
   if (redirect === 'booking.html' && hasValidSelectedSlot()) {
     return 'booking.html';
+  }
+
+  if (redirect === 'booking.html' && !hasValidSelectedSlot()) {
+    return 'index.html#calendar-booking';
+  }
+
+  if (redirect === 'customer-panel.html') {
+    return 'customer-panel.html';
+  }
+
+  if (redirect === 'index.html') {
+    return 'index.html';
   }
 
   return 'index.html';
@@ -807,11 +835,15 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   return;
 }
 
-    showMessage('✓ Login successful — redirecting…', 'success');
+    const finalRedirectUrl = getRedirectUrl();
 
-    setTimeout(() => {
-      window.location.href = getRedirectUrl();
-    }, 900);
+console.log('LOGIN REDIRECT URL:', finalRedirectUrl);
+
+showMessage('✓ Login successful — redirecting…', 'success');
+
+setTimeout(() => {
+  window.location.href = finalRedirectUrl;
+}, 900);
 
   } catch (error) {
     showMessage(error.message || 'Login failed. Please try again.', 'error');
