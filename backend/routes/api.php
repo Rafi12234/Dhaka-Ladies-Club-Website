@@ -86,6 +86,14 @@ Route::prefix('auth')->group(function () {
 
     Route::post('/logout', [CustomerAuthController::class, 'logout'])
         ->middleware('throttle:20,1');
+    Route::get('/panel', [CustomerAuthController::class, 'panel'])
+    ->middleware('throttle:60,1');
+
+Route::patch('/profile', [CustomerAuthController::class, 'updateProfile'])
+    ->middleware('throttle:20,1');
+
+Route::patch('/bookings/{bookingId}', [CustomerAuthController::class, 'updateBooking'])
+    ->middleware('throttle:20,1');
 });
 
 Route::fallback(function () {
