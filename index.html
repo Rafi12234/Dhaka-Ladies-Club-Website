@@ -209,6 +209,38 @@
   transform: translateY(-2px);
 }
 
+.profile-icon-link {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-border);
+  color: var(--gold-dark) !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px !important;
+  padding: 0 !important;
+  font-weight: 800 !important;
+  transition: var(--transition);
+}
+
+.profile-icon-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-icon-link:hover {
+  background: var(--gold);
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(184,134,11,0.28);
+}
+
+.profile-icon-link::after {
+  display: none !important;
+}
+
     /* ======================== */
     /* HERO */
     /* ======================== */
@@ -1351,7 +1383,15 @@
           <a href="index.html#gallery">Gallery</a>
           <a href="index.html#features">Features</a>
           <a href="#calendar-booking" class="btn nav-cta">Book Now</a>
-          <a href="login.html?redirect=booking.html" id="loginBtn" class="login-link" style="display:none;">Login</a>
+
+<a href="customer-panel.html" id="profileBtn" class="profile-icon-link" title="My Profile" aria-label="My Profile" style="display:none;">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21a8 8 0 0 0-16 0"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+</a>
+
+<a href="login.html?redirect=index.html" id="loginBtn" class="login-link" style="display:none;">Login</a>
 
 <button type="button" id="logoutBtn" class="logout-btn" onclick="logoutUser()" style="display:none;">
   Logout
@@ -2088,26 +2128,43 @@ async function proceedWithSelected() {
       }, 15000);
     }
 
-    async function updateNavbarAuthState() {
+async function updateNavbarAuthState() {
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const adminLoginLink = document.getElementById('adminLoginLink');
+  const profileBtn = document.getElementById('profileBtn');
 
   if (loginBtn) loginBtn.style.display = 'none';
   if (logoutBtn) logoutBtn.style.display = 'none';
   if (adminLoginLink) adminLoginLink.style.display = 'none';
+  if (profileBtn) profileBtn.style.display = 'none';
 
-  const user = typeof fetchLoggedInUser === 'function'
-    ? await fetchLoggedInUser()
-    : null;
+  const token = localStorage.getItem('dlc_customer_token_v1');
+  let localUser = null;
 
-  if (user && user.user_type === 'customer') {
-    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-    return;
+  try {
+    localUser = JSON.parse(localStorage.getItem('dlc_customer_user_v1') || 'null');
+  } catch (e) {
+    localUser = null;
   }
 
-  if (user && user.user_type !== 'customer') {
-    clearAuthSession();
+  let user = localUser;
+
+  if (token && typeof fetchLoggedInUser === 'function') {
+    try {
+      user = await fetchLoggedInUser() || localUser;
+    } catch (e) {
+      user = localUser;
+    }
+  }
+
+  const isCustomerLoggedIn =
+    !!token && (!user || String(user.user_type || 'customer').toLowerCase() === 'customer');
+
+  if (isCustomerLoggedIn) {
+    if (profileBtn) profileBtn.style.display = 'inline-flex';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+    return;
   }
 
   if (loginBtn) loginBtn.style.display = 'inline-flex';
@@ -2142,5 +2199,33 @@ async function proceedWithSelected() {
       initCalendar();
     });
   </script>
+<script>
+  async function logoutUser() {
+    const token = localStorage.getItem('dlc_customer_token_v1');
+
+    try {
+      if (token) {
+        await fetch(`${window.API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({})
+        });
+      }
+    } catch (error) {
+      console.warn('Logout API failed, clearing local session anyway.');
+    }
+
+    localStorage.removeItem('dlc_customer_token_v1');
+    localStorage.removeItem('dlc_customer_user_v1');
+
+    await updateNavbarAuthState();
+
+    window.location.href = 'index.html';
+  }
+</script>
 </body>
 </html>
