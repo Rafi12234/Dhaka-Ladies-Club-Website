@@ -326,9 +326,7 @@ const homePageStyles = String.raw`
   .hero-bg {
     position: absolute;
     inset: 0;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: url('/assets/img/BG-01.jpeg') center/cover no-repeat;
     transform: scale(1.05);
     animation: heroZoom 20s ease-in-out infinite alternate;
   }
@@ -390,48 +388,6 @@ const homePageStyles = String.raw`
     z-index: 2;
     padding: 20px;
     max-width: 900px;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(184,134,11,0.25);
-    border: 1px solid rgba(212,160,23,0.5);
-    color: #f0d080;
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-    backdrop-filter: blur(10px);
-    animation: fadeSlideDown 1s ease both;
-  }
-
-  .hero-badge::before {
-    content: '✦';
-    font-size: 10px;
-    animation: spin 3s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes fadeSlideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   .hero-content h1 {
@@ -1118,9 +1074,7 @@ const homePageStyles = String.raw`
   .booking-cta-bg {
     position: absolute;
     inset: 0;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: url('/assets/img/BG-01.jpeg') center/cover no-repeat;
   }
 
   .booking-cta-overlay {
@@ -1672,16 +1626,6 @@ const homePageStyles = String.raw`
 `;
 
 const EMPTY_HOMEPAGE_CONTENT = {
-  nav: {
-    logo: "",
-    logo_alt: "",
-    links: [],
-    booking_button_text: "",
-    booking_button_link: "",
-    login_text: "",
-    admin_login_text: "",
-    logout_text: "",
-  },
   hero: {
     title: "",
     highlight: "",
@@ -1691,17 +1635,6 @@ const EMPTY_HOMEPAGE_CONTENT = {
     primary_button_link: "",
     secondary_button_text: "",
     secondary_button_link: "",
-  },
-  stats: [],
-  calendar_section: {
-    eyebrow: "",
-    title: "",
-    description: "",
-    loading_text: "",
-    button_today: "",
-    button_month: "",
-    button_year_view: "",
-    legend: [],
   },
   our_story: {
     eyebrow: "",
@@ -1717,48 +1650,68 @@ const EMPTY_HOMEPAGE_CONTENT = {
     description_1: "",
     description_2: "",
     points: [],
-    button_text: "",
-    button_link: "",
   },
   gallery: {
     eyebrow: "",
     title: "",
     description: "",
     images: [],
-    empty_text: "",
-  },
-  features_section: {
-    eyebrow: "",
-    title: "",
-    description: "",
-    cards: [],
-  },
-  booking_cta: {
-    background_image: "",
-    title: "",
-    highlight: "",
-    title_suffix: "",
-    description: "",
-    primary_button_text: "",
-    primary_button_link: "",
-    secondary_button_text: "",
-    secondary_button_link: "",
   },
   footer: {
-    logo: "",
-    logo_alt: "",
     description: "",
-    quick_links_title: "",
-    quick_links: [],
-    contact_title: "",
     address: "",
     phone: "",
     email: "",
     copyright: "",
-    copyright_brand: "",
     tagline: "",
   },
 };
+
+const stats = [
+  { count: 500, label: "Events Hosted", delay: "" },
+  { count: 1200, label: "Happy Families", delay: "100" },
+  { count: 20, label: "Years Experience", delay: "200" },
+  { count: 98, label: "% Client Satisfaction", delay: "300" },
+];
+
+const featureCards = [
+  {
+    icon: "📅",
+    title: "Live Calendar",
+    text: "Browse the full year calendar and view available or booked shifts instantly with real-time updates.",
+    delay: "",
+  },
+  {
+    icon: "📝",
+    title: "Online Booking",
+    text: "Book event halls directly from the website with instant reservation requests and confirmation.",
+    delay: "150",
+  },
+  {
+    icon: "💳",
+    title: "Secure Payment",
+    text: "Easy and secure online payment system with encrypted transactions for booking confirmations.",
+    delay: "300",
+  },
+  {
+    icon: "🎉",
+    title: "Event Management",
+    text: "Full-service event coordination by our expert team to make your celebration flawless.",
+    delay: "450",
+  },
+  {
+    icon: "🌟",
+    title: "Premium Décor",
+    text: "Stunning decoration packages crafted by professional designers for every occasion.",
+    delay: "500",
+  },
+  {
+    icon: "🔔",
+    title: "Instant Alerts",
+    text: "Get real-time notifications and reminders for your upcoming events and booking updates.",
+    delay: "550",
+  },
+];
 
 const calendarColorMap = {
   available: "#198754",
@@ -1797,6 +1750,19 @@ function readLocalJson(key) {
 function clearCustomerAuthSession() {
   localStorage.removeItem(CUSTOMER_TOKEN_KEY);
   localStorage.removeItem(CUSTOMER_USER_KEY);
+}
+
+function clearAllBookingSessionData() {
+  Object.keys(sessionStorage).forEach((key) => {
+    if (
+      key === SELECTED_SLOT_KEY ||
+      key === ACTIVE_HOLD_KEY ||
+      key === BOOKING_DRAFT_KEY ||
+      key.startsWith(`${BOOKING_DRAFT_KEY}_`)
+    ) {
+      sessionStorage.removeItem(key);
+    }
+  });
 }
 
 function formatCountdown(ms) {
@@ -1895,84 +1861,65 @@ function getCustomerHeaderObject(token) {
   };
 }
 
-
-function resolveContentAssetUrl(url) {
+function resolveHostingUrl(url) {
   if (!url) return "";
-  const value = String(url).trim();
-  if (!value) return "";
-  if (/^https?:\/\//i.test(value)) return value;
-  if (value.startsWith("/")) return value;
-  return `/${value}`;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/")) return url;
+  return `/${url}`;
 }
 
-function normalizeArray(value) {
-  return Array.isArray(value) ? value : [];
+function normalizeGalleryImages(images) {
+  if (!Array.isArray(images)) return [];
+
+  return images
+    .filter((image) => image && (image.url || image.src))
+    .map((image, index) => ({
+      id: image.id || image.url || image.src || `gallery_${index + 1}`,
+      url: resolveHostingUrl(image.url || image.src),
+      alt: image.alt || image.title || `Gallery image ${index + 1}`,
+    }));
 }
 
-function normalizeHomepageContent(incomingContent = {}) {
-  const incoming = incomingContent && typeof incomingContent === "object" ? incomingContent : {};
+function mergeHomepageContent(rawContent) {
+  const incoming = rawContent && typeof rawContent === "object" ? rawContent : {};
 
-  const merged = {
-    ...EMPTY_HOMEPAGE_CONTENT,
-    ...incoming,
-    nav: { ...EMPTY_HOMEPAGE_CONTENT.nav, ...(incoming.nav || {}) },
-    hero: { ...EMPTY_HOMEPAGE_CONTENT.hero, ...(incoming.hero || {}) },
-    calendar_section: { ...EMPTY_HOMEPAGE_CONTENT.calendar_section, ...(incoming.calendar_section || {}) },
-    our_story: { ...EMPTY_HOMEPAGE_CONTENT.our_story, ...(incoming.our_story || {}) },
+  const content = {
+    hero: {
+      ...EMPTY_HOMEPAGE_CONTENT.hero,
+      ...(incoming.hero || {}),
+    },
+    our_story: {
+      ...EMPTY_HOMEPAGE_CONTENT.our_story,
+      ...(incoming.our_story || {}),
+    },
     creating_experiences: {
       ...EMPTY_HOMEPAGE_CONTENT.creating_experiences,
       ...(incoming.creating_experiences || {}),
     },
-    gallery: { ...EMPTY_HOMEPAGE_CONTENT.gallery, ...(incoming.gallery || {}) },
-    features_section: { ...EMPTY_HOMEPAGE_CONTENT.features_section, ...(incoming.features_section || {}) },
-    booking_cta: { ...EMPTY_HOMEPAGE_CONTENT.booking_cta, ...(incoming.booking_cta || {}) },
-    footer: { ...EMPTY_HOMEPAGE_CONTENT.footer, ...(incoming.footer || {}) },
+    gallery: {
+      ...EMPTY_HOMEPAGE_CONTENT.gallery,
+      ...(incoming.gallery || {}),
+    },
+    footer: {
+      ...EMPTY_HOMEPAGE_CONTENT.footer,
+      ...(incoming.footer || {}),
+    },
   };
 
-  merged.stats = normalizeArray(incoming.stats).map((item, index) => ({
-    id: item.id || item.label || `stat_${index + 1}`,
-    count: Number(item.count || item.number || 0),
-    suffix: item.suffix ?? "+",
-    label: item.label || "",
-    delay: item.delay || (index ? String(index * 100) : ""),
-  }));
+  content.hero.background_image = resolveHostingUrl(content.hero.background_image);
+  content.creating_experiences.image = resolveHostingUrl(content.creating_experiences.image);
+  content.creating_experiences.points = Array.isArray(content.creating_experiences.points)
+    ? content.creating_experiences.points.filter(Boolean)
+    : [];
+  content.gallery.images = normalizeGalleryImages(content.gallery.images);
 
-  merged.nav.links = normalizeArray(merged.nav.links);
-  merged.calendar_section.legend = normalizeArray(merged.calendar_section.legend);
-  merged.creating_experiences.points = normalizeArray(merged.creating_experiences.points);
-  merged.gallery.images = normalizeArray(merged.gallery.images)
-    .filter((image) => image && (image.url || image.src))
-    .map((image, index) => ({
-      id: image.id || image.url || image.src || `gallery_${index + 1}`,
-      url: resolveContentAssetUrl(image.url || image.src),
-      alt: image.alt || image.title || "Gallery image",
-    }));
-
-  merged.features_section.cards = normalizeArray(merged.features_section.cards).map((card, index) => ({
-    id: card.id || card.title || `feature_${index + 1}`,
-    icon: card.icon || "",
-    title: card.title || "",
-    text: card.text || card.description || "",
-    delay: card.delay || (index ? String(index * 150) : ""),
-  }));
-
-  merged.footer.quick_links = normalizeArray(merged.footer.quick_links);
-
-  merged.nav.logo = resolveContentAssetUrl(merged.nav.logo);
-  merged.hero.background_image = resolveContentAssetUrl(merged.hero.background_image);
-  merged.creating_experiences.image = resolveContentAssetUrl(merged.creating_experiences.image);
-  merged.booking_cta.background_image = resolveContentAssetUrl(merged.booking_cta.background_image);
-  merged.footer.logo = resolveContentAssetUrl(merged.footer.logo);
-
-  return merged;
+  return content;
 }
 
 function renderTitleWithHighlightedLastWord(title) {
   const safeTitle = String(title || "").trim();
 
-  if (!safeTitle) {
-    return null;
-  }
+  if (!safeTitle) return null;
 
   const words = safeTitle.split(/\s+/);
 
@@ -1985,6 +1932,28 @@ function renderTitleWithHighlightedLastWord(title) {
   return (
     <>
       {words.join(" ")} <span>{highlightedWord}</span>
+    </>
+  );
+}
+
+function renderFooterCopyright(text) {
+  const safeText = String(text || "").trim();
+
+  if (!safeText) return null;
+
+  const brand = "Dhaka Ladies Club";
+
+  if (!safeText.includes(brand)) {
+    return safeText;
+  }
+
+  const [beforeBrand, afterBrand] = safeText.split(brand);
+
+  return (
+    <>
+      {beforeBrand}
+      <span className="footer-gold">{brand}</span>
+      {afterBrand}
     </>
   );
 }
@@ -2012,6 +1981,7 @@ export default function HomePage() {
   const statsRef = useRef(null);
   const popupCloseTimerRef = useRef(null);
 
+  const [homepageContent, setHomepageContent] = useState(EMPTY_HOMEPAGE_CONTENT);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
   const [calendarReady, setCalendarReady] = useState(false);
@@ -2021,9 +1991,13 @@ export default function HomePage() {
   const [popupSlots, setPopupSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isProceeding, setIsProceeding] = useState(false);
-  const [homepageContent, setHomepageContent] = useState(EMPTY_HOMEPAGE_CONTENT);
   const [counterStarted, setCounterStarted] = useState(false);
-  const [counterValues, setCounterValues] = useState([]);
+  const [counterValues, setCounterValues] = useState({
+    500: 0,
+    1200: 0,
+    20: 0,
+    98: 0,
+  });
   const [, setClockTick] = useState(0);
 
   const particles = useMemo(() => {
@@ -2044,37 +2018,6 @@ export default function HomePage() {
     });
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadHomepageContent() {
-      try {
-        const payload = await requestApi("/homepage-content", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!isMounted) return;
-
-        setHomepageContent(normalizeHomepageContent(payload?.data || payload));
-      } catch (error) {
-        console.error("Homepage content loading failed:", error);
-
-        if (!isMounted) return;
-
-        setHomepageContent(EMPTY_HOMEPAGE_CONTENT);
-      }
-    }
-
-    loadHomepageContent();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const selectedFormattedDate = useMemo(() => {
     if (!popupDate) return "Loading...";
 
@@ -2085,6 +2028,15 @@ export default function HomePage() {
       day: "numeric",
     });
   }, [popupDate]);
+
+  const hero = homepageContent.hero;
+  const ourStory = homepageContent.our_story;
+  const creatingExperiences = homepageContent.creating_experiences;
+  const gallery = homepageContent.gallery;
+  const footer = homepageContent.footer;
+
+  const heroBackgroundImage = hero.background_image;
+  const ctaBackgroundImage = hero.background_image;
 
   const forceCalendarResize = useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
@@ -2374,11 +2326,40 @@ export default function HomePage() {
       console.warn("Logout API failed, clearing local session anyway.");
     }
 
-    clearCustomerAuthSession();
-    setIsCustomerLoggedIn(false);
     await releaseActiveHold();
-    navigate("/");
+    clearCustomerAuthSession();
+    clearAllBookingSessionData();
+    setIsCustomerLoggedIn(false);
+    navigate("/", { replace: true });
   }, [navigate, releaseActiveHold]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadHomepageContent() {
+      try {
+        const payload = await requestApi(`/homepage-content?t=${Date.now()}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!mounted) return;
+
+        const data = normalizeApiData(payload);
+        setHomepageContent(mergeHomepageContent(data));
+      } catch (error) {
+        console.error("Homepage content load failed:", error);
+      }
+    }
+
+    loadHomepageContent();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2412,7 +2393,7 @@ export default function HomePage() {
     return () => {
       observer.disconnect();
     };
-  }, [calendarReady, popupOpen]);
+  }, [calendarReady, popupOpen, homepageContent]);
 
   useEffect(() => {
     refreshNavbarAuthState();
@@ -2478,28 +2459,9 @@ export default function HomePage() {
     };
   }, [closePopup, popupOpen]);
 
-  const content = useMemo(() => normalizeHomepageContent(homepageContent), [homepageContent]);
-  const nav = content.nav;
-  const hero = content.hero;
-  const homepageStats = content.stats;
-  const calendarSection = content.calendar_section;
-  const ourStory = content.our_story;
-  const creatingExperiences = content.creating_experiences;
-  const gallery = content.gallery;
-  const featuresSection = content.features_section;
-  const bookingCta = content.booking_cta;
-  const footer = content.footer;
-  const footerQuickLinks = footer.quick_links;
-
-  useEffect(() => {
-    setCounterStarted(false);
-    setCounterValues(homepageStats.map(() => 0));
-  }, [homepageStats.length]);
-
   useEffect(() => {
     if (counterStarted) return;
     if (!statsRef.current) return;
-    if (!homepageStats.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -2516,12 +2478,12 @@ export default function HomePage() {
         const timer = setInterval(() => {
           frame += 1;
 
-          setCounterValues(
-            homepageStats.map((item) => {
-              const target = Number(item.count || 0);
-              return Math.min(target, Math.floor((target / frames) * frame));
-            })
-          );
+          setCounterValues({
+            500: Math.min(500, Math.floor((500 / frames) * frame)),
+            1200: Math.min(1200, Math.floor((1200 / frames) * frame)),
+            20: Math.min(20, Math.floor((20 / frames) * frame)),
+            98: Math.min(98, Math.floor((98 / frames) * frame)),
+          });
 
           if (frame >= frames) {
             clearInterval(timer);
@@ -2536,7 +2498,7 @@ export default function HomePage() {
     observer.observe(statsRef.current);
 
     return () => observer.disconnect();
-  }, [counterStarted, homepageStats]);
+  }, [counterStarted]);
 
   return (
     <>
@@ -2546,23 +2508,19 @@ export default function HomePage() {
         <div className="nav-inner">
           <div className="container nav-wrapper">
             <div className="logo">
-              <a href="#top" aria-label={nav.logo_alt || "Home"}>
-                {nav.logo && <img src={nav.logo} alt={nav.logo_alt || "Logo"} />}
+              <a href="#top" aria-label="Dhaka Ladies Club Home">
+                <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club Logo" />
               </a>
             </div>
 
             <div className="nav-links">
-              {nav.links.map((link) => (
-                <a href={link.href} key={`${link.label}-${link.href}`}>
-                  {link.label}
-                </a>
-              ))}
-
-              {nav.booking_button_text && (
-                <a href={nav.booking_button_link || "#calendar-booking"} className="btn nav-cta">
-                  {nav.booking_button_text}
-                </a>
-              )}
+              <a href="#calendar-booking">Calendar</a>
+              <a href="#about">About</a>
+              <a href="#gallery">Gallery</a>
+              <a href="#features">Features</a>
+              <a href="#calendar-booking" className="btn nav-cta">
+                Book Now
+              </a>
 
               {isCustomerLoggedIn ? (
                 <>
@@ -2587,21 +2545,17 @@ export default function HomePage() {
                   </Link>
 
                   <button type="button" className="logout-btn" onClick={handleLogout}>
-                    {nav.logout_text}
+                    Logout
                   </button>
                 </>
               ) : (
                 <>
-                  {nav.login_text && (
-                    <Link to="/login" className="login-link">
-                      {nav.login_text}
-                    </Link>
-                  )}
-                  {nav.admin_login_text && (
-                    <Link to="/admin-login" className="admin-login-link">
-                      {nav.admin_login_text}
-                    </Link>
-                  )}
+                  <Link to="/login" className="login-link">
+                    Login
+                  </Link>
+                  <Link to="/admin-login" className="admin-login-link">
+                    Admin Login
+                  </Link>
                 </>
               )}
             </div>
@@ -2612,7 +2566,7 @@ export default function HomePage() {
       <section className="hero" id="top">
         <div
           className="hero-bg"
-          style={{ backgroundImage: hero.background_image ? `url(${hero.background_image})` : "none" }}
+          style={heroBackgroundImage ? { backgroundImage: `url(${heroBackgroundImage})` } : undefined}
         />
         <div className="hero-overlay" />
 
@@ -2625,27 +2579,19 @@ export default function HomePage() {
         <div className="hero-content">
           <h1>
             {hero.title}
-            {hero.highlight && (
-              <>
-                <br />
-                <span>{hero.highlight}</span>
-              </>
-            )}
+            <br />
+            <span>{hero.highlight}</span>
           </h1>
 
-          {hero.subtitle && <p>{hero.subtitle}</p>}
+          <p>{hero.subtitle}</p>
 
           <div className="hero-actions">
-            {hero.primary_button_text && (
-              <a href={hero.primary_button_link || "#calendar-booking"} className="btn">
-                {hero.primary_button_text}
-              </a>
-            )}
-            {hero.secondary_button_text && (
-              <a href={hero.secondary_button_link || "#about"} className="btn btn-outline">
-                {hero.secondary_button_text}
-              </a>
-            )}
+            <a href={hero.primary_button_link || "#calendar-booking"} className="btn">
+              {hero.primary_button_text}
+            </a>
+            <a href={hero.secondary_button_link || "#about"} className="btn btn-outline">
+              {hero.secondary_button_text}
+            </a>
           </div>
         </div>
 
@@ -2665,15 +2611,15 @@ export default function HomePage() {
       <div className="stats-strip" id="stats" ref={statsRef}>
         <div className="container">
           <div className="stats-inner">
-            {homepageStats.map((item, index) => (
+            {stats.map((item) => (
               <div
                 className="stat-item"
                 data-aos="fade-up"
                 data-aos-delay={item.delay || undefined}
-                key={item.id || `${item.label}-${index}`}
+                key={item.label}
               >
                 <span className="stat-number" data-count={item.count}>
-                  {counterStarted ? `${counterValues[index] || 0}${item.suffix || ""}` : `0${item.suffix || ""}`}
+                  {counterStarted ? `${counterValues[item.count]}+` : "0"}
                 </span>
                 <span className="stat-label">{item.label}</span>
               </div>
@@ -2685,9 +2631,12 @@ export default function HomePage() {
       <section className="calendar-section" id="calendar-booking">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            {calendarSection.eyebrow && <span className="section-eyebrow">{calendarSection.eyebrow}</span>}
-            {calendarSection.title && <h2>{calendarSection.title}</h2>}
-            {calendarSection.description && <p>{calendarSection.description}</p>}
+            <span className="section-eyebrow">Live Availability</span>
+            <h2>Booking Calendar</h2>
+            <p>
+              Browse available shifts and reserve your preferred date. Click any date or event to view shift
+              availability and proceed with booking.
+            </p>
           </div>
 
           <div id="calendar" data-aos="zoom-in" data-aos-duration="800">
@@ -2710,9 +2659,9 @@ export default function HomePage() {
                   right: "dayGridMonth,listYear",
                 }}
                 buttonText={{
-                  today: calendarSection.button_today || "Today",
-                  month: calendarSection.button_month || "Month",
-                  listYear: calendarSection.button_year_view || "Year View",
+                  today: "Today",
+                  month: "Month",
+                  listYear: "Year View",
                 }}
                 events={loadSlots}
                 viewDidMount={forceCalendarResize}
@@ -2722,17 +2671,31 @@ export default function HomePage() {
                 eventClick={handleEventClick}
               />
             ) : (
-              <div className="calendar-loading">{calendarSection.loading_text}</div>
+              <div className="calendar-loading">Loading booking calendar...</div>
             )}
           </div>
 
           <div className="calendar-legend" data-aos="fade-up">
-            {calendarSection.legend.map((item, index) => (
-              <div className="legend-item" key={`${item.label}-${index}`}>
-                <div className="legend-dot" style={{ background: item.color }} />
-                {item.label}
-              </div>
-            ))}
+            <div className="legend-item">
+              <div className="legend-dot" style={{ background: "#198754" }} />
+              Available
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot" style={{ background: "#dc3545" }} />
+              Booked
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot" style={{ background: "#fd7e14" }} />
+              Booking In Progress
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot" style={{ background: "#b8860b" }} />
+              Pending Approval
+            </div>
+            <div className="legend-item">
+              <div className="legend-dot" style={{ background: "#6c757d" }} />
+              Blocked
+            </div>
           </div>
         </div>
       </section>
@@ -2740,45 +2703,46 @@ export default function HomePage() {
       <section id="about" className="about-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            {ourStory.eyebrow && <span className="section-eyebrow">{ourStory.eyebrow}</span>}
-            {ourStory.title && <h2>{ourStory.title}</h2>}
-            {ourStory.description && <p>{ourStory.description}</p>}
+            <span className="section-eyebrow">{ourStory.eyebrow}</span>
+            <h2>{ourStory.title}</h2>
+            <p>{ourStory.description}</p>
           </div>
 
           <div className="about-wrapper">
             <div className="about-img-wrap float" data-aos="fade-right">
               <div className="about-img-deco" />
+
               {creatingExperiences.image && (
-                <img src={creatingExperiences.image} alt={creatingExperiences.image_alt || ourStory.title || "About image"} />
+                <img
+                  src={creatingExperiences.image}
+                  alt={creatingExperiences.image_alt || ourStory.title || "Dhaka Ladies Club"}
+                />
               )}
 
-              {creatingExperiences.badge_text && (
-                <div className="about-img-badge">
-                  <span>
-                    {String(creatingExperiences.badge_text)
-                      .split("\n")
-                      .map((line, index, lines) => (
-                        <span key={`${line}-${index}`}>
-                          {line}
-                          {index < lines.length - 1 && <br />}
-                        </span>
-                      ))}
-                  </span>
-                </div>
-              )}
+              <div className="about-img-badge">
+                <span>
+                  {(creatingExperiences.badge_text || "20+\nYears\nExcellence")
+                    .split("\n")
+                    .map((line, index, lines) => (
+                      <span key={`${line}-${index}`}>
+                        {line}
+                        {index < lines.length - 1 && <br />}
+                      </span>
+                    ))}
+                </span>
+              </div>
             </div>
 
             <div className="about-text" data-aos="fade-left">
-              {creatingExperiences.eyebrow && (
-                <span className="section-eyebrow" style={{ textAlign: "left" }}>
-                  {creatingExperiences.eyebrow}
-                </span>
-              )}
+              <span className="section-eyebrow" style={{ textAlign: "left" }}>
+                {creatingExperiences.eyebrow}
+              </span>
 
-              {creatingExperiences.title && <h3>{renderTitleWithHighlightedLastWord(creatingExperiences.title)}</h3>}
+              <h3>{renderTitleWithHighlightedLastWord(creatingExperiences.title)}</h3>
 
-              {creatingExperiences.description_1 && <p>{creatingExperiences.description_1}</p>}
-              {creatingExperiences.description_2 && <p>{creatingExperiences.description_2}</p>}
+              <p>{creatingExperiences.description_1}</p>
+
+              <p>{creatingExperiences.description_2}</p>
 
               <div className="about-features">
                 {creatingExperiences.points.map((feature, index) => (
@@ -2788,14 +2752,11 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {creatingExperiences.button_text && (
-                <>
-                  <br />
-                  <a href={creatingExperiences.button_link || "#calendar-booking"} className="btn" style={{ marginTop: "10px" }}>
-                    {creatingExperiences.button_text}
-                  </a>
-                </>
-              )}
+              <br />
+
+              <a href="#calendar-booking" className="btn" style={{ marginTop: "10px" }}>
+                Book a Visit
+              </a>
             </div>
           </div>
         </div>
@@ -2804,19 +2765,12 @@ export default function HomePage() {
       <section id="gallery" className="gallery-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            {gallery.eyebrow && <span className="section-eyebrow">{gallery.eyebrow}</span>}
-            {gallery.title && <h2>{gallery.title}</h2>}
-            {gallery.description && <p>{gallery.description}</p>}
+            <span className="section-eyebrow">{gallery.eyebrow}</span>
+            <h2>{gallery.title}</h2>
+            <p>{gallery.description}</p>
           </div>
 
           <div className="gallery-grid">
-            {gallery.images.length === 0 && (
-              <div className="popup-empty" style={{ gridColumn: "1 / -1" }}>
-                <div className="popup-empty-icon">📭</div>
-                <p>{gallery.empty_text}</p>
-              </div>
-            )}
-
             {gallery.images.map((image, index) => (
               <div
                 className="gallery-item"
@@ -2837,18 +2791,18 @@ export default function HomePage() {
       <section className="features-section" id="features">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            {featuresSection.eyebrow && <span className="section-eyebrow">{featuresSection.eyebrow}</span>}
-            {featuresSection.title && <h2>{featuresSection.title}</h2>}
-            {featuresSection.description && <p>{featuresSection.description}</p>}
+            <span className="section-eyebrow">Why Choose Us</span>
+            <h2>World-Class Features</h2>
+            <p>Smart booking system with live calendar and secure payments — designed for a seamless experience.</p>
           </div>
 
           <div className="feature-grid">
-            {featuresSection.cards.map((feature) => (
+            {featureCards.map((feature) => (
               <div
                 className="feature-card"
                 data-aos="zoom-in"
                 data-aos-delay={feature.delay || undefined}
-                key={feature.id || feature.title}
+                key={feature.title}
               >
                 <div className="feature-icon-wrap">{feature.icon}</div>
                 <h3>{feature.title}</h3>
@@ -2862,28 +2816,27 @@ export default function HomePage() {
       <section className="booking-cta">
         <div
           className="booking-cta-bg"
-          style={{ backgroundImage: bookingCta.background_image ? `url(${bookingCta.background_image})` : "none" }}
+          style={ctaBackgroundImage ? { backgroundImage: `url(${ctaBackgroundImage})` } : undefined}
         />
         <div className="booking-cta-overlay" />
 
         <div className="container" data-aos="zoom-in">
           <h2>
-            {bookingCta.title} {bookingCta.highlight && <span>{bookingCta.highlight}</span>} {bookingCta.title_suffix}
+            Plan Your <span>Dream Event</span> Today
           </h2>
 
-          {bookingCta.description && <p>{bookingCta.description}</p>}
+          <p>
+            Make your celebrations unforgettable with Dhaka Ladies Club&apos;s premium event management services. Your
+            perfect event begins with a single click.
+          </p>
 
           <div className="hero-actions">
-            {bookingCta.primary_button_text && (
-              <a href={bookingCta.primary_button_link || "#calendar-booking"} className="btn">
-                {bookingCta.primary_button_text}
-              </a>
-            )}
-            {bookingCta.secondary_button_text && (
-              <a href={bookingCta.secondary_button_link || "#about"} className="btn btn-outline">
-                {bookingCta.secondary_button_text}
-              </a>
-            )}
+            <a href="#calendar-booking" className="btn">
+              Check Availability
+            </a>
+            <a href="tel:+8801700000000" className="btn btn-outline">
+              Contact Us
+            </a>
           </div>
         </div>
       </section>
@@ -2961,9 +2914,7 @@ export default function HomePage() {
                             )}
                           </div>
 
-                          <span className={`slot-status-badge ${statusBadge.cls}`}>
-                            {statusBadge.label}
-                          </span>
+                          <span className={`slot-status-badge ${statusBadge.cls}`}>{statusBadge.label}</span>
                         </label>
                       </div>
                     );
@@ -3005,29 +2956,28 @@ export default function HomePage() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-brand">
-              {footer.logo && <img src={footer.logo} alt={footer.logo_alt || "Footer logo"} />}
-              {footer.description && <p>{footer.description}</p>}
+              <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
+              <p>{footer.description}</p>
             </div>
 
             <div className="footer-col">
-              {footer.quick_links_title && <h4>{footer.quick_links_title}</h4>}
-              {footerQuickLinks.map((link) => (
-                <a href={link.href} key={`${link.label}-${link.href}`}>
-                  {link.label}
-                </a>
-              ))}
+              <h4>Quick Links</h4>
+              <a href="#calendar-booking">Booking Calendar</a>
+              <a href="#about">About Us</a>
+              <a href="#gallery">Gallery</a>
+              <a href="#features">Features</a>
             </div>
 
             <div className="footer-col">
-              {footer.contact_title && <h4>{footer.contact_title}</h4>}
-              {footer.address && <p>📍 {footer.address}</p>}
-              {footer.phone && <p>📞 {footer.phone}</p>}
-              {footer.email && <p>✉️ {footer.email}</p>}
+              <h4>Contact</h4>
+              <p>📍 {footer.address}</p>
+              <p>📞 {footer.phone}</p>
+              <p>✉️ {footer.email}</p>
             </div>
           </div>
 
           <div className="footer-bottom">
-            <p>{footer.copyright}</p>
+            <p>{renderFooterCopyright(footer.copyright)}</p>
             <p>{footer.tagline}</p>
           </div>
         </div>
