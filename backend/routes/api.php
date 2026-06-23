@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminManualBookingController;
 use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\HomepageContentController;
 
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('/booking-context', [BookingContextController::class, 'index'])
@@ -94,6 +95,27 @@ Route::patch('/profile', [CustomerAuthController::class, 'updateProfile'])
 
 Route::patch('/bookings/{bookingId}', [CustomerAuthController::class, 'updateBooking'])
     ->middleware('throttle:20,1');
+});
+
+Route::get('/homepage-content', [HomepageContentController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('api.homepage-content.show');
+
+Route::prefix('admin/homepage-content')->middleware('throttle:30,1')->group(function () {
+    Route::get('/', [HomepageContentController::class, 'show'])
+        ->name('api.admin.homepage-content.show');
+
+    Route::put('/', [HomepageContentController::class, 'update'])
+        ->name('api.admin.homepage-content.update');
+
+    Route::post('/upload-image', [HomepageContentController::class, 'uploadImage'])
+        ->name('api.admin.homepage-content.upload-image');
+
+    Route::post('/gallery', [HomepageContentController::class, 'storeGalleryImage'])
+        ->name('api.admin.homepage-content.gallery.store');
+
+    Route::delete('/gallery/{imageId}', [HomepageContentController::class, 'deleteGalleryImage'])
+        ->name('api.admin.homepage-content.gallery.delete');
 });
 
 Route::fallback(function () {
