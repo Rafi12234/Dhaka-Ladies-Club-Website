@@ -1745,6 +1745,89 @@ const featureCards = [
   },
 ];
 
+const DEFAULT_HOMEPAGE_CONTENT = {
+  hero: {
+    title: "Elegant Events",
+    highlight: "Beautiful Memories",
+    subtitle:
+      "Dhaka Ladies Club is a luxurious convention hall offering premium event spaces for weddings, receptions, conferences, and unforgettable celebrations.",
+    background_image: "/assets/img/BG-01.jpeg",
+    primary_button_text: "Book Your Event",
+    primary_button_link: "#calendar-booking",
+    secondary_button_text: "Discover More",
+    secondary_button_link: "#about",
+  },
+  our_story: {
+    eyebrow: "Our Story",
+    title: "About Dhaka Ladies Club",
+    description:
+      "A prestigious event destination in Dhaka designed for elegant weddings, corporate events, and premium celebrations.",
+  },
+  creating_experiences: {
+    image: "/assets/img/About.jpg",
+    image_alt: "About Dhaka Ladies Club",
+    badge_text: "20+\nYears\nExcellence",
+    eyebrow: "Creating Experiences",
+    title: "Where Every Event Becomes Extraordinary",
+    description_1:
+      "Dhaka Ladies Club combines elegance, luxury, and professionalism to deliver exceptional event experiences for every guest. Our dedicated team ensures that every detail is meticulously planned and executed.",
+    description_2:
+      "From stunning decoration arrangements to premium hospitality, every celebration is carefully designed to create lifelong memories that you and your guests will cherish forever.",
+    points: aboutFeatures,
+    button_text: "Book a Visit",
+    button_link: "#calendar-booking",
+  },
+  gallery: {
+    eyebrow: "Visual Gallery",
+    title: "Decoration Gallery",
+    description:
+      "Explore stunning decoration concepts and luxurious setups from our most celebrated events.",
+    use_default_images: true,
+    images: galleryImages.map((image, index) => ({
+      id: `default_gallery_${index + 1}`,
+      url: image.src,
+      alt: image.alt,
+    })),
+  },
+  features_section: {
+    eyebrow: "Why Choose Us",
+    title: "World-Class Features",
+    description: "Smart booking system with live calendar and secure payments — designed for a seamless experience.",
+  },
+  booking_cta: {
+    background_image: "/assets/img/BG-01.jpeg",
+    title: "Plan Your",
+    highlight: "Dream Event",
+    title_suffix: "Today",
+    description:
+      "Make your celebrations unforgettable with Dhaka Ladies Club's premium event management services. Your perfect event begins with a single click.",
+    primary_button_text: "Check Availability",
+    primary_button_link: "#calendar-booking",
+    secondary_button_text: "Contact Us",
+    secondary_button_link: "tel:+8801700000000",
+  },
+  footer: {
+    logo: "/assets/img/dlclogo_long.png",
+    logo_alt: "Dhaka Ladies Club",
+    description:
+      "A prestigious event destination in Dhaka delivering exceptional experiences for weddings, corporate events, and premium celebrations since 2005.",
+    quick_links_title: "Quick Links",
+    quick_links: [
+      { label: "Booking Calendar", href: "#calendar-booking" },
+      { label: "About Us", href: "#about" },
+      { label: "Gallery", href: "#gallery" },
+      { label: "Features", href: "#features" },
+    ],
+    contact_title: "Contact",
+    address: "Dhaka, Bangladesh",
+    phone: "+880 1700-000000",
+    email: "info@dhakaladiesclub.com",
+    copyright: "© 2026 Dhaka Ladies Club. All Rights Reserved.",
+    copyright_brand: "Dhaka Ladies Club",
+    tagline: "Premium Convention & Party Venue in Dhaka",
+  },
+};
+
 const calendarColorMap = {
   available: "#198754",
   booked: "#dc3545",
@@ -1783,18 +1866,7 @@ function clearCustomerAuthSession() {
   localStorage.removeItem(CUSTOMER_TOKEN_KEY);
   localStorage.removeItem(CUSTOMER_USER_KEY);
 }
-function clearAllBookingSessionData() {
-  Object.keys(sessionStorage).forEach((key) => {
-    if (
-      key === SELECTED_SLOT_KEY ||
-      key === ACTIVE_HOLD_KEY ||
-      key === BOOKING_DRAFT_KEY ||
-      key.startsWith(`${BOOKING_DRAFT_KEY}_`)
-    ) {
-      sessionStorage.removeItem(key);
-    }
-  });
-}
+
 function formatCountdown(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
   const minutes = String(Math.floor(total / 60)).padStart(2, "0");
@@ -1891,6 +1963,111 @@ function getCustomerHeaderObject(token) {
   };
 }
 
+
+function resolveContentAssetUrl(url) {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/")) return url;
+  return `/${url}`;
+}
+
+function normalizeGalleryImages(images, useDefaultImages = true) {
+  if (Array.isArray(images) && images.length > 0) {
+    return images
+      .filter((image) => image && (image.url || image.src))
+      .map((image, index) => ({
+        id: image.id || image.url || image.src || `gallery_${index}`,
+        url: resolveContentAssetUrl(image.url || image.src),
+        alt: image.alt || image.title || "Gallery image",
+      }));
+  }
+
+  return useDefaultImages
+    ? DEFAULT_HOMEPAGE_CONTENT.gallery.images.map((image) => ({
+        ...image,
+        url: resolveContentAssetUrl(image.url),
+      }))
+    : [];
+}
+
+function mergeHomepageContent(incomingContent = {}) {
+  const incoming = incomingContent && typeof incomingContent === "object" ? incomingContent : {};
+
+  const merged = {
+    ...DEFAULT_HOMEPAGE_CONTENT,
+    ...incoming,
+    hero: {
+      ...DEFAULT_HOMEPAGE_CONTENT.hero,
+      ...(incoming.hero || {}),
+    },
+    our_story: {
+      ...DEFAULT_HOMEPAGE_CONTENT.our_story,
+      ...(incoming.our_story || {}),
+    },
+    creating_experiences: {
+      ...DEFAULT_HOMEPAGE_CONTENT.creating_experiences,
+      ...(incoming.creating_experiences || {}),
+    },
+    gallery: {
+      ...DEFAULT_HOMEPAGE_CONTENT.gallery,
+      ...(incoming.gallery || {}),
+    },
+    features_section: {
+      ...DEFAULT_HOMEPAGE_CONTENT.features_section,
+      ...(incoming.features_section || {}),
+    },
+    booking_cta: {
+      ...DEFAULT_HOMEPAGE_CONTENT.booking_cta,
+      ...(incoming.booking_cta || {}),
+    },
+    footer: {
+      ...DEFAULT_HOMEPAGE_CONTENT.footer,
+      ...(incoming.footer || {}),
+    },
+  };
+
+  if (!Array.isArray(merged.creating_experiences.points)) {
+    merged.creating_experiences.points = DEFAULT_HOMEPAGE_CONTENT.creating_experiences.points;
+  }
+
+  if (!Array.isArray(merged.footer.quick_links)) {
+    merged.footer.quick_links = DEFAULT_HOMEPAGE_CONTENT.footer.quick_links;
+  }
+
+  const useDefaultImages = merged.gallery.use_default_images !== false;
+  merged.gallery.images = normalizeGalleryImages(merged.gallery.images, useDefaultImages);
+
+  merged.hero.background_image = resolveContentAssetUrl(merged.hero.background_image);
+  merged.creating_experiences.image = resolveContentAssetUrl(merged.creating_experiences.image);
+  merged.booking_cta.background_image = resolveContentAssetUrl(merged.booking_cta.background_image);
+  merged.footer.logo = resolveContentAssetUrl(merged.footer.logo);
+
+  return merged;
+}
+
+function renderTitleWithHighlightedLastWord(title) {
+  const safeTitle = String(title || "").trim();
+
+  if (!safeTitle) {
+    return null;
+  }
+
+  const words = safeTitle.split(/\s+/);
+
+  if (words.length === 1) {
+    return <span>{safeTitle}</span>;
+  }
+
+  const highlightedWord = words.pop();
+
+  return (
+    <>
+      {words.join(" ")} <span>{highlightedWord}</span>
+    </>
+  );
+}
+
+
 async function requestApi(endpoint, options = {}) {
   if (typeof apiRequest === "function") {
     return apiRequest(endpoint, options);
@@ -1923,6 +2100,7 @@ export default function HomePage() {
   const [popupSlots, setPopupSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isProceeding, setIsProceeding] = useState(false);
+  const [homepageContent, setHomepageContent] = useState(DEFAULT_HOMEPAGE_CONTENT);
   const [counterStarted, setCounterStarted] = useState(false);
   const [counterValues, setCounterValues] = useState({
     500: 0,
@@ -1948,6 +2126,34 @@ export default function HomePage() {
         },
       };
     });
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadHomepageContent() {
+      try {
+        const payload = await requestApi("/homepage-content", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!isMounted) return;
+
+        setHomepageContent(mergeHomepageContent(payload?.data || payload));
+      } catch {
+        if (!isMounted) return;
+        setHomepageContent(DEFAULT_HOMEPAGE_CONTENT);
+      }
+    }
+
+    loadHomepageContent();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const selectedFormattedDate = useMemo(() => {
@@ -2234,34 +2440,26 @@ export default function HomePage() {
     navigate("/booking");
   }, [fetchLoggedInCustomer, isProceeding, navigate, selectedSlot]);
 
-const handleLogout = useCallback(async () => {
-  const token = localStorage.getItem(CUSTOMER_TOKEN_KEY);
+  const handleLogout = useCallback(async () => {
+    const token = localStorage.getItem(CUSTOMER_TOKEN_KEY);
 
-  try {
-    if (token) {
-      await requestApi("/auth/logout", {
-        method: "POST",
-        headers: getCustomerHeaderObject(token),
-        body: JSON.stringify({}),
-      });
+    try {
+      if (token) {
+        await requestApi("/auth/logout", {
+          method: "POST",
+          headers: getCustomerHeaderObject(token),
+          body: JSON.stringify({}),
+        });
+      }
+    } catch {
+      console.warn("Logout API failed, clearing local session anyway.");
     }
-  } catch {
-    console.warn("Logout API failed, clearing local session anyway.");
-  }
 
-  // Release active hold before clearing sessionStorage
-  await releaseActiveHold();
-
-  // Clear customer auth
-  clearCustomerAuthSession();
-
-  // Clear selected slot, active hold, and all booking drafts
-  clearAllBookingSessionData();
-
-  setIsCustomerLoggedIn(false);
-
-  navigate("/", { replace: true });
-}, [navigate, releaseActiveHold]);
+    clearCustomerAuthSession();
+    setIsCustomerLoggedIn(false);
+    await releaseActiveHold();
+    navigate("/");
+  }, [navigate, releaseActiveHold]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2402,6 +2600,22 @@ const handleLogout = useCallback(async () => {
     return () => observer.disconnect();
   }, [counterStarted]);
 
+  const content = mergeHomepageContent(homepageContent);
+  const hero = content.hero;
+  const ourStory = content.our_story;
+  const creatingExperiences = content.creating_experiences;
+  const gallery = content.gallery;
+  const featuresSection = content.features_section;
+  const bookingCta = content.booking_cta;
+  const footer = content.footer;
+  const dynamicAboutFeatures = creatingExperiences.points.length
+    ? creatingExperiences.points
+    : DEFAULT_HOMEPAGE_CONTENT.creating_experiences.points;
+  const dynamicGalleryImages = gallery.images;
+  const footerQuickLinks = footer.quick_links.length
+    ? footer.quick_links
+    : DEFAULT_HOMEPAGE_CONTENT.footer.quick_links;
+
   return (
     <>
       <style>{homePageStyles}</style>
@@ -2466,7 +2680,10 @@ const handleLogout = useCallback(async () => {
       </nav>
 
       <section className="hero" id="top">
-        <div className="hero-bg" />
+        <div
+          className="hero-bg"
+          style={{ backgroundImage: `url(${hero.background_image})` }}
+        />
         <div className="hero-overlay" />
 
         <div className="hero-particles" id="heroParticles">
@@ -2477,22 +2694,19 @@ const handleLogout = useCallback(async () => {
 
         <div className="hero-content">
           <h1>
-            Elegant Events
+            {hero.title}
             <br />
-            <span>Beautiful Memories</span>
+            <span>{hero.highlight}</span>
           </h1>
 
-          <p>
-            Dhaka Ladies Club is a luxurious convention hall offering premium event spaces for weddings,
-            receptions, conferences, and unforgettable celebrations.
-          </p>
+          <p>{hero.subtitle}</p>
 
           <div className="hero-actions">
-            <a href="#calendar-booking" className="btn">
-              Book Your Event
+            <a href={hero.primary_button_link} className="btn">
+              {hero.primary_button_text}
             </a>
-            <a href="#about" className="btn btn-outline">
-              Discover More
+            <a href={hero.secondary_button_link} className="btn btn-outline">
+              {hero.secondary_button_text}
             </a>
           </div>
         </div>
@@ -2605,53 +2819,44 @@ const handleLogout = useCallback(async () => {
       <section id="about" className="about-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">Our Story</span>
-            <h2>About Dhaka Ladies Club</h2>
-            <p>
-              A prestigious event destination in Dhaka designed for elegant weddings, corporate events, and premium
-              celebrations.
-            </p>
+            <span className="section-eyebrow">{ourStory.eyebrow}</span>
+            <h2>{ourStory.title}</h2>
+            <p>{ourStory.description}</p>
           </div>
 
           <div className="about-wrapper">
             <div className="about-img-wrap float" data-aos="fade-right">
               <div className="about-img-deco" />
-              <img src="/assets/img/About.jpg" alt="About Dhaka Ladies Club" />
+              <img src={creatingExperiences.image} alt={creatingExperiences.image_alt || ourStory.title} />
 
               <div className="about-img-badge">
                 <span>
-                  20+
-                  <br />
-                  Years
-                  <br />
-                  Excellence
+                  {String(creatingExperiences.badge_text || "20+\nYears\nExcellence")
+                    .split("\n")
+                    .map((line, index, lines) => (
+                      <span key={`${line}-${index}`}>
+                        {line}
+                        {index < lines.length - 1 && <br />}
+                      </span>
+                    ))}
                 </span>
               </div>
             </div>
 
             <div className="about-text" data-aos="fade-left">
               <span className="section-eyebrow" style={{ textAlign: "left" }}>
-                Creating Experiences
+                {creatingExperiences.eyebrow}
               </span>
 
-              <h3>
-                Where Every Event Becomes <span>Extraordinary</span>
-              </h3>
+              <h3>{renderTitleWithHighlightedLastWord(creatingExperiences.title)}</h3>
 
-              <p>
-                Dhaka Ladies Club combines elegance, luxury, and professionalism to deliver exceptional event
-                experiences for every guest. Our dedicated team ensures that every detail is meticulously planned and
-                executed.
-              </p>
+              {creatingExperiences.description_1 && <p>{creatingExperiences.description_1}</p>}
 
-              <p>
-                From stunning decoration arrangements to premium hospitality, every celebration is carefully designed to
-                create lifelong memories that you and your guests will cherish forever.
-              </p>
+              {creatingExperiences.description_2 && <p>{creatingExperiences.description_2}</p>}
 
               <div className="about-features">
-                {aboutFeatures.map((feature) => (
-                  <div className="about-feature-item" key={feature}>
+                {dynamicAboutFeatures.map((feature, index) => (
+                  <div className="about-feature-item" key={`${feature}-${index}`}>
                     {feature}
                   </div>
                 ))}
@@ -2659,8 +2864,8 @@ const handleLogout = useCallback(async () => {
 
               <br />
 
-              <a href="#calendar-booking" className="btn" style={{ marginTop: "10px" }}>
-                Book a Visit
+              <a href={creatingExperiences.button_link} className="btn" style={{ marginTop: "10px" }}>
+                {creatingExperiences.button_text}
               </a>
             </div>
           </div>
@@ -2670,20 +2875,27 @@ const handleLogout = useCallback(async () => {
       <section id="gallery" className="gallery-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">Visual Gallery</span>
-            <h2>Decoration Gallery</h2>
-            <p>Explore stunning decoration concepts and luxurious setups from our most celebrated events.</p>
+            <span className="section-eyebrow">{gallery.eyebrow}</span>
+            <h2>{gallery.title}</h2>
+            <p>{gallery.description}</p>
           </div>
 
           <div className="gallery-grid">
-            {galleryImages.map((image, index) => (
+            {dynamicGalleryImages.length === 0 && (
+              <div className="popup-empty" style={{ gridColumn: "1 / -1" }}>
+                <div className="popup-empty-icon">📭</div>
+                <p>No gallery images uploaded yet.</p>
+              </div>
+            )}
+
+            {dynamicGalleryImages.map((image, index) => (
               <div
                 className="gallery-item"
                 data-aos="zoom-in"
                 data-aos-delay={index === 0 ? undefined : String(index * 50 + 50)}
-                key={image.src}
+                key={image.id || image.url || index}
               >
-                <img src={image.src} alt={image.alt} />
+                <img src={image.url} alt={image.alt} />
                 <div className="gallery-overlay">
                   <div className="gallery-overlay-icon">✦</div>
                 </div>
@@ -2696,9 +2908,9 @@ const handleLogout = useCallback(async () => {
       <section className="features-section" id="features">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">Why Choose Us</span>
-            <h2>World-Class Features</h2>
-            <p>Smart booking system with live calendar and secure payments — designed for a seamless experience.</p>
+            <span className="section-eyebrow">{featuresSection.eyebrow}</span>
+            <h2>{featuresSection.title}</h2>
+            <p>{featuresSection.description}</p>
           </div>
 
           <div className="feature-grid">
@@ -2719,25 +2931,25 @@ const handleLogout = useCallback(async () => {
       </section>
 
       <section className="booking-cta">
-        <div className="booking-cta-bg" />
+        <div
+          className="booking-cta-bg"
+          style={{ backgroundImage: `url(${bookingCta.background_image})` }}
+        />
         <div className="booking-cta-overlay" />
 
         <div className="container" data-aos="zoom-in">
           <h2>
-            Plan Your <span>Dream Event</span> Today
+            {bookingCta.title} <span>{bookingCta.highlight}</span> {bookingCta.title_suffix}
           </h2>
 
-          <p>
-            Make your celebrations unforgettable with Dhaka Ladies Club&apos;s premium event management services. Your
-            perfect event begins with a single click.
-          </p>
+          <p>{bookingCta.description}</p>
 
           <div className="hero-actions">
-            <a href="#calendar-booking" className="btn">
-              Check Availability
+            <a href={bookingCta.primary_button_link} className="btn">
+              {bookingCta.primary_button_text}
             </a>
-            <a href="tel:+8801700000000" className="btn btn-outline">
-              Contact Us
+            <a href={bookingCta.secondary_button_link} className="btn btn-outline">
+              {bookingCta.secondary_button_text}
             </a>
           </div>
         </div>
@@ -2860,34 +3072,38 @@ const handleLogout = useCallback(async () => {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-brand">
-              <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
-              <p>
-                A prestigious event destination in Dhaka delivering exceptional experiences for weddings, corporate
-                events, and premium celebrations since 2005.
-              </p>
+              <img src={footer.logo} alt={footer.logo_alt || "Dhaka Ladies Club"} />
+              <p>{footer.description}</p>
             </div>
 
             <div className="footer-col">
-              <h4>Quick Links</h4>
-              <a href="#calendar-booking">Booking Calendar</a>
-              <a href="#about">About Us</a>
-              <a href="#gallery">Gallery</a>
-              <a href="#features">Features</a>
+              <h4>{footer.quick_links_title}</h4>
+              {footerQuickLinks.map((link) => (
+                <a href={link.href} key={`${link.label}-${link.href}`}>
+                  {link.label}
+                </a>
+              ))}
             </div>
 
             <div className="footer-col">
-              <h4>Contact</h4>
-              <p>📍 Dhaka, Bangladesh</p>
-              <p>📞 +880 1700-000000</p>
-              <p>✉️ info@dhakaladiescub.com</p>
+              <h4>{footer.contact_title}</h4>
+              <p>📍 {footer.address}</p>
+              <p>📞 {footer.phone}</p>
+              <p>✉️ {footer.email}</p>
             </div>
           </div>
 
           <div className="footer-bottom">
             <p>
-              © 2026 <span className="footer-gold">Dhaka Ladies Club</span>. All Rights Reserved.
+              {footer.copyright.includes(footer.copyright_brand || "Dhaka Ladies Club")
+                ? footer.copyright.split(footer.copyright_brand || "Dhaka Ladies Club")[0]
+                : ""}
+              <span className="footer-gold">{footer.copyright_brand || "Dhaka Ladies Club"}</span>
+              {footer.copyright.includes(footer.copyright_brand || "Dhaka Ladies Club")
+                ? footer.copyright.split(footer.copyright_brand || "Dhaka Ladies Club").slice(1).join(footer.copyright_brand || "Dhaka Ladies Club")
+                : footer.copyright}
             </p>
-            <p>Premium Convention &amp; Party Venue in Dhaka</p>
+            <p>{footer.tagline}</p>
           </div>
         </div>
       </footer>
