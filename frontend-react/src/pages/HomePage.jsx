@@ -326,7 +326,9 @@ const homePageStyles = String.raw`
   .hero-bg {
     position: absolute;
     inset: 0;
-    background: url('/assets/img/BG-01.jpeg') center/cover no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     transform: scale(1.05);
     animation: heroZoom 20s ease-in-out infinite alternate;
   }
@@ -1116,7 +1118,9 @@ const homePageStyles = String.raw`
   .booking-cta-bg {
     position: absolute;
     inset: 0;
-    background: url('/assets/img/BG-01.jpeg') center/cover no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 
   .booking-cta-overlay {
@@ -1667,164 +1671,92 @@ const homePageStyles = String.raw`
   }
 `;
 
-const galleryImages = [
-  {
-    src: "https://scontent.fdac199-1.fna.fbcdn.net/v/t39.30808-6/695300615_1396656175832752_4020711769413914413_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHQ0Wb3sauW3CBcXakUiEZ1RoUrnHaMrlFGhSucdoyuUVmvss_xebs2uq-g2vByHFmNpZ_u0dh5AHmKaGHrW62M&_nc_ohc=v80hq3zEa1QQ7kNvwHDMwnz&_nc_oc=AdptbtIDLqIPpfdAdt_SjCowtNeDfkIxm8hAYe2AVKDcv24mtjHywsjrfQaLKR_K2u4&_nc_zt=23&_nc_ht=scontent.fdac199-1.fna&_nc_gid=rC8ph6y9OLrDdnb63tK1qA&_nc_ss=7b2a8&oh=00_Af9hPC_xB7Iw1Ypyuhyd-Z9og27XD4Qb-ap8nlby5wqQEA&oe=6A266D91",
-    alt: "Wedding Decoration",
+const EMPTY_HOMEPAGE_CONTENT = {
+  nav: {
+    logo: "",
+    logo_alt: "",
+    links: [],
+    booking_button_text: "",
+    booking_button_link: "",
+    login_text: "",
+    admin_login_text: "",
+    logout_text: "",
   },
-  {
-    src: "https://scontent.fdac199-1.fna.fbcdn.net/v/t39.30808-6/577713139_1248987840599587_1364093469034454110_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGpW3KQ6EoZt1h70UIdZXLltLPnB6oeD3q0s-cHqh4PeggJ3nuapiKj-o-afOLdVzRxx9sYcP1_o0G7uxfAUvGj&_nc_ohc=L5q2aK7w_GgQ7kNvwGZQHDx&_nc_oc=AdpweNHsWNeTRUgw4bM3M6cs-u9u9OBu1kZ9qbVmEtoWmCllNBondbo38f_kVWEh8gA&_nc_zt=23&_nc_ht=scontent.fdac199-1.fna&_nc_gid=XRVLrZGPdG8L16SgcCZrNw&_nc_ss=7b2a8&oh=00_Af9igwdpnMg3zmSAxQdrFbXbNW4RbSr6o6oSntGnIPKtQw&oe=6A265903",
-    alt: "Reception Hall",
-  },
-  {
-    src: "https://scontent.fdac199-1.fna.fbcdn.net/v/t39.30808-6/660370282_1365902858908084_7552683890379266601_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFOWSFPSY5wC5L7lggAtJEzd-bg8rgUR7935uDyuBRHv5Lf7hhNHJMUeLwa4POZit3qE3G7hJGRm73VbJs6J1iI&_nc_ohc=mjraAfHKBOQQ7kNvwGWlRBR&_nc_oc=AdqvF_pS4SuQNssX7acavmhO0PQA4fjl2jNf5AU0HrO1yExW5jU8bJDO6KrmxnD4rbU&_nc_zt=23&_nc_ht=scontent.fdac199-1.fna&_nc_gid=s1JYkxBpn1SxXLU-HapmzQ&_nc_ss=7b2a8&oh=00_Af_PNz55KlVRj8b_WmOW7aIVCIP5xf7_Xh1rL286Zf7V3g&oe=6A267AC2",
-    alt: "Event Setup",
-  },
-  {
-    src: "https://scontent.fdac199-1.fna.fbcdn.net/v/t39.30808-6/660428518_1367623672069336_956385337566117623_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHHGIy6A9nY-2wMUsF5_yftHRTqvVGP3zIdFOq9UY_fMheTE6WVmW0f35yzkeDG8D_8l-wDamsB1eoUx2axhB6O&_nc_ohc=RpjzZmKP-cgQ7kNvwGwM0hx&_nc_oc=AdoOXiVCsW-F6c6rqdtfKnmotDCFss62hdR5i1xP3G2RtXV13wI2ZBhU0UWBi4kFCfI&_nc_zt=23&_nc_ht=scontent.fdac199-1.fna&_nc_gid=e79GhRL5C5R-Zk-0aSYXQA&_nc_ss=7b2a8&oh=00_Af8Az6Snt3b1HS_XFdUjjJqfYyRpyk6heFbUGBZeY63bwA&oe=6A264AB1",
-    alt: "Party Hall",
-  },
-  {
-    src: "https://scontent.fdac199-1.fna.fbcdn.net/v/t39.30808-6/672672353_1379844067513963_8942882148565501199_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGeWONgf3CT9Dt4alZnP5Pp8jOLFj3hwe_yM4sWPeHB7zhS9O5Y9lTfIOv5Nxb4zYAihjJswOeyxbl02iPn8uMW&_nc_ohc=ah9hvf5ahxUQ7kNvwGZbwho&_nc_oc=AdpWnOK5JdmdOOEJGcEAZmoNzH95YSg0j7tTeAVJbiwcQGicg7czEFP0n33eHJKyvmk&_nc_zt=23&_nc_ht=scontent.fdac199-1.fna&_nc_gid=a1MbfPJtkF_MPNZKr1FJuw&_nc_ss=7b2a8&oh=00_Af867iEsVO_tkcZhRheZbG9ZcyJCWeZTN8O2Nbgow4eS-g&oe=6A267BB5",
-    alt: "Event Flowers",
-  },
-];
-
-const stats = [
-  { count: 500, label: "Events Hosted", delay: "" },
-  { count: 1200, label: "Happy Families", delay: "100" },
-  { count: 20, label: "Years Experience", delay: "200" },
-  { count: 98, label: "% Client Satisfaction", delay: "300" },
-];
-
-const aboutFeatures = [
-  "Premium Decorations",
-  "Expert Catering",
-  "State-of-Art AV",
-  "Valet Parking",
-  "Dedicated Team",
-  "Custom Packages",
-];
-
-const featureCards = [
-  {
-    icon: "📅",
-    title: "Live Calendar",
-    text: "Browse the full year calendar and view available or booked shifts instantly with real-time updates.",
-    delay: "",
-  },
-  {
-    icon: "📝",
-    title: "Online Booking",
-    text: "Book event halls directly from the website with instant reservation requests and confirmation.",
-    delay: "150",
-  },
-  {
-    icon: "💳",
-    title: "Secure Payment",
-    text: "Easy and secure online payment system with encrypted transactions for booking confirmations.",
-    delay: "300",
-  },
-  {
-    icon: "🎉",
-    title: "Event Management",
-    text: "Full-service event coordination by our expert team to make your celebration flawless.",
-    delay: "450",
-  },
-  {
-    icon: "🌟",
-    title: "Premium Décor",
-    text: "Stunning decoration packages crafted by professional designers for every occasion.",
-    delay: "500",
-  },
-  {
-    icon: "🔔",
-    title: "Instant Alerts",
-    text: "Get real-time notifications and reminders for your upcoming events and booking updates.",
-    delay: "550",
-  },
-];
-
-const DEFAULT_HOMEPAGE_CONTENT = {
   hero: {
-    title: "Elegant Events",
-    highlight: "Beautiful Memories",
-    subtitle:
-      "Dhaka Ladies Club is a luxurious convention hall offering premium event spaces for weddings, receptions, conferences, and unforgettable celebrations.",
-    background_image: "/assets/img/BG-01.jpeg",
-    primary_button_text: "Book Your Event",
-    primary_button_link: "#calendar-booking",
-    secondary_button_text: "Discover More",
-    secondary_button_link: "#about",
+    title: "",
+    highlight: "",
+    subtitle: "",
+    background_image: "",
+    primary_button_text: "",
+    primary_button_link: "",
+    secondary_button_text: "",
+    secondary_button_link: "",
+  },
+  stats: [],
+  calendar_section: {
+    eyebrow: "",
+    title: "",
+    description: "",
+    loading_text: "",
+    button_today: "",
+    button_month: "",
+    button_year_view: "",
+    legend: [],
   },
   our_story: {
-    eyebrow: "Our Story",
-    title: "About Dhaka Ladies Club",
-    description:
-      "A prestigious event destination in Dhaka designed for elegant weddings, corporate events, and premium celebrations.",
+    eyebrow: "",
+    title: "",
+    description: "",
   },
   creating_experiences: {
-    image: "/assets/img/About.jpg",
-    image_alt: "About Dhaka Ladies Club",
-    badge_text: "20+\nYears\nExcellence",
-    eyebrow: "Creating Experiences",
-    title: "Where Every Event Becomes Extraordinary",
-    description_1:
-      "Dhaka Ladies Club combines elegance, luxury, and professionalism to deliver exceptional event experiences for every guest. Our dedicated team ensures that every detail is meticulously planned and executed.",
-    description_2:
-      "From stunning decoration arrangements to premium hospitality, every celebration is carefully designed to create lifelong memories that you and your guests will cherish forever.",
-    points: aboutFeatures,
-    button_text: "Book a Visit",
-    button_link: "#calendar-booking",
+    image: "",
+    image_alt: "",
+    badge_text: "",
+    eyebrow: "",
+    title: "",
+    description_1: "",
+    description_2: "",
+    points: [],
+    button_text: "",
+    button_link: "",
   },
   gallery: {
-    eyebrow: "Visual Gallery",
-    title: "Decoration Gallery",
-    description:
-      "Explore stunning decoration concepts and luxurious setups from our most celebrated events.",
-    use_default_images: true,
-    images: galleryImages.map((image, index) => ({
-      id: `default_gallery_${index + 1}`,
-      url: image.src,
-      alt: image.alt,
-    })),
+    eyebrow: "",
+    title: "",
+    description: "",
+    images: [],
+    empty_text: "",
   },
   features_section: {
-    eyebrow: "Why Choose Us",
-    title: "World-Class Features",
-    description: "Smart booking system with live calendar and secure payments — designed for a seamless experience.",
+    eyebrow: "",
+    title: "",
+    description: "",
+    cards: [],
   },
   booking_cta: {
-    background_image: "/assets/img/BG-01.jpeg",
-    title: "Plan Your",
-    highlight: "Dream Event",
-    title_suffix: "Today",
-    description:
-      "Make your celebrations unforgettable with Dhaka Ladies Club's premium event management services. Your perfect event begins with a single click.",
-    primary_button_text: "Check Availability",
-    primary_button_link: "#calendar-booking",
-    secondary_button_text: "Contact Us",
-    secondary_button_link: "tel:+8801700000000",
+    background_image: "",
+    title: "",
+    highlight: "",
+    title_suffix: "",
+    description: "",
+    primary_button_text: "",
+    primary_button_link: "",
+    secondary_button_text: "",
+    secondary_button_link: "",
   },
   footer: {
-    logo: "/assets/img/dlclogo_long.png",
-    logo_alt: "Dhaka Ladies Club",
-    description:
-      "A prestigious event destination in Dhaka delivering exceptional experiences for weddings, corporate events, and premium celebrations since 2005.",
-    quick_links_title: "Quick Links",
-    quick_links: [
-      { label: "Booking Calendar", href: "#calendar-booking" },
-      { label: "About Us", href: "#about" },
-      { label: "Gallery", href: "#gallery" },
-      { label: "Features", href: "#features" },
-    ],
-    contact_title: "Contact",
-    address: "Dhaka, Bangladesh",
-    phone: "+880 1700-000000",
-    email: "info@dhakaladiesclub.com",
-    copyright: "© 2026 Dhaka Ladies Club. All Rights Reserved.",
-    copyright_brand: "Dhaka Ladies Club",
-    tagline: "Premium Convention & Party Venue in Dhaka",
+    logo: "",
+    logo_alt: "",
+    description: "",
+    quick_links_title: "",
+    quick_links: [],
+    contact_title: "",
+    address: "",
+    phone: "",
+    email: "",
+    copyright: "",
+    copyright_brand: "",
+    tagline: "",
   },
 };
 
@@ -1966,77 +1898,67 @@ function getCustomerHeaderObject(token) {
 
 function resolveContentAssetUrl(url) {
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  if (url.startsWith("/")) return url;
-  return `/${url}`;
+  const value = String(url).trim();
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith("/")) return value;
+  return `/${value}`;
 }
 
-function normalizeGalleryImages(images, useDefaultImages = true) {
-  if (Array.isArray(images) && images.length > 0) {
-    return images
-      .filter((image) => image && (image.url || image.src))
-      .map((image, index) => ({
-        id: image.id || image.url || image.src || `gallery_${index}`,
-        url: resolveContentAssetUrl(image.url || image.src),
-        alt: image.alt || image.title || "Gallery image",
-      }));
-  }
-
-  return useDefaultImages
-    ? DEFAULT_HOMEPAGE_CONTENT.gallery.images.map((image) => ({
-        ...image,
-        url: resolveContentAssetUrl(image.url),
-      }))
-    : [];
+function normalizeArray(value) {
+  return Array.isArray(value) ? value : [];
 }
 
-function mergeHomepageContent(incomingContent = {}) {
+function normalizeHomepageContent(incomingContent = {}) {
   const incoming = incomingContent && typeof incomingContent === "object" ? incomingContent : {};
 
   const merged = {
-    ...DEFAULT_HOMEPAGE_CONTENT,
+    ...EMPTY_HOMEPAGE_CONTENT,
     ...incoming,
-    hero: {
-      ...DEFAULT_HOMEPAGE_CONTENT.hero,
-      ...(incoming.hero || {}),
-    },
-    our_story: {
-      ...DEFAULT_HOMEPAGE_CONTENT.our_story,
-      ...(incoming.our_story || {}),
-    },
+    nav: { ...EMPTY_HOMEPAGE_CONTENT.nav, ...(incoming.nav || {}) },
+    hero: { ...EMPTY_HOMEPAGE_CONTENT.hero, ...(incoming.hero || {}) },
+    calendar_section: { ...EMPTY_HOMEPAGE_CONTENT.calendar_section, ...(incoming.calendar_section || {}) },
+    our_story: { ...EMPTY_HOMEPAGE_CONTENT.our_story, ...(incoming.our_story || {}) },
     creating_experiences: {
-      ...DEFAULT_HOMEPAGE_CONTENT.creating_experiences,
+      ...EMPTY_HOMEPAGE_CONTENT.creating_experiences,
       ...(incoming.creating_experiences || {}),
     },
-    gallery: {
-      ...DEFAULT_HOMEPAGE_CONTENT.gallery,
-      ...(incoming.gallery || {}),
-    },
-    features_section: {
-      ...DEFAULT_HOMEPAGE_CONTENT.features_section,
-      ...(incoming.features_section || {}),
-    },
-    booking_cta: {
-      ...DEFAULT_HOMEPAGE_CONTENT.booking_cta,
-      ...(incoming.booking_cta || {}),
-    },
-    footer: {
-      ...DEFAULT_HOMEPAGE_CONTENT.footer,
-      ...(incoming.footer || {}),
-    },
+    gallery: { ...EMPTY_HOMEPAGE_CONTENT.gallery, ...(incoming.gallery || {}) },
+    features_section: { ...EMPTY_HOMEPAGE_CONTENT.features_section, ...(incoming.features_section || {}) },
+    booking_cta: { ...EMPTY_HOMEPAGE_CONTENT.booking_cta, ...(incoming.booking_cta || {}) },
+    footer: { ...EMPTY_HOMEPAGE_CONTENT.footer, ...(incoming.footer || {}) },
   };
 
-  if (!Array.isArray(merged.creating_experiences.points)) {
-    merged.creating_experiences.points = DEFAULT_HOMEPAGE_CONTENT.creating_experiences.points;
-  }
+  merged.stats = normalizeArray(incoming.stats).map((item, index) => ({
+    id: item.id || item.label || `stat_${index + 1}`,
+    count: Number(item.count || item.number || 0),
+    suffix: item.suffix ?? "+",
+    label: item.label || "",
+    delay: item.delay || (index ? String(index * 100) : ""),
+  }));
 
-  if (!Array.isArray(merged.footer.quick_links)) {
-    merged.footer.quick_links = DEFAULT_HOMEPAGE_CONTENT.footer.quick_links;
-  }
+  merged.nav.links = normalizeArray(merged.nav.links);
+  merged.calendar_section.legend = normalizeArray(merged.calendar_section.legend);
+  merged.creating_experiences.points = normalizeArray(merged.creating_experiences.points);
+  merged.gallery.images = normalizeArray(merged.gallery.images)
+    .filter((image) => image && (image.url || image.src))
+    .map((image, index) => ({
+      id: image.id || image.url || image.src || `gallery_${index + 1}`,
+      url: resolveContentAssetUrl(image.url || image.src),
+      alt: image.alt || image.title || "Gallery image",
+    }));
 
-  const useDefaultImages = merged.gallery.use_default_images !== false;
-  merged.gallery.images = normalizeGalleryImages(merged.gallery.images, useDefaultImages);
+  merged.features_section.cards = normalizeArray(merged.features_section.cards).map((card, index) => ({
+    id: card.id || card.title || `feature_${index + 1}`,
+    icon: card.icon || "",
+    title: card.title || "",
+    text: card.text || card.description || "",
+    delay: card.delay || (index ? String(index * 150) : ""),
+  }));
 
+  merged.footer.quick_links = normalizeArray(merged.footer.quick_links);
+
+  merged.nav.logo = resolveContentAssetUrl(merged.nav.logo);
   merged.hero.background_image = resolveContentAssetUrl(merged.hero.background_image);
   merged.creating_experiences.image = resolveContentAssetUrl(merged.creating_experiences.image);
   merged.booking_cta.background_image = resolveContentAssetUrl(merged.booking_cta.background_image);
@@ -2066,7 +1988,6 @@ function renderTitleWithHighlightedLastWord(title) {
     </>
   );
 }
-
 
 async function requestApi(endpoint, options = {}) {
   if (typeof apiRequest === "function") {
@@ -2100,14 +2021,9 @@ export default function HomePage() {
   const [popupSlots, setPopupSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isProceeding, setIsProceeding] = useState(false);
-  const [homepageContent, setHomepageContent] = useState(DEFAULT_HOMEPAGE_CONTENT);
+  const [homepageContent, setHomepageContent] = useState(EMPTY_HOMEPAGE_CONTENT);
   const [counterStarted, setCounterStarted] = useState(false);
-  const [counterValues, setCounterValues] = useState({
-    500: 0,
-    1200: 0,
-    20: 0,
-    98: 0,
-  });
+  const [counterValues, setCounterValues] = useState([]);
   const [, setClockTick] = useState(0);
 
   const particles = useMemo(() => {
@@ -2142,10 +2058,13 @@ export default function HomePage() {
 
         if (!isMounted) return;
 
-        setHomepageContent(mergeHomepageContent(payload?.data || payload));
-      } catch {
+        setHomepageContent(normalizeHomepageContent(payload?.data || payload));
+      } catch (error) {
+        console.error("Homepage content loading failed:", error);
+
         if (!isMounted) return;
-        setHomepageContent(DEFAULT_HOMEPAGE_CONTENT);
+
+        setHomepageContent(EMPTY_HOMEPAGE_CONTENT);
       }
     }
 
@@ -2559,9 +2478,28 @@ export default function HomePage() {
     };
   }, [closePopup, popupOpen]);
 
+  const content = useMemo(() => normalizeHomepageContent(homepageContent), [homepageContent]);
+  const nav = content.nav;
+  const hero = content.hero;
+  const homepageStats = content.stats;
+  const calendarSection = content.calendar_section;
+  const ourStory = content.our_story;
+  const creatingExperiences = content.creating_experiences;
+  const gallery = content.gallery;
+  const featuresSection = content.features_section;
+  const bookingCta = content.booking_cta;
+  const footer = content.footer;
+  const footerQuickLinks = footer.quick_links;
+
+  useEffect(() => {
+    setCounterStarted(false);
+    setCounterValues(homepageStats.map(() => 0));
+  }, [homepageStats.length]);
+
   useEffect(() => {
     if (counterStarted) return;
     if (!statsRef.current) return;
+    if (!homepageStats.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -2578,12 +2516,12 @@ export default function HomePage() {
         const timer = setInterval(() => {
           frame += 1;
 
-          setCounterValues({
-            500: Math.min(500, Math.floor((500 / frames) * frame)),
-            1200: Math.min(1200, Math.floor((1200 / frames) * frame)),
-            20: Math.min(20, Math.floor((20 / frames) * frame)),
-            98: Math.min(98, Math.floor((98 / frames) * frame)),
-          });
+          setCounterValues(
+            homepageStats.map((item) => {
+              const target = Number(item.count || 0);
+              return Math.min(target, Math.floor((target / frames) * frame));
+            })
+          );
 
           if (frame >= frames) {
             clearInterval(timer);
@@ -2598,23 +2536,7 @@ export default function HomePage() {
     observer.observe(statsRef.current);
 
     return () => observer.disconnect();
-  }, [counterStarted]);
-
-  const content = mergeHomepageContent(homepageContent);
-  const hero = content.hero;
-  const ourStory = content.our_story;
-  const creatingExperiences = content.creating_experiences;
-  const gallery = content.gallery;
-  const featuresSection = content.features_section;
-  const bookingCta = content.booking_cta;
-  const footer = content.footer;
-  const dynamicAboutFeatures = creatingExperiences.points.length
-    ? creatingExperiences.points
-    : DEFAULT_HOMEPAGE_CONTENT.creating_experiences.points;
-  const dynamicGalleryImages = gallery.images;
-  const footerQuickLinks = footer.quick_links.length
-    ? footer.quick_links
-    : DEFAULT_HOMEPAGE_CONTENT.footer.quick_links;
+  }, [counterStarted, homepageStats]);
 
   return (
     <>
@@ -2624,19 +2546,23 @@ export default function HomePage() {
         <div className="nav-inner">
           <div className="container nav-wrapper">
             <div className="logo">
-              <a href="#top" aria-label="Dhaka Ladies Club Home">
-                <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club Logo" />
+              <a href="#top" aria-label={nav.logo_alt || "Home"}>
+                {nav.logo && <img src={nav.logo} alt={nav.logo_alt || "Logo"} />}
               </a>
             </div>
 
             <div className="nav-links">
-              <a href="#calendar-booking">Calendar</a>
-              <a href="#about">About</a>
-              <a href="#gallery">Gallery</a>
-              <a href="#features">Features</a>
-              <a href="#calendar-booking" className="btn nav-cta">
-                Book Now
-              </a>
+              {nav.links.map((link) => (
+                <a href={link.href} key={`${link.label}-${link.href}`}>
+                  {link.label}
+                </a>
+              ))}
+
+              {nav.booking_button_text && (
+                <a href={nav.booking_button_link || "#calendar-booking"} className="btn nav-cta">
+                  {nav.booking_button_text}
+                </a>
+              )}
 
               {isCustomerLoggedIn ? (
                 <>
@@ -2661,17 +2587,21 @@ export default function HomePage() {
                   </Link>
 
                   <button type="button" className="logout-btn" onClick={handleLogout}>
-                    Logout
+                    {nav.logout_text}
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="login-link">
-                    Login
-                  </Link>
-                  <Link to="/admin-login" className="admin-login-link">
-                    Admin Login
-                  </Link>
+                  {nav.login_text && (
+                    <Link to="/login" className="login-link">
+                      {nav.login_text}
+                    </Link>
+                  )}
+                  {nav.admin_login_text && (
+                    <Link to="/admin-login" className="admin-login-link">
+                      {nav.admin_login_text}
+                    </Link>
+                  )}
                 </>
               )}
             </div>
@@ -2682,7 +2612,7 @@ export default function HomePage() {
       <section className="hero" id="top">
         <div
           className="hero-bg"
-          style={{ backgroundImage: `url(${hero.background_image})` }}
+          style={{ backgroundImage: hero.background_image ? `url(${hero.background_image})` : "none" }}
         />
         <div className="hero-overlay" />
 
@@ -2695,19 +2625,27 @@ export default function HomePage() {
         <div className="hero-content">
           <h1>
             {hero.title}
-            <br />
-            <span>{hero.highlight}</span>
+            {hero.highlight && (
+              <>
+                <br />
+                <span>{hero.highlight}</span>
+              </>
+            )}
           </h1>
 
-          <p>{hero.subtitle}</p>
+          {hero.subtitle && <p>{hero.subtitle}</p>}
 
           <div className="hero-actions">
-            <a href={hero.primary_button_link} className="btn">
-              {hero.primary_button_text}
-            </a>
-            <a href={hero.secondary_button_link} className="btn btn-outline">
-              {hero.secondary_button_text}
-            </a>
+            {hero.primary_button_text && (
+              <a href={hero.primary_button_link || "#calendar-booking"} className="btn">
+                {hero.primary_button_text}
+              </a>
+            )}
+            {hero.secondary_button_text && (
+              <a href={hero.secondary_button_link || "#about"} className="btn btn-outline">
+                {hero.secondary_button_text}
+              </a>
+            )}
           </div>
         </div>
 
@@ -2727,15 +2665,15 @@ export default function HomePage() {
       <div className="stats-strip" id="stats" ref={statsRef}>
         <div className="container">
           <div className="stats-inner">
-            {stats.map((item) => (
+            {homepageStats.map((item, index) => (
               <div
                 className="stat-item"
                 data-aos="fade-up"
                 data-aos-delay={item.delay || undefined}
-                key={item.label}
+                key={item.id || `${item.label}-${index}`}
               >
                 <span className="stat-number" data-count={item.count}>
-                  {counterStarted ? `${counterValues[item.count]}+` : "0"}
+                  {counterStarted ? `${counterValues[index] || 0}${item.suffix || ""}` : `0${item.suffix || ""}`}
                 </span>
                 <span className="stat-label">{item.label}</span>
               </div>
@@ -2747,12 +2685,9 @@ export default function HomePage() {
       <section className="calendar-section" id="calendar-booking">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">Live Availability</span>
-            <h2>Booking Calendar</h2>
-            <p>
-              Browse available shifts and reserve your preferred date. Click any date or event to view shift
-              availability and proceed with booking.
-            </p>
+            {calendarSection.eyebrow && <span className="section-eyebrow">{calendarSection.eyebrow}</span>}
+            {calendarSection.title && <h2>{calendarSection.title}</h2>}
+            {calendarSection.description && <p>{calendarSection.description}</p>}
           </div>
 
           <div id="calendar" data-aos="zoom-in" data-aos-duration="800">
@@ -2775,9 +2710,9 @@ export default function HomePage() {
                   right: "dayGridMonth,listYear",
                 }}
                 buttonText={{
-                  today: "Today",
-                  month: "Month",
-                  listYear: "Year View",
+                  today: calendarSection.button_today || "Today",
+                  month: calendarSection.button_month || "Month",
+                  listYear: calendarSection.button_year_view || "Year View",
                 }}
                 events={loadSlots}
                 viewDidMount={forceCalendarResize}
@@ -2787,31 +2722,17 @@ export default function HomePage() {
                 eventClick={handleEventClick}
               />
             ) : (
-              <div className="calendar-loading">Loading booking calendar...</div>
+              <div className="calendar-loading">{calendarSection.loading_text}</div>
             )}
           </div>
 
           <div className="calendar-legend" data-aos="fade-up">
-            <div className="legend-item">
-              <div className="legend-dot" style={{ background: "#198754" }} />
-              Available
-            </div>
-            <div className="legend-item">
-              <div className="legend-dot" style={{ background: "#dc3545" }} />
-              Booked
-            </div>
-            <div className="legend-item">
-              <div className="legend-dot" style={{ background: "#fd7e14" }} />
-              Booking In Progress
-            </div>
-            <div className="legend-item">
-              <div className="legend-dot" style={{ background: "#b8860b" }} />
-              Pending Approval
-            </div>
-            <div className="legend-item">
-              <div className="legend-dot" style={{ background: "#6c757d" }} />
-              Blocked
-            </div>
+            {calendarSection.legend.map((item, index) => (
+              <div className="legend-item" key={`${item.label}-${index}`}>
+                <div className="legend-dot" style={{ background: item.color }} />
+                {item.label}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -2819,54 +2740,62 @@ export default function HomePage() {
       <section id="about" className="about-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">{ourStory.eyebrow}</span>
-            <h2>{ourStory.title}</h2>
-            <p>{ourStory.description}</p>
+            {ourStory.eyebrow && <span className="section-eyebrow">{ourStory.eyebrow}</span>}
+            {ourStory.title && <h2>{ourStory.title}</h2>}
+            {ourStory.description && <p>{ourStory.description}</p>}
           </div>
 
           <div className="about-wrapper">
             <div className="about-img-wrap float" data-aos="fade-right">
               <div className="about-img-deco" />
-              <img src={creatingExperiences.image} alt={creatingExperiences.image_alt || ourStory.title} />
+              {creatingExperiences.image && (
+                <img src={creatingExperiences.image} alt={creatingExperiences.image_alt || ourStory.title || "About image"} />
+              )}
 
-              <div className="about-img-badge">
-                <span>
-                  {String(creatingExperiences.badge_text || "20+\nYears\nExcellence")
-                    .split("\n")
-                    .map((line, index, lines) => (
-                      <span key={`${line}-${index}`}>
-                        {line}
-                        {index < lines.length - 1 && <br />}
-                      </span>
-                    ))}
-                </span>
-              </div>
+              {creatingExperiences.badge_text && (
+                <div className="about-img-badge">
+                  <span>
+                    {String(creatingExperiences.badge_text)
+                      .split("\n")
+                      .map((line, index, lines) => (
+                        <span key={`${line}-${index}`}>
+                          {line}
+                          {index < lines.length - 1 && <br />}
+                        </span>
+                      ))}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="about-text" data-aos="fade-left">
-              <span className="section-eyebrow" style={{ textAlign: "left" }}>
-                {creatingExperiences.eyebrow}
-              </span>
+              {creatingExperiences.eyebrow && (
+                <span className="section-eyebrow" style={{ textAlign: "left" }}>
+                  {creatingExperiences.eyebrow}
+                </span>
+              )}
 
-              <h3>{renderTitleWithHighlightedLastWord(creatingExperiences.title)}</h3>
+              {creatingExperiences.title && <h3>{renderTitleWithHighlightedLastWord(creatingExperiences.title)}</h3>}
 
               {creatingExperiences.description_1 && <p>{creatingExperiences.description_1}</p>}
-
               {creatingExperiences.description_2 && <p>{creatingExperiences.description_2}</p>}
 
               <div className="about-features">
-                {dynamicAboutFeatures.map((feature, index) => (
+                {creatingExperiences.points.map((feature, index) => (
                   <div className="about-feature-item" key={`${feature}-${index}`}>
                     {feature}
                   </div>
                 ))}
               </div>
 
-              <br />
-
-              <a href={creatingExperiences.button_link} className="btn" style={{ marginTop: "10px" }}>
-                {creatingExperiences.button_text}
-              </a>
+              {creatingExperiences.button_text && (
+                <>
+                  <br />
+                  <a href={creatingExperiences.button_link || "#calendar-booking"} className="btn" style={{ marginTop: "10px" }}>
+                    {creatingExperiences.button_text}
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -2875,20 +2804,20 @@ export default function HomePage() {
       <section id="gallery" className="gallery-section">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">{gallery.eyebrow}</span>
-            <h2>{gallery.title}</h2>
-            <p>{gallery.description}</p>
+            {gallery.eyebrow && <span className="section-eyebrow">{gallery.eyebrow}</span>}
+            {gallery.title && <h2>{gallery.title}</h2>}
+            {gallery.description && <p>{gallery.description}</p>}
           </div>
 
           <div className="gallery-grid">
-            {dynamicGalleryImages.length === 0 && (
+            {gallery.images.length === 0 && (
               <div className="popup-empty" style={{ gridColumn: "1 / -1" }}>
                 <div className="popup-empty-icon">📭</div>
-                <p>No gallery images uploaded yet.</p>
+                <p>{gallery.empty_text}</p>
               </div>
             )}
 
-            {dynamicGalleryImages.map((image, index) => (
+            {gallery.images.map((image, index) => (
               <div
                 className="gallery-item"
                 data-aos="zoom-in"
@@ -2908,18 +2837,18 @@ export default function HomePage() {
       <section className="features-section" id="features">
         <div className="container">
           <div className="section-title" data-aos="fade-up">
-            <span className="section-eyebrow">{featuresSection.eyebrow}</span>
-            <h2>{featuresSection.title}</h2>
-            <p>{featuresSection.description}</p>
+            {featuresSection.eyebrow && <span className="section-eyebrow">{featuresSection.eyebrow}</span>}
+            {featuresSection.title && <h2>{featuresSection.title}</h2>}
+            {featuresSection.description && <p>{featuresSection.description}</p>}
           </div>
 
           <div className="feature-grid">
-            {featureCards.map((feature) => (
+            {featuresSection.cards.map((feature) => (
               <div
                 className="feature-card"
                 data-aos="zoom-in"
                 data-aos-delay={feature.delay || undefined}
-                key={feature.title}
+                key={feature.id || feature.title}
               >
                 <div className="feature-icon-wrap">{feature.icon}</div>
                 <h3>{feature.title}</h3>
@@ -2933,24 +2862,28 @@ export default function HomePage() {
       <section className="booking-cta">
         <div
           className="booking-cta-bg"
-          style={{ backgroundImage: `url(${bookingCta.background_image})` }}
+          style={{ backgroundImage: bookingCta.background_image ? `url(${bookingCta.background_image})` : "none" }}
         />
         <div className="booking-cta-overlay" />
 
         <div className="container" data-aos="zoom-in">
           <h2>
-            {bookingCta.title} <span>{bookingCta.highlight}</span> {bookingCta.title_suffix}
+            {bookingCta.title} {bookingCta.highlight && <span>{bookingCta.highlight}</span>} {bookingCta.title_suffix}
           </h2>
 
-          <p>{bookingCta.description}</p>
+          {bookingCta.description && <p>{bookingCta.description}</p>}
 
           <div className="hero-actions">
-            <a href={bookingCta.primary_button_link} className="btn">
-              {bookingCta.primary_button_text}
-            </a>
-            <a href={bookingCta.secondary_button_link} className="btn btn-outline">
-              {bookingCta.secondary_button_text}
-            </a>
+            {bookingCta.primary_button_text && (
+              <a href={bookingCta.primary_button_link || "#calendar-booking"} className="btn">
+                {bookingCta.primary_button_text}
+              </a>
+            )}
+            {bookingCta.secondary_button_text && (
+              <a href={bookingCta.secondary_button_link || "#about"} className="btn btn-outline">
+                {bookingCta.secondary_button_text}
+              </a>
+            )}
           </div>
         </div>
       </section>
@@ -3072,12 +3005,12 @@ export default function HomePage() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-brand">
-              <img src={footer.logo} alt={footer.logo_alt || "Dhaka Ladies Club"} />
-              <p>{footer.description}</p>
+              {footer.logo && <img src={footer.logo} alt={footer.logo_alt || "Footer logo"} />}
+              {footer.description && <p>{footer.description}</p>}
             </div>
 
             <div className="footer-col">
-              <h4>{footer.quick_links_title}</h4>
+              {footer.quick_links_title && <h4>{footer.quick_links_title}</h4>}
               {footerQuickLinks.map((link) => (
                 <a href={link.href} key={`${link.label}-${link.href}`}>
                   {link.label}
@@ -3086,23 +3019,15 @@ export default function HomePage() {
             </div>
 
             <div className="footer-col">
-              <h4>{footer.contact_title}</h4>
-              <p>📍 {footer.address}</p>
-              <p>📞 {footer.phone}</p>
-              <p>✉️ {footer.email}</p>
+              {footer.contact_title && <h4>{footer.contact_title}</h4>}
+              {footer.address && <p>📍 {footer.address}</p>}
+              {footer.phone && <p>📞 {footer.phone}</p>}
+              {footer.email && <p>✉️ {footer.email}</p>}
             </div>
           </div>
 
           <div className="footer-bottom">
-            <p>
-              {footer.copyright.includes(footer.copyright_brand || "Dhaka Ladies Club")
-                ? footer.copyright.split(footer.copyright_brand || "Dhaka Ladies Club")[0]
-                : ""}
-              <span className="footer-gold">{footer.copyright_brand || "Dhaka Ladies Club"}</span>
-              {footer.copyright.includes(footer.copyright_brand || "Dhaka Ladies Club")
-                ? footer.copyright.split(footer.copyright_brand || "Dhaka Ladies Club").slice(1).join(footer.copyright_brand || "Dhaka Ladies Club")
-                : footer.copyright}
-            </p>
+            <p>{footer.copyright}</p>
             <p>{footer.tagline}</p>
           </div>
         </div>
