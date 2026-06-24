@@ -920,8 +920,16 @@ const homePageStyles = String.raw`
   }
 
 .gallery-grid {
-  column-count: 3;
-  column-gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.gallery-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .gallery-item {
@@ -929,23 +937,18 @@ const homePageStyles = String.raw`
   overflow: hidden;
   border-radius: var(--radius);
   cursor: pointer;
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 18px;
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-}
-
-.gallery-item:first-child {
   width: 100%;
 }
-
 .gallery-item img {
   width: 100%;
   height: auto;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
+}
+.gallery-item:first-child {
+  grid-column: auto;
+  grid-row: auto;
 }
 
 .gallery-item:first-child img {
@@ -1519,7 +1522,7 @@ const homePageStyles = String.raw`
 
   @media(max-width: 1024px) {
 .gallery-grid {
-  column-count: 2;
+  grid-template-columns: repeat(2, 1fr);
 }
 
     .footer-grid {
@@ -1545,7 +1548,7 @@ const homePageStyles = String.raw`
     }
 
 .gallery-grid {
-  column-count: 2;
+  grid-template-columns: repeat(2, 1fr);
 }
 
     .footer-grid {
@@ -1599,7 +1602,7 @@ const homePageStyles = String.raw`
 
   @media(max-width: 480px) {
 .gallery-grid {
-  column-count: 1;
+  grid-template-columns: 1fr;
 }
     .about-wrapper {
       grid-template-columns: 1fr;
@@ -1958,7 +1961,46 @@ async function requestApi(endpoint, options = {}) {
 
   return payload;
 }
+function getGalleryColumnCount() {
+  if (window.innerWidth <= 480) return 1;
+  if (window.innerWidth <= 900) return 2;
+  return 3;
+}
 
+function getImageRatio(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+
+    img.onload = () => {
+      const ratio = img.naturalHeight && img.naturalWidth ? img.naturalHeight / img.naturalWidth : 0.75;
+      resolve(ratio);
+    };
+
+    img.onerror = () => resolve(0.75);
+    img.src = url;
+  });
+}
+
+async function buildBalancedGalleryColumns(images, columnCount) {
+  const columns = Array.from({ length: columnCount }, () => []);
+  const heights = Array.from({ length: columnCount }, () => 0);
+
+  const imagesWithRatio = await Promise.all(
+    images.map(async (image) => ({
+      ...image,
+      ratio: await getImageRatio(image.url),
+    }))
+  );
+
+  imagesWithRatio.forEach((image) => {
+    const shortestColumnIndex = heights.indexOf(Math.min(...heights));
+
+    columns[shortestColumnIndex].push(image);
+    heights[shortestColumnIndex] += image.ratio;
+  });
+
+  return columns;
+}
 export default function HomePage() {
   const navigate = useNavigate();
   const calendarRef = useRef(null);
@@ -1968,6 +2010,7 @@ export default function HomePage() {
   const popupCloseTimerRef = useRef(null);
 
   const [homepageContent, setHomepageContent] = useState(EMPTY_HOMEPAGE_CONTENT);
+  const [galleryColumns, setGalleryColumns] = useState([[], [], []]);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
   const [calendarReady, setCalendarReady] = useState(false);
@@ -2019,6 +2062,33 @@ export default function HomePage() {
   const ourStory = homepageContent.our_story;
   const creatingExperiences = homepageContent.creating_experiences;
   const gallery = homepageContent.gallery;
+  useEffect(() => {
+  let mounted = true;
+
+  async function balanceGallery() {
+    const images = Array.isArray(gallery.images) ? gallery.images : [];
+    const columnCount = getGalleryColumnCount();
+
+    const balancedColumns = await buildBalancedGalleryColumns(images, columnCount);
+
+    if (mounted) {
+      setGalleryColumns(balancedColumns);
+    }
+  }
+
+  balanceGallery();
+
+  const handleResize = () => {
+    balanceGallery();
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    mounted = false;
+    window.removeEventListener("resize", handleResize);
+  };
+}, [gallery.images]);
   const footer = homepageContent.footer;
 
   const heroBackgroundImage = hero.background_image;
@@ -2757,19 +2827,24 @@ export default function HomePage() {
           </div>
 
           <div className="gallery-grid">
-            {gallery.images.map((image, index) => (
-              <div
-                className="gallery-item"
-                data-aos="zoom-in"
-                data-aos-delay={index === 0 ? undefined : String(index * 50 + 50)}
-                key={image.id || image.url || index}
-              >
-                <img src={image.url} alt={image.alt} />
-                <div className="gallery-overlay">
-                </div>
-              </div>
-            ))}
+  {galleryColumns.map((column, columnIndex) => (
+    <div className="gallery-column" key={`gallery-column-${columnIndex}`}>
+      {column.map((image, imageIndex) => (
+        <div
+          className="gallery-item"
+          data-aos="zoom-in"
+          data-aos-delay={imageIndex === 0 ? undefined : String(imageIndex * 50 + 50)}
+          key={image.id || image.url || `${columnIndex}-${imageIndex}`}
+        >
+          <img src={image.url} alt={image.alt} />
+          <div className="gallery-overlay">
+            <div className="gallery-overlay-icon">✦</div>
           </div>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
         </div>
       </section>
 
