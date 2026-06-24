@@ -919,12 +919,11 @@ const homePageStyles = String.raw`
     background: white;
   }
 
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: auto auto;
-    gap: 18px;
-  }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
 
   .gallery-item {
     position: relative;
@@ -933,23 +932,22 @@ const homePageStyles = String.raw`
     cursor: pointer;
   }
 
-  .gallery-item:first-child {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
+.gallery-item:first-child {
+  grid-column: auto;
+  grid-row: auto;
+}
 
-  .gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    display: block;
-    min-height: 220px;
-  }
+.gallery-item img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+}
 
-  .gallery-item:first-child img {
-    min-height: 460px;
-  }
+.gallery-item:first-child img {
+  height: 260px;
+}
 
   .gallery-overlay {
     position: absolute;
