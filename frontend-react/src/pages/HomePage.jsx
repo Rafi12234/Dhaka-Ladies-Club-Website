@@ -920,33 +920,36 @@ const homePageStyles = String.raw`
   }
 
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+  column-count: 3;
+  column-gap: 18px;
 }
 
-  .gallery-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    cursor: pointer;
-  }
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 18px;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+}
 
 .gallery-item:first-child {
-  grid-column: auto;
-  grid-row: auto;
+  width: 100%;
 }
 
 .gallery-item img {
   width: 100%;
-  height: 260px;
+  height: auto;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
 }
 
 .gallery-item:first-child img {
-  height: 260px;
+  height: auto;
 }
 
   .gallery-overlay {
@@ -1515,15 +1518,9 @@ const homePageStyles = String.raw`
   }
 
   @media(max-width: 1024px) {
-    .gallery-grid {
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: auto;
-    }
-
-    .gallery-item:first-child {
-      grid-column: span 2;
-      grid-row: span 1;
-    }
+.gallery-grid {
+  column-count: 2;
+}
 
     .footer-grid {
       grid-template-columns: 1fr 1fr;
@@ -1547,13 +1544,9 @@ const homePageStyles = String.raw`
       font-size: 40px;
     }
 
-    .gallery-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .gallery-item:first-child {
-      grid-column: span 2;
-    }
+.gallery-grid {
+  column-count: 2;
+}
 
     .footer-grid {
       grid-template-columns: 1fr;
@@ -1605,14 +1598,9 @@ const homePageStyles = String.raw`
   }
 
   @media(max-width: 480px) {
-    .gallery-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .gallery-item:first-child {
-      grid-column: span 1;
-    }
-
+.gallery-grid {
+  column-count: 1;
+}
     .about-wrapper {
       grid-template-columns: 1fr;
     }
