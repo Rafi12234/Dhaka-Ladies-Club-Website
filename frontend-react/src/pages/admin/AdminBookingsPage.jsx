@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiRequest, adminHeaders } from "../../services/api";
+import { apiRequest } from "../../services/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -1285,22 +1285,9 @@ function getStoredAdmin() {
 function buildAdminHeaders() {
   const token = getAdminToken();
 
-  let helperHeaders = {};
-
-  try {
-    helperHeaders = typeof adminHeaders === "function" ? adminHeaders(token) : {};
-  } catch {
-    try {
-      helperHeaders = typeof adminHeaders === "function" ? adminHeaders() : {};
-    } catch {
-      helperHeaders = {};
-    }
-  }
-
   return {
     Accept: "application/json",
     "Content-Type": "application/json",
-    ...(helperHeaders || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
@@ -1718,7 +1705,7 @@ export default function AdminBookingsPage() {
     setIsLoggingOut(true);
 
     try {
-      await requestAdminApi("/auth/logout", {
+      await requestAdminApi("/admin/logout", {
         method: "POST",
         body: JSON.stringify({}),
       });

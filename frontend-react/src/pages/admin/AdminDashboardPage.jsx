@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiRequest, adminHeaders } from "../../services/api";
-
+import { apiRequest } from "../../services/api";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
@@ -1071,26 +1070,12 @@ function getAdminToken() {
 function buildAdminHeaders() {
   const token = getAdminToken();
 
-  let helperHeaders = {};
-
-  try {
-    helperHeaders = typeof adminHeaders === "function" ? adminHeaders(token) : {};
-  } catch {
-    try {
-      helperHeaders = typeof adminHeaders === "function" ? adminHeaders() : {};
-    } catch {
-      helperHeaders = {};
-    }
-  }
-
   return {
     Accept: "application/json",
     "Content-Type": "application/json",
-    ...(helperHeaders || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
-
 function normalizeApiData(payload) {
   return payload?.data !== undefined ? payload.data : payload;
 }
@@ -1375,7 +1360,7 @@ export default function AdminDashboardPage() {
     setIsLoggingOut(true);
 
     try {
-      await requestAdminApi("/auth/logout", {
+     await requestAdminApi("/admin/logout", {
         method: "POST",
         body: JSON.stringify({}),
       });

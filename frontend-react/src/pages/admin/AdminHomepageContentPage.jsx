@@ -1368,7 +1368,7 @@ export default function AdminHomepageContentPage() {
     setIsLoggingOut(true);
 
     try {
-      await requestAdminApi("/auth/logout", {
+      await requestAdminApi("/admin/logout", {
         method: "POST",
         body: JSON.stringify({}),
       });
