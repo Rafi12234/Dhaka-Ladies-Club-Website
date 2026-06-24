@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiRequest, adminHeaders } from "../../services/api";
-
+import { apiRequest } from "../../services/api";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
@@ -848,29 +847,14 @@ function getAdminToken() {
 
 function buildAdminHeaders(json = true) {
   const token = getAdminToken();
-  let helperHeaders = {};
-
-  try {
-    helperHeaders = typeof adminHeaders === "function" ? adminHeaders(token) : {};
-  } catch {
-    try {
-      helperHeaders = typeof adminHeaders === "function" ? adminHeaders() : {};
-    } catch {
-      helperHeaders = {};
-    }
-  }
 
   const headers = {
     Accept: "application/json",
-    ...(helperHeaders || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   if (json) {
     headers["Content-Type"] = "application/json";
-  } else {
-    delete headers["Content-Type"];
-    delete headers["content-type"];
   }
 
   return headers;
@@ -1466,13 +1450,13 @@ export default function AdminHomepageContentPage() {
             <IconPlus />
             Manual Booking
           </Link>
-
-          <div className="sidebar-section-title">Website</div>
-
           <Link to="/admin-homepage-content" className="sidebar-link active" onClick={() => setSidebarOpen(false)}>
             <IconEdit />
             Homepage Content
           </Link>
+
+          <div className="sidebar-section-title">Website</div>
+
 
           <Link to="/" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconCalendar />
