@@ -2766,7 +2766,6 @@ export default function HomePage() {
               >
                 <img src={image.url} alt={image.alt} />
                 <div className="gallery-overlay">
-                  <div className="gallery-overlay-icon">✦</div>
                 </div>
               </div>
             ))}
