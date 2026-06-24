@@ -14,7 +14,8 @@ class HomepageContentController extends Controller
 {
     private function publicRoot(): string
     {
-        return dirname(base_path()) . '/public_html/dhaka-ladies-club';
+        return env('DLC_FRONTEND_PUBLIC_ROOT')
+            ?: dirname(base_path()) . '/public_html/dhaka-ladies-club';
     }
 
     private function homepageDir(): string
@@ -35,15 +36,52 @@ class HomepageContentController extends Controller
     private function defaultContent(): array
     {
         return [
+            'nav' => [
+                'logo' => '/assets/img/dlclogo_long.png',
+                'logo_alt' => 'Dhaka Ladies Club Logo',
+                'links' => [
+                    ['label' => 'Calendar', 'href' => '#calendar-booking'],
+                    ['label' => 'About', 'href' => '#about'],
+                    ['label' => 'Gallery', 'href' => '#gallery'],
+                    ['label' => 'Features', 'href' => '#features'],
+                ],
+                'booking_button_text' => 'Book Now',
+                'booking_button_link' => '#calendar-booking',
+                'login_text' => 'Login',
+                'admin_login_text' => 'Admin Login',
+                'logout_text' => 'Logout',
+            ],
             'hero' => [
                 'title' => 'Elegant Events',
                 'highlight' => 'Beautiful Memories',
                 'subtitle' => 'Dhaka Ladies Club is a luxurious convention hall offering premium event spaces for weddings, receptions, conferences, and unforgettable celebrations.',
-                'background_image' => '/assets/img/BG-01.jpeg',
+                'background_image' => '/uploads/homepage/hero-background.jpeg',
                 'primary_button_text' => 'Book Your Event',
                 'primary_button_link' => '#calendar-booking',
                 'secondary_button_text' => 'Discover More',
                 'secondary_button_link' => '#about',
+            ],
+            'stats' => [
+                ['id' => 'events_hosted', 'count' => 500, 'suffix' => '+', 'label' => 'Events Hosted', 'delay' => ''],
+                ['id' => 'happy_families', 'count' => 1200, 'suffix' => '+', 'label' => 'Happy Families', 'delay' => '100'],
+                ['id' => 'years_experience', 'count' => 20, 'suffix' => '+', 'label' => 'Years Experience', 'delay' => '200'],
+                ['id' => 'client_satisfaction', 'count' => 98, 'suffix' => '%', 'label' => 'Client Satisfaction', 'delay' => '300'],
+            ],
+            'calendar_section' => [
+                'eyebrow' => 'Live Availability',
+                'title' => 'Booking Calendar',
+                'description' => 'Browse available shifts and reserve your preferred date. Click any date or event to view shift availability and proceed with booking.',
+                'loading_text' => 'Loading booking calendar...',
+                'button_today' => 'Today',
+                'button_month' => 'Month',
+                'button_year_view' => 'Year View',
+                'legend' => [
+                    ['label' => 'Available', 'color' => '#198754'],
+                    ['label' => 'Booked', 'color' => '#dc3545'],
+                    ['label' => 'Booking In Progress', 'color' => '#fd7e14'],
+                    ['label' => 'Pending Approval', 'color' => '#b8860b'],
+                    ['label' => 'Blocked', 'color' => '#6c757d'],
+                ],
             ],
             'our_story' => [
                 'eyebrow' => 'Our Story',
@@ -51,7 +89,9 @@ class HomepageContentController extends Controller
                 'description' => 'A prestigious event destination in Dhaka designed for elegant weddings, corporate events, and premium celebrations.',
             ],
             'creating_experiences' => [
-                'image' => '/assets/img/About.jpg',
+                'image' => '/uploads/homepage/creating-experiences.jpg',
+                'image_alt' => 'About Dhaka Ladies Club',
+                'badge_text' => "20+\nYears\nExcellence",
                 'eyebrow' => 'Creating Experiences',
                 'title' => 'Where Every Event Becomes Extraordinary',
                 'description_1' => 'Dhaka Ladies Club combines elegance, luxury, and professionalism to deliver exceptional event experiences for every guest. Our dedicated team ensures that every detail is meticulously planned and executed.',
@@ -64,19 +104,93 @@ class HomepageContentController extends Controller
                     'Dedicated Team',
                     'Custom Packages',
                 ],
+                'button_text' => 'Book a Visit',
+                'button_link' => '#calendar-booking',
             ],
             'gallery' => [
                 'eyebrow' => 'Visual Gallery',
                 'title' => 'Decoration Gallery',
                 'description' => 'Explore stunning decoration concepts and luxurious setups from our most celebrated events.',
+                'empty_text' => 'No gallery images uploaded yet.',
                 'images' => [],
             ],
+            'features_section' => [
+                'eyebrow' => 'Why Choose Us',
+                'title' => 'World-Class Features',
+                'description' => 'Smart booking system with live calendar and secure payments — designed for a seamless experience.',
+                'cards' => [
+                    [
+                        'id' => 'live_calendar',
+                        'icon' => '📅',
+                        'title' => 'Live Calendar',
+                        'text' => 'Browse the full year calendar and view available or booked shifts instantly with real-time updates.',
+                        'delay' => '',
+                    ],
+                    [
+                        'id' => 'online_booking',
+                        'icon' => '📝',
+                        'title' => 'Online Booking',
+                        'text' => 'Book event halls directly from the website with instant reservation requests and confirmation.',
+                        'delay' => '150',
+                    ],
+                    [
+                        'id' => 'secure_payment',
+                        'icon' => '💳',
+                        'title' => 'Secure Payment',
+                        'text' => 'Easy and secure online payment system with encrypted transactions for booking confirmations.',
+                        'delay' => '300',
+                    ],
+                    [
+                        'id' => 'event_management',
+                        'icon' => '🎉',
+                        'title' => 'Event Management',
+                        'text' => 'Full-service event coordination by our expert team to make your celebration flawless.',
+                        'delay' => '450',
+                    ],
+                    [
+                        'id' => 'premium_decor',
+                        'icon' => '🌟',
+                        'title' => 'Premium Décor',
+                        'text' => 'Stunning decoration packages crafted by professional designers for every occasion.',
+                        'delay' => '500',
+                    ],
+                    [
+                        'id' => 'instant_alerts',
+                        'icon' => '🔔',
+                        'title' => 'Instant Alerts',
+                        'text' => 'Get real-time notifications and reminders for your upcoming events and booking updates.',
+                        'delay' => '550',
+                    ],
+                ],
+            ],
+            'booking_cta' => [
+                'background_image' => '/uploads/homepage/hero-background.jpeg',
+                'title' => 'Plan Your',
+                'highlight' => 'Dream Event',
+                'title_suffix' => 'Today',
+                'description' => "Make your celebrations unforgettable with Dhaka Ladies Club's premium event management services. Your perfect event begins with a single click.",
+                'primary_button_text' => 'Check Availability',
+                'primary_button_link' => '#calendar-booking',
+                'secondary_button_text' => 'Contact Us',
+                'secondary_button_link' => 'tel:+8801700000000',
+            ],
             'footer' => [
+                'logo' => '/assets/img/dlclogo_long.png',
+                'logo_alt' => 'Dhaka Ladies Club',
                 'description' => 'A prestigious event destination in Dhaka delivering exceptional experiences for weddings, corporate events, and premium celebrations since 2005.',
+                'quick_links_title' => 'Quick Links',
+                'quick_links' => [
+                    ['label' => 'Booking Calendar', 'href' => '#calendar-booking'],
+                    ['label' => 'About Us', 'href' => '#about'],
+                    ['label' => 'Gallery', 'href' => '#gallery'],
+                    ['label' => 'Features', 'href' => '#features'],
+                ],
+                'contact_title' => 'Contact',
                 'address' => 'Dhaka, Bangladesh',
                 'phone' => '+880 1700-000000',
                 'email' => 'info@dhakaladiesclub.com',
                 'copyright' => '© 2026 Dhaka Ladies Club. All Rights Reserved.',
+                'copyright_brand' => 'Dhaka Ladies Club',
                 'tagline' => 'Premium Convention & Party Venue in Dhaka',
             ],
         ];
@@ -113,9 +227,7 @@ class HomepageContentController extends Controller
 
     private function writeContent(array $content): void
     {
-        if (!File::exists($this->homepageDir())) {
-            File::makeDirectory($this->homepageDir(), 0755, true);
-        }
+        $this->ensureStorageExists();
 
         File::put(
             $this->contentFile(),
@@ -134,31 +246,48 @@ class HomepageContentController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
+    public function adminShow(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Homepage editor data loaded successfully.',
+            'data' => [
+                'content' => $this->readContent(),
+                'gallery_files' => $this->getGalleryFilesArray(),
+            ],
+        ]);
+    }
+
     public function update(Request $request): JsonResponse
     {
         try {
             $incoming = $request->all();
 
             $allowedKeys = [
+                'nav',
                 'hero',
+                'stats',
+                'calendar_section',
                 'our_story',
                 'creating_experiences',
                 'gallery',
+                'features_section',
+                'booking_cta',
                 'footer',
             ];
 
             $incoming = Arr::only($incoming, $allowedKeys);
-
             $current = $this->readContent();
+
             $updated = array_replace_recursive($current, $incoming);
 
-            if (isset($updated['creating_experiences']['points']) && !is_array($updated['creating_experiences']['points'])) {
-                $updated['creating_experiences']['points'] = [];
-            }
-
-            if (isset($updated['gallery']['images']) && !is_array($updated['gallery']['images'])) {
-                $updated['gallery']['images'] = [];
-            }
+            $updated['stats'] = array_values($updated['stats'] ?? []);
+            $updated['nav']['links'] = array_values($updated['nav']['links'] ?? []);
+            $updated['calendar_section']['legend'] = array_values($updated['calendar_section']['legend'] ?? []);
+            $updated['creating_experiences']['points'] = array_values($updated['creating_experiences']['points'] ?? []);
+            $updated['gallery']['images'] = array_values($updated['gallery']['images'] ?? []);
+            $updated['features_section']['cards'] = array_values($updated['features_section']['cards'] ?? []);
+            $updated['footer']['quick_links'] = array_values($updated['footer']['quick_links'] ?? []);
 
             $this->writeContent($updated);
 
@@ -176,96 +305,121 @@ class HomepageContentController extends Controller
         }
     }
 
-    public function uploadImage(Request $request): JsonResponse
+    public function listGalleryFiles(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Gallery files loaded successfully.',
+            'data' => $this->getGalleryFilesArray(),
+        ]);
+    }
+
+    public function uploadSectionImage(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
-                'target' => ['required', 'string', 'in:hero_background,creating_experiences_image'],
-                'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+                'target' => [
+                    'required',
+                    'string',
+                    'in:hero_background,creating_experiences_image,booking_cta_background,nav_logo,footer_logo',
+                ],
+                'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             ]);
 
             $this->ensureStorageExists();
 
             $content = $this->readContent();
             $file = $request->file('image');
-            $extension = $file->getClientOriginalExtension();
+            $extension = strtolower($file->getClientOriginalExtension());
 
             $targetMap = [
                 'hero_background' => [
-                    'json_path' => ['hero', 'background_image'],
                     'filename' => 'hero-background.' . $extension,
+                    'paths' => ['hero.background_image', 'booking_cta.background_image'],
                 ],
                 'creating_experiences_image' => [
-                    'json_path' => ['creating_experiences', 'image'],
                     'filename' => 'creating-experiences.' . $extension,
+                    'paths' => ['creating_experiences.image'],
+                ],
+                'booking_cta_background' => [
+                    'filename' => 'booking-cta-background.' . $extension,
+                    'paths' => ['booking_cta.background_image'],
+                ],
+                'nav_logo' => [
+                    'filename' => 'nav-logo.' . $extension,
+                    'paths' => ['nav.logo'],
+                ],
+                'footer_logo' => [
+                    'filename' => 'footer-logo.' . $extension,
+                    'paths' => ['footer.logo'],
                 ],
             ];
 
             $config = $targetMap[$validated['target']];
-            $filename = $config['filename'];
-            $absolutePath = $this->homepageDir() . '/' . $filename;
-            $publicUrl = '/uploads/homepage/' . $filename;
+            $publicUrl = '/uploads/homepage/' . $config['filename'];
 
-            $oldUrl = Arr::get($content, implode('.', $config['json_path']));
+            foreach ($config['paths'] as $jsonPath) {
+                $oldUrl = Arr::get($content, $jsonPath);
+                $this->deleteUploadedFileByUrl($oldUrl, false);
+            }
 
-            $this->deleteUploadedFileByUrl($oldUrl);
+            $this->deleteKnownFixedFiles(pathinfo($config['filename'], PATHINFO_FILENAME), $this->homepageDir());
 
-            $file->move($this->homepageDir(), $filename);
+            $file->move($this->homepageDir(), $config['filename']);
 
-            Arr::set($content, implode('.', $config['json_path']), $publicUrl);
+            foreach ($config['paths'] as $jsonPath) {
+                Arr::set($content, $jsonPath, $publicUrl);
+            }
 
             $this->writeContent($content);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Image uploaded successfully.',
+                'message' => 'Section image uploaded successfully.',
                 'image_url' => $publicUrl,
                 'data' => $content,
             ]);
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload image.',
+                'message' => 'Failed to upload section image.',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function storeGalleryImage(Request $request): JsonResponse
+    public function uploadGalleryImages(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
-                'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-                'alt' => ['nullable', 'string', 'max:150'],
+                'images' => ['required', 'array', 'min:1'],
+                'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             ]);
 
             $this->ensureStorageExists();
 
-            $content = $this->readContent();
+            $uploaded = [];
 
-            $file = $request->file('image');
-            $extension = $file->getClientOriginalExtension();
+            foreach ($request->file('images', []) as $file) {
+                $extension = strtolower($file->getClientOriginalExtension());
+                $number = $this->nextGalleryNumber();
+                $filename = 'gallery_' . $number . '.' . $extension;
 
-            $id = 'gallery_' . now()->format('YmdHis') . '_' . Str::lower(Str::random(6));
-            $filename = $id . '.' . $extension;
+                $file->move($this->galleryDir(), $filename);
 
-            $file->move($this->galleryDir(), $filename);
-
-            $imageItem = [
-                'id' => $id,
-                'url' => '/uploads/homepage/gallery/' . $filename,
-                'alt' => $validated['alt'] ?? 'Gallery image',
-            ];
-
-            $content['gallery']['images'][] = $imageItem;
-
-            $this->writeContent($content);
+                $uploaded[] = [
+                    'id' => pathinfo($filename, PATHINFO_FILENAME),
+                    'name' => $filename,
+                    'url' => '/uploads/homepage/gallery/' . $filename,
+                    'alt' => 'Gallery Image ' . $number,
+                ];
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Gallery image uploaded successfully.',
-                'image' => $imageItem,
-                'data' => $content,
+                'uploaded' => $uploaded,
+                'gallery_files' => $this->getGalleryFilesArray(),
             ]);
         } catch (Throwable $e) {
             return response()->json([
@@ -276,55 +430,168 @@ class HomepageContentController extends Controller
         }
     }
 
-    public function deleteGalleryImage(string $imageId): JsonResponse
+    public function selectGalleryImages(Request $request): JsonResponse
     {
         try {
-            $this->ensureStorageExists();
+            $validated = $request->validate([
+                'selected_urls' => ['present', 'array'],
+                'selected_urls.*' => ['string'],
+            ]);
 
             $content = $this->readContent();
-            $images = $content['gallery']['images'] ?? [];
+            $files = collect($this->getGalleryFilesArray())->keyBy('url');
 
-            $deletedImage = null;
+            $selectedImages = [];
 
-            $remainingImages = array_values(array_filter($images, function ($image) use ($imageId, &$deletedImage) {
-                if (($image['id'] ?? null) === $imageId) {
-                    $deletedImage = $image;
-                    return false;
+            foreach ($validated['selected_urls'] as $index => $url) {
+                if (!$files->has($url)) {
+                    continue;
                 }
 
-                return true;
-            }));
+                $file = $files->get($url);
 
-            if (!$deletedImage) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gallery image not found.',
-                ], 404);
+                $selectedImages[] = [
+                    'id' => $file['id'],
+                    'url' => $file['url'],
+                    'alt' => 'Gallery Image ' . ($index + 1),
+                ];
             }
 
-            $this->deleteUploadedFileByUrl($deletedImage['url'] ?? null);
-
-            $content['gallery']['images'] = $remainingImages;
+            $content['gallery']['images'] = $selectedImages;
 
             $this->writeContent($content);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Gallery image deleted successfully.',
+                'message' => 'Homepage gallery selection updated successfully.',
                 'data' => $content,
+                'gallery_files' => $this->getGalleryFilesArray(),
             ]);
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete gallery image.',
+                'message' => 'Failed to update gallery selection.',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    private function deleteUploadedFileByUrl(?string $url): void
+    public function deleteGalleryFile(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'url' => ['required', 'string'],
+            ]);
+
+            $url = $validated['url'];
+
+            if (!Str::startsWith($url, '/uploads/homepage/gallery/')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid gallery image path.',
+                ], 422);
+            }
+
+            $absolutePath = $this->publicRoot() . $url;
+
+            if (File::exists($absolutePath) && File::isFile($absolutePath)) {
+                File::delete($absolutePath);
+            }
+
+            $content = $this->readContent();
+
+            $content['gallery']['images'] = array_values(array_filter(
+                $content['gallery']['images'] ?? [],
+                fn ($image) => ($image['url'] ?? null) !== $url
+            ));
+
+            $this->writeContent($content);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Gallery file deleted successfully.',
+                'data' => $content,
+                'gallery_files' => $this->getGalleryFilesArray(),
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete gallery file.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function getGalleryFilesArray(): array
+    {
+        $this->ensureStorageExists();
+
+        $files = File::files($this->galleryDir());
+        $selectedUrls = collect($this->readContent()['gallery']['images'] ?? [])
+            ->pluck('url')
+            ->filter()
+            ->values()
+            ->all();
+
+        $items = [];
+
+        foreach ($files as $file) {
+            $extension = strtolower($file->getExtension());
+
+            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                continue;
+            }
+
+            $filename = $file->getFilename();
+            $url = '/uploads/homepage/gallery/' . $filename;
+
+            $items[] = [
+                'id' => pathinfo($filename, PATHINFO_FILENAME),
+                'name' => $filename,
+                'url' => $url,
+                'size' => $file->getSize(),
+                'selected' => in_array($url, $selectedUrls, true),
+            ];
+        }
+
+        usort($items, function ($a, $b) {
+            return strnatcasecmp($a['name'], $b['name']);
+        });
+
+        return $items;
+    }
+
+    private function nextGalleryNumber(): int
+    {
+        $max = 0;
+
+        foreach (File::files($this->galleryDir()) as $file) {
+            if (preg_match('/^gallery_(\d+)\.(jpg|jpeg|png|webp)$/i', $file->getFilename(), $matches)) {
+                $max = max($max, (int) $matches[1]);
+            }
+        }
+
+        return $max + 1;
+    }
+
+    private function deleteKnownFixedFiles(string $baseName, string $directory): void
+    {
+        foreach (['jpg', 'jpeg', 'png', 'webp'] as $extension) {
+            $path = $directory . '/' . $baseName . '.' . $extension;
+
+            if (File::exists($path) && File::isFile($path)) {
+                File::delete($path);
+            }
+        }
+    }
+
+    private function deleteUploadedFileByUrl(?string $url, bool $deleteGallery = true): void
     {
         if (!$url || !Str::startsWith($url, '/uploads/homepage/')) {
+            return;
+        }
+
+        if (!$deleteGallery && Str::startsWith($url, '/uploads/homepage/gallery/')) {
             return;
         }
 

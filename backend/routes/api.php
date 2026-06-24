@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AdminManualBookingController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\HomepageContentController;
 
+
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('/booking-context', [BookingContextController::class, 'index'])
         ->name('api.booking-context');
@@ -116,6 +117,33 @@ Route::prefix('admin/homepage-content')->middleware('throttle:30,1')->group(func
 
     Route::delete('/gallery/{imageId}', [HomepageContentController::class, 'deleteGalleryImage'])
         ->name('api.admin.homepage-content.gallery.delete');
+});
+
+Route::get('/homepage-content', [HomepageContentController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('api.homepage-content.show');
+
+Route::prefix('admin/homepage-content')->middleware('throttle:30,1')->group(function () {
+    Route::get('/', [HomepageContentController::class, 'adminShow'])
+        ->name('api.admin.homepage-content.show');
+
+    Route::put('/', [HomepageContentController::class, 'update'])
+        ->name('api.admin.homepage-content.update');
+
+    Route::get('/gallery-files', [HomepageContentController::class, 'listGalleryFiles'])
+        ->name('api.admin.homepage-content.gallery-files');
+
+    Route::post('/upload-section-image', [HomepageContentController::class, 'uploadSectionImage'])
+        ->name('api.admin.homepage-content.upload-section-image');
+
+    Route::post('/gallery/upload', [HomepageContentController::class, 'uploadGalleryImages'])
+        ->name('api.admin.homepage-content.gallery.upload');
+
+    Route::post('/gallery/select', [HomepageContentController::class, 'selectGalleryImages'])
+        ->name('api.admin.homepage-content.gallery.select');
+
+    Route::delete('/gallery/file', [HomepageContentController::class, 'deleteGalleryFile'])
+        ->name('api.admin.homepage-content.gallery.delete-file');
 });
 
 Route::fallback(function () {

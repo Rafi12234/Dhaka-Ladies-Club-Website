@@ -13,6 +13,7 @@ import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminBookingsPage from "./pages/admin/AdminBookingsPage";
 import AdminManualBookingPage from "./pages/admin/AdminManualBookingPage";
+import AdminHomepageContentPage from "./pages/admin/AdminHomepageContentPage";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin-bookings" element={<AdminBookingsPage />} />
         <Route path="/admin-manual-booking" element={<AdminManualBookingPage />} />
+        <Route path="/admin-homepage-content" element={<AdminHomepageContentPage />} />
 
         {/* Fallback: prevent white blank screen */}
         <Route path="*" element={<Navigate to="/" replace />} />
