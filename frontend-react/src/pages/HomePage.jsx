@@ -1981,6 +1981,42 @@ function getImageRatio(url) {
   });
 }
 
+function getImageRatioReliable(url) {
+  return new Promise((resolve) => {
+    // Hard timeout — never hang forever
+    const timeout = setTimeout(() => resolve(0.75), 3000);
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    const finish = (ratio) => {
+      clearTimeout(timeout);
+      resolve(ratio);
+    };
+
+    img.onload = () => {
+      const ratio =
+        img.naturalHeight && img.naturalWidth
+          ? img.naturalHeight / img.naturalWidth
+          : 0.75;
+      finish(ratio);
+    };
+
+    img.onerror = () => finish(0.75);
+
+    // For already-cached images, naturalWidth is already set synchronously
+    img.src = url;
+
+    if (img.complete && img.naturalWidth) {
+      const ratio =
+        img.naturalHeight && img.naturalWidth
+          ? img.naturalHeight / img.naturalWidth
+          : 0.75;
+      finish(ratio);
+    }
+  });
+}
+
 async function buildBalancedGalleryColumns(images, columnCount) {
   const columns = Array.from({ length: columnCount }, () => []);
   const heights = Array.from({ length: columnCount }, () => 0);
@@ -1988,13 +2024,12 @@ async function buildBalancedGalleryColumns(images, columnCount) {
   const imagesWithRatio = await Promise.all(
     images.map(async (image) => ({
       ...image,
-      ratio: await getImageRatio(image.url),
+      ratio: await getImageRatioReliable(image.url),
     }))
   );
 
   imagesWithRatio.forEach((image) => {
     const shortestColumnIndex = heights.indexOf(Math.min(...heights));
-
     columns[shortestColumnIndex].push(image);
     heights[shortestColumnIndex] += image.ratio;
   });
@@ -2062,30 +2097,59 @@ export default function HomePage() {
   const ourStory = homepageContent.our_story;
   const creatingExperiences = homepageContent.creating_experiences;
   const gallery = homepageContent.gallery;
-  useEffect(() => {
+useEffect(() => {
   let mounted = true;
 
+  const images = Array.isArray(gallery.images) ? gallery.images : [];
+
+  // Immediately distribute images without waiting for ratio loading
+  // so gallery is never empty on first render
+  function distributeImagesEvenly(imgs, columnCount) {
+    const columns = Array.from({ length: columnCount }, () => []);
+    imgs.forEach((image, index) => {
+      columns[index % columnCount].push({ ...image, ratio: 0.75 });
+    });
+    return columns;
+  }
+
   async function balanceGallery() {
-    const images = Array.isArray(gallery.images) ? gallery.images : [];
+    if (!mounted) return;
+
     const columnCount = getGalleryColumnCount();
 
-    const balancedColumns = await buildBalancedGalleryColumns(images, columnCount);
+    if (images.length === 0) {
+      setGalleryColumns(Array.from({ length: columnCount }, () => []));
+      return;
+    }
 
-    if (mounted) {
-      setGalleryColumns(balancedColumns);
+    // Step 1: Show images immediately (evenly distributed)
+    const immediateColumns = distributeImagesEvenly(images, columnCount);
+    if (mounted) setGalleryColumns(immediateColumns);
+
+    // Step 2: Rebalance after ratios are known
+    try {
+      const balancedColumns = await buildBalancedGalleryColumns(images, columnCount);
+      if (mounted) setGalleryColumns(balancedColumns);
+    } catch {
+      // Keep the immediate layout if balancing fails
     }
   }
 
   balanceGallery();
 
+  let resizeTimer;
   const handleResize = () => {
-    balanceGallery();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      balanceGallery();
+    }, 200);
   };
 
   window.addEventListener("resize", handleResize);
 
   return () => {
     mounted = false;
+    clearTimeout(resizeTimer);
     window.removeEventListener("resize", handleResize);
   };
 }, [gallery.images]);
