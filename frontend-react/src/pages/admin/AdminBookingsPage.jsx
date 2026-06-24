@@ -1787,6 +1787,10 @@ export default function AdminBookingsPage() {
             <IconPlus />
             Manual Booking
           </Link>
+          <Link to="/admin-homepage-content" className="sidebar-link">
+          <IconEdit />
+            Homepage Content
+          </Link>
 
           <div className="sidebar-section-title">Website</div>
 
