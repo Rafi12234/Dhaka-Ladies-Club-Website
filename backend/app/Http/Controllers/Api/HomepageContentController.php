@@ -235,28 +235,46 @@ class HomepageContentController extends Controller
         );
     }
 
-    public function show(): JsonResponse
-    {
-        return response()
-            ->json([
-                'success' => true,
-                'message' => 'Homepage content loaded successfully.',
-                'data' => $this->readContent(),
-            ])
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-    }
+public function show(): JsonResponse
+{
+    $content = $this->readContent();
 
-    public function adminShow(): JsonResponse
-    {
-        return response()->json([
+    $content['_cache_version'] = File::exists($this->contentFile())
+        ? File::lastModified($this->contentFile())
+        : time();
+
+    return response()
+        ->json([
+            'success' => true,
+            'message' => 'Homepage content loaded successfully.',
+            'data' => $content,
+        ])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+}
+
+public function adminShow(): JsonResponse
+{
+    $content = $this->readContent();
+
+    $content['_cache_version'] = File::exists($this->contentFile())
+        ? File::lastModified($this->contentFile())
+        : time();
+
+    return response()
+        ->json([
             'success' => true,
             'message' => 'Homepage editor data loaded successfully.',
             'data' => [
-                'content' => $this->readContent(),
+                'content' => $content,
                 'gallery_files' => $this->getGalleryFilesArray(),
             ],
-        ]);
-    }
+        ])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+}
 
 public function update(Request $request): JsonResponse
 {

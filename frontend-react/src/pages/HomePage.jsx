@@ -968,30 +968,66 @@ function resolveUrl(url) {
   if (/^https?:\/\//i.test(url)) return url;
   return url.startsWith("/") ? url : `/${url}`;
 }
-function normalizeGalleryImages(images) {
+function versionedUploadUrl(url, version) {
+  const resolvedUrl = resolveUrl(url);
+
+  if (!resolvedUrl) return "";
+
+  // Only cache-bust homepage uploaded images.
+  // Do not affect normal assets like logo unless needed.
+  if (!resolvedUrl.includes("/uploads/homepage/")) {
+    return resolvedUrl;
+  }
+
+  const safeVersion = version || Date.now();
+  const separator = resolvedUrl.includes("?") ? "&" : "?";
+
+  return `${resolvedUrl}${separator}v=${safeVersion}`;
+}
+function normalizeGalleryImages(images, version) {
   if (!Array.isArray(images)) return [];
+
   return images
     .filter((img) => img && (img.url || img.src))
     .map((img, i) => ({
       id: img.id || img.url || img.src || `g${i}`,
-      url: resolveUrl(img.url || img.src),
+      url: versionedUploadUrl(img.url || img.src, version),
       alt: img.alt || img.title || `Gallery image ${i + 1}`,
     }));
 }
 function mergeContent(raw) {
   const inc = raw && typeof raw === "object" ? raw : {};
+
+  const assetVersion =
+    inc._cache_version ||
+    inc.cache_version ||
+    inc.updated_at ||
+    Date.now();
+
   const c = {
     hero: { ...EMPTY_HOMEPAGE_CONTENT.hero, ...(inc.hero || {}) },
     our_story: { ...EMPTY_HOMEPAGE_CONTENT.our_story, ...(inc.our_story || {}) },
-    creating_experiences: { ...EMPTY_HOMEPAGE_CONTENT.creating_experiences, ...(inc.creating_experiences || {}) },
+    creating_experiences: {
+      ...EMPTY_HOMEPAGE_CONTENT.creating_experiences,
+      ...(inc.creating_experiences || {}),
+    },
     gallery: { ...EMPTY_HOMEPAGE_CONTENT.gallery, ...(inc.gallery || {}) },
     footer: { ...EMPTY_HOMEPAGE_CONTENT.footer, ...(inc.footer || {}) },
   };
-  c.hero.background_image = resolveUrl(c.hero.background_image);
-  c.creating_experiences.image = resolveUrl(c.creating_experiences.image);
+
+  c.hero.background_image = versionedUploadUrl(c.hero.background_image, assetVersion);
+
+  c.creating_experiences.image = versionedUploadUrl(
+    c.creating_experiences.image,
+    assetVersion
+  );
+
   c.creating_experiences.points = Array.isArray(c.creating_experiences.points)
-    ? c.creating_experiences.points.filter(Boolean) : [];
-  c.gallery.images = normalizeGalleryImages(c.gallery.images);
+    ? c.creating_experiences.points.filter(Boolean)
+    : [];
+
+  c.gallery.images = normalizeGalleryImages(c.gallery.images, assetVersion);
+
   return c;
 }
 
@@ -1158,7 +1194,7 @@ export default function HomePage() {
   // Seed from localStorage cache → instant render on refresh, no blank flash
   const [content, setContent] = useState(() => {
     const cached = getCachedContent();
-    return cached ? mergeContent(cached) : EMPTY_HOMEPAGE_CONTENT;
+    return cached ? mergeContent(cached) : mergeContent(EMPTY_HOMEPAGE_CONTENT);
   });
 
   const [galleryColumns, setGalleryColumns] = useState([[], [], []]);
