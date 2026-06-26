@@ -17,6 +17,30 @@ const ACTIVE_HOLD_KEY = "dlc_active_hold_v2";
 
 // ── Homepage content cache ──────────────────────────────────────────────────
 const HOMEPAGE_CACHE_KEY = "dlc_homepage_content_cache_v1";
+// ── Booking context cache ────────────────────────────────────────────────────
+const BOOKING_CTX_CACHE_KEY = "dlc_booking_ctx_cache_v1";
+const BOOKING_CTX_MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
+
+function readBookingCtxCache() {
+  try {
+    const raw = localStorage.getItem(BOOKING_CTX_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || !parsed.ts) return null;
+    if (Date.now() - parsed.ts > BOOKING_CTX_MAX_AGE_MS) return null;
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function writeBookingCtxCache(data) {
+  try {
+    localStorage.setItem(BOOKING_CTX_CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
+  } catch {
+    // ignore
+  }
+}
 const HOMEPAGE_CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
 
 function readHomepageCache() {
@@ -2295,29 +2319,32 @@ export default function HomePage() {
       return null;
     }
 
-    let user = localUser;
+    // ── Fast path: resolve UI immediately from localStorage ──────────────────
+    // Do NOT block on a network request just to show the correct navbar icon.
+    // Apply local data right away, then silently verify in background.
+    const localUserType = String(localUser?.user_type || "customer").toLowerCase();
+    const isCustomerLocal = !!token && (!localUser || localUserType === "customer");
+    setIsCustomerLoggedIn(isCustomerLocal);
 
-    try {
-      const payload = await requestApi("/auth/panel", {
-        method: "GET",
-        headers: getCustomerHeaderObject(token),
+    // ── Background verification (does not block the caller) ─────────────────
+    requestApi("/auth/panel", {
+      method: "GET",
+      headers: getCustomerHeaderObject(token),
+    })
+      .then((payload) => {
+        const data = normalizeApiData(payload);
+        const user = data?.user || data?.customer || data || localUser;
+        if (user && typeof user === "object") {
+          localStorage.setItem(CUSTOMER_USER_KEY, JSON.stringify(user));
+        }
+        const userType = String(user?.user_type || "customer").toLowerCase();
+        setIsCustomerLoggedIn(!!token && (!user || userType === "customer"));
+      })
+      .catch(() => {
+        // keep the local state we already set above
       });
 
-      const data = normalizeApiData(payload);
-      user = data?.user || data?.customer || data || localUser;
-
-      if (user && typeof user === "object") {
-        localStorage.setItem(CUSTOMER_USER_KEY, JSON.stringify(user));
-      }
-    } catch {
-      user = localUser;
-    }
-
-    const userType = String(user?.user_type || "customer").toLowerCase();
-    const isCustomer = !!token && (!user || userType === "customer");
-
-    setIsCustomerLoggedIn(isCustomer);
-    return isCustomer ? user : null;
+    return isCustomerLocal ? localUser : null;
   }, []);
 
   const fetchLoggedInCustomer = useCallback(async () => {
@@ -2398,6 +2425,25 @@ export default function HomePage() {
   }, []);
 
   const loadBookingContext = useCallback(async () => {
+    // ── Fast path: use cached booking context immediately ────────────────────
+    const cached = readBookingCtxCache();
+    if (cached) {
+      bookingContextRef.current = cached;
+      // Still refresh in background so cache stays warm
+      requestApi("/booking-context", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      })
+        .then((payload) => {
+          const fresh = normalizeApiData(payload);
+          bookingContextRef.current = fresh;
+          writeBookingCtxCache(fresh);
+        })
+        .catch(() => {/* keep cached value */});
+      return cached;
+    }
+
+    // ── No cache: fetch and store ────────────────────────────────────────────
     const payload = await requestApi("/booking-context", {
       method: "GET",
       headers: { Accept: "application/json" },
@@ -2405,6 +2451,7 @@ export default function HomePage() {
 
     const data = normalizeApiData(payload);
     bookingContextRef.current = data;
+    writeBookingCtxCache(data);
     return data;
   }, []);
 
@@ -2565,48 +2612,60 @@ export default function HomePage() {
   useEffect(() => {
     let mounted = true;
 
-    // ── Step 1: Load from cache instantly ──────────────────────────────────
-    const cached = readHomepageCache();
-    if (cached && cached.data) {
-      const mergedCached = mergeHomepageContent(cached.data);
+    // ── Step 1: Apply all caches synchronously before any network request ────
+    const cachedContent = readHomepageCache();
+    if (cachedContent && cachedContent.data) {
+      const mergedCached = mergeHomepageContent(cachedContent.data);
       setHomepageContent(mergedCached);
-      // Preload gallery images from cache immediately
       preloadGalleryImages(mergedCached.gallery?.images);
     }
 
-    // ── Step 2: Fetch fresh data in background ────────────────────────────
-    async function loadHomepageContent() {
-      try {
-        const payload = await requestApi(`/homepage-content?t=${Date.now()}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!mounted) return;
-
-        const data = normalizeApiData(payload);
-
-        // Write raw API data to cache for next page load
-        writeHomepageCache(data);
-
-        const merged = mergeHomepageContent(data);
-        setHomepageContent(merged);
-
-        // Preload any new images from fresh data
-        preloadGalleryImages(merged.gallery?.images);
-      } catch (error) {
-        console.error("Homepage content load failed:", error);
-        // If we had no cache either, the page shows empty — but that's
-        // the same as before. Next successful load will populate cache.
-      }
+    const cachedCtx = readBookingCtxCache();
+    if (cachedCtx) {
+      bookingContextRef.current = cachedCtx;
     }
 
-    // If cache is stale (or missing), fetch immediately.
-    // If cache is fresh, still fetch to keep it updated but images are
-    // already showing from cache so user sees no flicker.
-    loadHomepageContent();
+    // ── Step 2: Fire ALL network requests in parallel ────────────────────────
+    // Using Promise.allSettled so one slow/failing request never blocks others.
+    async function fetchAllInParallel() {
+      const [homepageResult, ctxResult] = await Promise.allSettled([
+        // homepage-content: no ?t= cache-bust; we control freshness via our own cache
+        requestApi("/homepage-content", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        }),
+        // booking-context (skip if already cached and fresh)
+        cachedCtx
+          ? Promise.resolve(null)
+          : requestApi("/booking-context", {
+              method: "GET",
+              headers: { Accept: "application/json" },
+            }),
+      ]);
+
+      if (!mounted) return;
+
+      if (homepageResult.status === "fulfilled" && homepageResult.value) {
+        const data = normalizeApiData(homepageResult.value);
+        writeHomepageCache(data);
+        const merged = mergeHomepageContent(data);
+        setHomepageContent(merged);
+        preloadGalleryImages(merged.gallery?.images);
+      }
+
+      if (ctxResult.status === "fulfilled" && ctxResult.value) {
+        const data = normalizeApiData(ctxResult.value);
+        bookingContextRef.current = data;
+        writeBookingCtxCache(data);
+      }
+
+      // Mark calendar ready regardless of individual fetch outcomes
+      if (mounted) setCalendarReady(true);
+    }
+
+    fetchAllInParallel().catch(() => {
+      if (mounted) setCalendarReady(true);
+    });
 
     return () => {
       mounted = false;
@@ -2648,22 +2707,9 @@ export default function HomePage() {
   }, [calendarReady, popupOpen, homepageContent]);
 
   useEffect(() => {
+    // Auth state is resolved non-blocking (local data first, background verify)
     refreshNavbarAuthState();
-
-    let mounted = true;
-
-    loadBookingContext()
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        if (mounted) setCalendarReady(true);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [loadBookingContext, refreshNavbarAuthState]);
+  }, [refreshNavbarAuthState]);
 
   useEffect(() => {
     const resizeHandler = () => forceCalendarResize();
