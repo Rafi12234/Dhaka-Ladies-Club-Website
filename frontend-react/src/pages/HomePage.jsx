@@ -15,6 +15,56 @@ const SELECTED_SLOT_KEY = "dlc_selected_slot_v2";
 const BOOKING_DRAFT_KEY = "dlc_booking_draft_v2";
 const ACTIVE_HOLD_KEY = "dlc_active_hold_v2";
 
+// ── Homepage content cache ──────────────────────────────────────────────────
+const HOMEPAGE_CACHE_KEY = "dlc_homepage_content_cache_v1";
+const HOMEPAGE_CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
+
+function readHomepageCache() {
+  try {
+    const raw = localStorage.getItem(HOMEPAGE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || !parsed.ts) return null;
+    // Use cached data even if stale — we'll refresh in background
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeHomepageCache(data) {
+  try {
+    localStorage.setItem(
+      HOMEPAGE_CACHE_KEY,
+      JSON.stringify({ data, ts: Date.now() })
+    );
+  } catch {
+    // Storage full or unavailable — ignore
+  }
+}
+
+function isHomepageCacheStale(cacheEntry) {
+  if (!cacheEntry || !cacheEntry.ts) return true;
+  return Date.now() - cacheEntry.ts > HOMEPAGE_CACHE_MAX_AGE_MS;
+}
+
+// ── In-memory image ratio cache (survives re-renders, cleared on navigation) ─
+const imageRatioCache = new Map();
+
+// ── Image preloader ─────────────────────────────────────────────────────────
+const preloadedUrls = new Set();
+
+function preloadGalleryImages(images) {
+  if (!Array.isArray(images)) return;
+  images.forEach((image) => {
+    const url = image?.url;
+    if (!url || preloadedUrls.has(url)) return;
+    preloadedUrls.add(url);
+    const img = new Image();
+    img.src = url;
+  });
+}
+
 const homePageStyles = String.raw`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
@@ -1982,32 +2032,34 @@ function getImageRatio(url) {
 }
 
 function getImageRatioReliable(url) {
+  // Return from in-memory cache instantly if we already measured this URL
+  if (imageRatioCache.has(url)) {
+    return Promise.resolve(imageRatioCache.get(url));
+  }
+
   return new Promise((resolve) => {
-    // Hard timeout — never hang forever
-    const timeout = setTimeout(() => resolve(0.75), 3000);
+    const timeout = setTimeout(() => finishWith(0.75), 3000);
 
     let finished = false;
-    const finish = (ratio) => {
+    function finishWith(ratio) {
       if (finished) return;
       finished = true;
       clearTimeout(timeout);
+      imageRatioCache.set(url, ratio);
       resolve(ratio);
-    };
+    }
 
     const img = new Image();
-    // Do NOT set crossOrigin here — it forces a CORS preflight on hosting
-    // servers that don't send CORS headers, causing onerror and potentially
-    // poisoning the browser's network cache for the real <img> tags in the DOM.
 
     img.onload = () => {
       const ratio =
         img.naturalHeight && img.naturalWidth
           ? img.naturalHeight / img.naturalWidth
           : 0.75;
-      finish(ratio);
+      finishWith(ratio);
     };
 
-    img.onerror = () => finish(0.75);
+    img.onerror = () => finishWith(0.75);
 
     img.src = url;
 
@@ -2017,7 +2069,7 @@ function getImageRatioReliable(url) {
         img.naturalHeight && img.naturalWidth
           ? img.naturalHeight / img.naturalWidth
           : 0.75;
-      finish(ratio);
+      finishWith(ratio);
     }
   });
 }
@@ -2041,6 +2093,42 @@ async function buildBalancedGalleryColumns(images, columnCount) {
 
   return columns;
 }
+
+// ── Gallery image component with auto-retry on load failure ──────────────────
+const MAX_IMG_RETRIES = 3;
+const RETRY_DELAYS = [1000, 2000, 4000]; // exponential backoff
+
+function GalleryImg({ src, alt }) {
+  const imgRef = useRef(null);
+  const retryCountRef = useRef(0);
+
+  const handleError = useCallback(() => {
+    if (retryCountRef.current >= MAX_IMG_RETRIES) return;
+
+    const attempt = retryCountRef.current;
+    retryCountRef.current += 1;
+
+    const delay = RETRY_DELAYS[attempt] || 4000;
+
+    setTimeout(() => {
+      if (!imgRef.current) return;
+      // Append a cache-busting param to force a fresh request
+      const separator = src.includes("?") ? "&" : "?";
+      imgRef.current.src = `${src}${separator}_retry=${attempt + 1}&_t=${Date.now()}`;
+    }, delay);
+  }, [src]);
+
+  return (
+    <img
+      ref={imgRef}
+      src={src}
+      alt={alt}
+      loading="lazy"
+      onError={handleError}
+    />
+  );
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const calendarRef = useRef(null);
@@ -2102,62 +2190,78 @@ export default function HomePage() {
   const ourStory = homepageContent.our_story;
   const creatingExperiences = homepageContent.creating_experiences;
   const gallery = homepageContent.gallery;
-useEffect(() => {
-  let mounted = true;
 
-  const images = Array.isArray(gallery.images) ? gallery.images : [];
+  // ── Stabilize gallery.images reference ──────────────────────────────────
+  // normalizeGalleryImages creates a new array every render, which would
+  // re-trigger the gallery useEffect even when the actual URLs haven't
+  // changed. We serialize to a key string and only update the ref when the
+  // content truly changes.
+  const galleryImagesRef = useRef([]);
+  const galleryImagesKey = useMemo(
+    () => (Array.isArray(gallery.images) ? gallery.images.map((i) => i.url).join("|") : ""),
+    [gallery.images]
+  );
 
-  // Immediately distribute images without waiting for ratio loading
-  // so gallery is never empty on first render
-  function distributeImagesEvenly(imgs, columnCount) {
-    const columns = Array.from({ length: columnCount }, () => []);
-    imgs.forEach((image, index) => {
-      columns[index % columnCount].push({ ...image, ratio: 0.75 });
-    });
-    return columns;
-  }
+  useEffect(() => {
+    galleryImagesRef.current = Array.isArray(gallery.images) ? gallery.images : [];
+    // Preload all gallery images immediately so they're in browser cache
+    preloadGalleryImages(galleryImagesRef.current);
+  }, [galleryImagesKey]); // only when actual URLs change
 
-  async function balanceGallery() {
-    if (!mounted) return;
+  useEffect(() => {
+    let mounted = true;
 
-    const columnCount = getGalleryColumnCount();
+    const images = galleryImagesRef.current;
 
-    if (images.length === 0) {
-      setGalleryColumns(Array.from({ length: columnCount }, () => []));
-      return;
+    function distributeImagesEvenly(imgs, columnCount) {
+      const columns = Array.from({ length: columnCount }, () => []);
+      imgs.forEach((image, index) => {
+        columns[index % columnCount].push({ ...image, ratio: 0.75 });
+      });
+      return columns;
     }
 
-    // Step 1: Show images immediately (evenly distributed)
-    const immediateColumns = distributeImagesEvenly(images, columnCount);
-    if (mounted) setGalleryColumns(immediateColumns);
+    async function balanceGallery() {
+      if (!mounted) return;
 
-    // Step 2: Rebalance after ratios are known
-    try {
-      const balancedColumns = await buildBalancedGalleryColumns(images, columnCount);
-      if (mounted) setGalleryColumns(balancedColumns);
-    } catch {
-      // Keep the immediate layout if balancing fails
+      const columnCount = getGalleryColumnCount();
+
+      if (images.length === 0) {
+        setGalleryColumns(Array.from({ length: columnCount }, () => []));
+        return;
+      }
+
+      // Step 1: Show images immediately (evenly distributed)
+      const immediateColumns = distributeImagesEvenly(images, columnCount);
+      if (mounted) setGalleryColumns(immediateColumns);
+
+      // Step 2: Rebalance after ratios are known (fast — uses ratio cache)
+      try {
+        const balancedColumns = await buildBalancedGalleryColumns(images, columnCount);
+        if (mounted) setGalleryColumns(balancedColumns);
+      } catch {
+        // Keep the immediate layout if balancing fails
+      }
     }
-  }
 
-  balanceGallery();
+    balanceGallery();
 
-  let resizeTimer;
-  const handleResize = () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      balanceGallery();
-    }, 200);
-  };
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        balanceGallery();
+      }, 200);
+    };
 
-  window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
 
-  return () => {
-    mounted = false;
-    clearTimeout(resizeTimer);
-    window.removeEventListener("resize", handleResize);
-  };
-}, [gallery.images]);
+    return () => {
+      mounted = false;
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [galleryImagesKey]); // only re-run when actual image URLs change
   const footer = homepageContent.footer;
 
   const heroBackgroundImage = hero.background_image;
@@ -2461,6 +2565,16 @@ useEffect(() => {
   useEffect(() => {
     let mounted = true;
 
+    // ── Step 1: Load from cache instantly ──────────────────────────────────
+    const cached = readHomepageCache();
+    if (cached && cached.data) {
+      const mergedCached = mergeHomepageContent(cached.data);
+      setHomepageContent(mergedCached);
+      // Preload gallery images from cache immediately
+      preloadGalleryImages(mergedCached.gallery?.images);
+    }
+
+    // ── Step 2: Fetch fresh data in background ────────────────────────────
     async function loadHomepageContent() {
       try {
         const payload = await requestApi(`/homepage-content?t=${Date.now()}`, {
@@ -2473,12 +2587,25 @@ useEffect(() => {
         if (!mounted) return;
 
         const data = normalizeApiData(payload);
-        setHomepageContent(mergeHomepageContent(data));
+
+        // Write raw API data to cache for next page load
+        writeHomepageCache(data);
+
+        const merged = mergeHomepageContent(data);
+        setHomepageContent(merged);
+
+        // Preload any new images from fresh data
+        preloadGalleryImages(merged.gallery?.images);
       } catch (error) {
         console.error("Homepage content load failed:", error);
+        // If we had no cache either, the page shows empty — but that's
+        // the same as before. Next successful load will populate cache.
       }
     }
 
+    // If cache is stale (or missing), fetch immediately.
+    // If cache is fresh, still fetch to keep it updated but images are
+    // already showing from cache so user sees no flicker.
     loadHomepageContent();
 
     return () => {
@@ -2905,7 +3032,7 @@ useEffect(() => {
           data-aos-delay={imageIndex === 0 ? undefined : String(imageIndex * 50 + 50)}
           key={image.id || image.url || `${columnIndex}-${imageIndex}`}
         >
-          <img src={image.url} alt={image.alt} />
+          <GalleryImg src={image.url} alt={image.alt} />
           <div className="gallery-overlay">
             <div className="gallery-overlay-icon">✦</div>
           </div>
