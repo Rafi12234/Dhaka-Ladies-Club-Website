@@ -17,9 +17,9 @@ const ACTIVE_HOLD_KEY = "dlc_active_hold_v2";
 const HOMEPAGE_CACHE_KEY = "dlc_homepage_content_v1";
 const HOMEPAGE_CACHE_TS_KEY = "dlc_homepage_content_ts_v1";
 const IMG_RATIO_CACHE_KEY = "dlc_img_ratios_v1";
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
-// ─── Styles ──────────────────────────────────────────────────────────────────
+// ─── Styles ───────────────────────────────────────────────────────────────────
 const homePageStyles = String.raw`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
@@ -140,7 +140,6 @@ const homePageStyles = String.raw`
   }
   .nav-links a:hover { color: var(--gold); }
   .nav-links a:hover::after { width: 40%; }
-
   .login-link {
     background: var(--gold); color: white !important;
     font-weight: 600 !important;
@@ -148,7 +147,6 @@ const homePageStyles = String.raw`
   }
   .login-link:hover { background: var(--gold-dark); transform: translateY(-2px); }
   .login-link::after { display: none !important; }
-
   .nav-cta {
     background: var(--gold) !important; color: white !important;
     font-weight: 600 !important;
@@ -159,7 +157,6 @@ const homePageStyles = String.raw`
     box-shadow: 0 8px 25px rgba(184,134,11,0.4) !important;
   }
   .nav-cta::after { display: none !important; }
-
   .admin-login-link {
     background: #1a1a2e; color: white !important;
     font-weight: 600 !important;
@@ -167,7 +164,6 @@ const homePageStyles = String.raw`
   }
   .admin-login-link:hover { background: #b8860b; transform: translateY(-2px); }
   .admin-login-link::after { display: none !important; }
-
   .logout-btn {
     background: #dc3545; color: white; border: none;
     padding: 8px 18px; border-radius: 50px;
@@ -176,7 +172,6 @@ const homePageStyles = String.raw`
     cursor: pointer; transition: var(--transition);
   }
   .logout-btn:hover { background: #b02a37; transform: translateY(-2px); }
-
   .profile-icon-link {
     width: 42px; height: 42px; border-radius: 50%;
     background: var(--gold-pale); border: 1px solid var(--gold-border);
@@ -245,7 +240,7 @@ const homePageStyles = String.raw`
   }
   @keyframes fadeSlideUp {
     from { opacity: 0; transform: translateY(40px); }
-    to   { opacity: 1; transform: translateY(0);    }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .hero-content p {
     max-width: 650px; margin: 0 auto 40px;
@@ -307,12 +302,15 @@ const homePageStyles = String.raw`
     100% { transform: translateY(18px); opacity: 0; }
   }
   @keyframes bounceDown {
-    0%,100% { transform: translateX(-50%) translateY(0);  }
-    50%      { transform: translateX(-50%) translateY(8px);}
+    0%,100% { transform: translateX(-50%) translateY(0);   }
+    50%     { transform: translateX(-50%) translateY(8px); }
   }
 
   /* ── Stats ── */
-  .stats-strip { background: white; padding: 0; box-shadow: var(--shadow-md); position: relative; z-index: 10; }
+  .stats-strip {
+    background: white; padding: 0;
+    box-shadow: var(--shadow-md); position: relative; z-index: 10;
+  }
   .stats-inner { display: grid; grid-template-columns: repeat(4,1fr); }
   .stat-item {
     padding: 35px 20px; text-align: center;
@@ -321,8 +319,11 @@ const homePageStyles = String.raw`
   }
   .stat-item:last-child { border-right: none; }
   .stat-item:hover { background: var(--gold-pale); }
-  .stat-number { font-size: 36px; font-weight: 800; color: var(--gold); display: block; line-height: 1; margin-bottom: 6px; }
-  .stat-label  { font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px; }
+  .stat-number {
+    font-size: 36px; font-weight: 800; color: var(--gold);
+    display: block; line-height: 1; margin-bottom: 6px;
+  }
+  .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px; }
 
   section { padding: 110px 0; }
 
@@ -367,19 +368,28 @@ const homePageStyles = String.raw`
   #calendar .fc-col-header,
   #calendar .fc-scrollgrid-sync-table { width: 100% !important; }
   #calendar table { table-layout: fixed !important; }
-  .fc-toolbar-title { font-size: 26px !important; color: var(--text) !important; font-weight: 800 !important; font-family: 'Poppins',sans-serif !important; }
+  .fc-toolbar-title {
+    font-size: 26px !important; color: var(--text) !important;
+    font-weight: 800 !important; font-family: 'Poppins',sans-serif !important;
+  }
   .fc-button-primary {
     background: var(--gold) !important; border-color: var(--gold) !important;
     font-family: 'Poppins',sans-serif !important; font-weight: 600 !important;
     border-radius: 10px !important; padding: 8px 16px !important;
     transition: var(--transition) !important;
   }
-  .fc-button-primary:hover { background: var(--gold-dark) !important; border-color: var(--gold-dark) !important; transform: translateY(-1px) !important; }
-  .fc-button-primary:not(:disabled).fc-button-active { background: var(--gold-dark) !important; border-color: var(--gold-dark) !important; }
+  .fc-button-primary:hover {
+    background: var(--gold-dark) !important; border-color: var(--gold-dark) !important;
+    transform: translateY(-1px) !important;
+  }
+  .fc-button-primary:not(:disabled).fc-button-active {
+    background: var(--gold-dark) !important; border-color: var(--gold-dark) !important;
+  }
   .fc-col-header-cell {
     background: var(--gold-pale) !important; color: var(--gold-dark) !important;
     font-weight: 700 !important; font-size: 13px !important;
-    text-transform: uppercase !important; letter-spacing: 1px !important; padding: 12px 0 !important;
+    text-transform: uppercase !important; letter-spacing: 1px !important;
+    padding: 12px 0 !important;
   }
   .fc .fc-daygrid-day-frame { min-height: 110px; }
   .fc .fc-daygrid-event {
@@ -389,23 +399,45 @@ const homePageStyles = String.raw`
     cursor: pointer; transition: transform 0.2s;
   }
   .fc .fc-daygrid-event:hover { transform: scale(1.02); }
-  .fc .fc-daygrid-day-number { font-size: 16px; font-weight: 600; padding: 8px; color: var(--text); }
+  .fc .fc-daygrid-day-number {
+    font-size: 16px; font-weight: 600; padding: 8px; color: var(--text);
+  }
   .fc .fc-daygrid-day:hover .fc-daygrid-day-number { color: var(--gold); }
   .fc .fc-daygrid-day.fc-day-today { background: rgba(184,134,11,0.06) !important; }
   .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
     background: var(--gold); color: white; border-radius: 50%;
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; display: flex;
+    align-items: center; justify-content: center;
   }
-  .calendar-legend { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
-  .legend-dot  { width: 14px; height: 14px; border-radius: 4px; }
+  .calendar-legend {
+    display: flex; gap: 24px; justify-content: center;
+    flex-wrap: wrap; margin-top: 28px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+  }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
 
   /* ── About ── */
   .about-section { background: var(--bg); }
-  .about-wrapper { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 60px; align-items: center; }
+  .about-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(340px,1fr));
+    gap: 60px; align-items: center;
+  }
   .about-img-wrap { position: relative; }
-  .about-img-wrap img { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: block; position: relative; z-index: 2; }
-  .about-img-deco { position: absolute; width: 100%; height: 100%; border-radius: var(--radius-lg); border: 3px solid var(--gold-border); top: 18px; left: 18px; z-index: 1; }
+  .about-img-wrap img {
+    width: 100%; border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); display: block;
+    position: relative; z-index: 2;
+  }
+  .about-img-deco {
+    position: absolute; width: 100%; height: 100%;
+    border-radius: var(--radius-lg);
+    border: 3px solid var(--gold-border);
+    top: 18px; left: 18px; z-index: 1;
+  }
   .about-img-badge {
     position: absolute; bottom: -20px; right: -20px;
     background: var(--gold); color: white;
@@ -417,15 +449,21 @@ const homePageStyles = String.raw`
     box-shadow: 0 8px 25px rgba(184,134,11,0.4);
     animation: rotateBadge 15s linear infinite;
   }
-  @keyframes rotateBadge      { from { transform: rotate(0deg);   } to { transform: rotate(360deg);  } }
-  .about-img-badge span       { animation: rotateBadgeInner 15s linear infinite reverse; }
-  @keyframes rotateBadgeInner { from { transform: rotate(0deg);   } to { transform: rotate(360deg);  } }
+  @keyframes rotateBadge { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .about-img-badge span { animation: rotateBadgeInner 15s linear infinite reverse; }
+  @keyframes rotateBadgeInner { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .about-text { padding-left: 10px; }
-  .about-text h3 { font-size: clamp(26px,4vw,38px); font-weight: 800; color: var(--text); margin-bottom: 22px; line-height: 1.2; }
+  .about-text h3 {
+    font-size: clamp(26px,4vw,38px); font-weight: 800;
+    color: var(--text); margin-bottom: 22px; line-height: 1.2;
+  }
   .about-text h3 span { color: var(--gold); }
   .about-text p { color: var(--text-muted); line-height: 1.95; margin-bottom: 20px; font-size: 15.5px; }
   .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
-  .about-feature-item { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--text); }
+  .about-feature-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
   .about-feature-item::before {
     content: '✓'; width: 24px; height: 24px;
     background: var(--gold); color: white; border-radius: 50%;
@@ -438,30 +476,51 @@ const homePageStyles = String.raw`
 
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 18px;
     align-items: start;
   }
-  .gallery-column { display: flex; flex-direction: column; gap: 18px; }
+  .gallery-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
 
-  /* Each item is a normal block — image is display:block width:100% height:auto.
-     This is the ONLY reliable cross-browser approach. No padding tricks needed. */
+  /*
+   * .gallery-item
+   * The image is ALWAYS visible — no opacity tricks.
+   * A shimmer overlay sits on top and fades out once the image loads.
+   * This guarantees images show even if onLoad is late or missed.
+   */
   .gallery-item {
     position: relative;
     border-radius: var(--radius);
     overflow: hidden;
     cursor: pointer;
-    /* gold background shows as placeholder while image loads */
-    background: #f0ebe0;
-    /* min-height so the shimmer is visible before any image loads */
-    min-height: 160px;
+    display: block;
+    background: #ede8df;
+    min-height: 180px;
   }
 
-  /* Shimmer animation layered via pseudo-element on the wrapper */
-  .gallery-item::before {
-    content: '';
+  /* Image — always visible, natural aspect ratio */
+  .gallery-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 180px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ede8df;
+  }
+
+  /* Shimmer sits ON TOP of the image (z-index 2) and fades away when loaded */
+  .gallery-shimmer {
     position: absolute;
     inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: var(--radius);
     background: linear-gradient(
       90deg,
       #f0ebe0 0%,
@@ -471,47 +530,26 @@ const homePageStyles = String.raw`
     );
     background-size: 300% 100%;
     animation: galleryShimmer 1.6s ease-in-out infinite;
-    z-index: 1;
-    border-radius: var(--radius);
-    transition: opacity 0.35s ease;
+    transition: opacity 0.5s ease;
+    opacity: 1;
   }
-
-  /* Once loaded, hide the shimmer */
-  .gallery-item.img-loaded::before {
+  .gallery-shimmer.done {
     opacity: 0;
-    pointer-events: none;
   }
-
   @keyframes galleryShimmer {
     0%   { background-position: 100% 0; }
     100% { background-position: -100% 0; }
   }
 
-  /* The actual image: block layout, natural aspect ratio, hidden until loaded */
-  .gallery-item img {
-    display: block;
-    width: 100%;
-    height: auto;
-    position: relative;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.4,0,0.2,1);
-    /* Reserve space so layout doesn't jump: browser uses width+aspect-ratio once known */
-  }
-
-  .gallery-item.img-loaded img {
-    opacity: 1;
-  }
-
-  /* Overlay */
+  /* Hover overlay — z-index 4, above shimmer */
   .gallery-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg,rgba(184,134,11,0.7) 0%,rgba(0,0,0,0.4) 100%);
+    background: linear-gradient(135deg,rgba(184,134,11,0.75) 0%,rgba(0,0,0,0.45) 100%);
     opacity: 0;
     transition: var(--transition);
     display: flex; align-items: center; justify-content: center;
-    z-index: 3;
+    z-index: 4;
     border-radius: var(--radius);
   }
   .gallery-overlay-icon {
@@ -522,8 +560,8 @@ const homePageStyles = String.raw`
     transform: scale(0.6) rotate(-15deg);
     transition: var(--transition);
   }
-  .gallery-item:hover img              { transform: scale(1.08); }
-  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gallery-item:hover img                   { transform: scale(1.08); }
+  .gallery-item:hover .gallery-overlay      { opacity: 1; }
   .gallery-item:hover .gallery-overlay-icon { transform: scale(1) rotate(0deg); }
 
   /* ── Features ── */
@@ -549,29 +587,56 @@ const homePageStyles = String.raw`
     margin: 0 auto 24px; font-size: 38px;
     transition: var(--transition); border: 2px solid var(--gold-border);
   }
-  .feature-card:hover .feature-icon-wrap { background: var(--gold); border-color: var(--gold); transform: rotateY(360deg); }
+  .feature-card:hover .feature-icon-wrap {
+    background: var(--gold); border-color: var(--gold); transform: rotateY(360deg);
+  }
   .feature-card h3 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
   .feature-card p  { color: var(--text-muted); line-height: 1.8; font-size: 15px; }
 
   /* ── CTA ── */
   .booking-cta { position: relative; overflow: hidden; }
-  .booking-cta-bg { position: absolute; inset: 0; background: url('/assets/img/BG-01.jpeg') center/cover no-repeat; }
-  .booking-cta-overlay { position: absolute; inset: 0; background: linear-gradient(135deg,rgba(0,0,0,0.78) 0%,rgba(184,134,11,0.35) 50%,rgba(0,0,0,0.78) 100%); }
+  .booking-cta-bg {
+    position: absolute; inset: 0;
+    background: url('/assets/img/BG-01.jpeg') center/cover no-repeat;
+  }
+  .booking-cta-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg,rgba(0,0,0,0.78) 0%,rgba(184,134,11,0.35) 50%,rgba(0,0,0,0.78) 100%);
+  }
   .booking-cta .container { position: relative; z-index: 2; text-align: center; }
-  .booking-cta h2 { font-size: clamp(32px,6vw,58px); font-weight: 800; color: white; margin-bottom: 20px; line-height: 1.15; }
+  .booking-cta h2 {
+    font-size: clamp(32px,6vw,58px); font-weight: 800;
+    color: white; margin-bottom: 20px; line-height: 1.15;
+  }
   .booking-cta h2 span { color: #f0d080; }
-  .booking-cta p { max-width: 650px; margin: 0 auto 40px; line-height: 1.9; color: rgba(255,255,255,0.82); font-size: 17px; }
+  .booking-cta p {
+    max-width: 650px; margin: 0 auto 40px;
+    line-height: 1.9; color: rgba(255,255,255,0.82); font-size: 17px;
+  }
 
   /* ── Footer ── */
   footer { background: #0f0f1a; color: white; padding: 70px 0 40px; }
-  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px; margin-bottom: 50px;
+  }
   .footer-brand img { height: 34px; margin-bottom: 18px; filter: brightness(10); }
   .footer-brand p   { color: #9ca3af; line-height: 1.8; font-size: 14px; max-width: 280px; }
-  .footer-col h4 { color: var(--gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .footer-col h4 {
+    color: var(--gold); font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;
+  }
   .footer-col a,
-  .footer-col p  { display: block; color: #9ca3af; font-size: 14px; line-height: 1.7; margin-bottom: 8px; transition: var(--transition); }
+  .footer-col p {
+    display: block; color: #9ca3af; font-size: 14px;
+    line-height: 1.7; margin-bottom: 8px; transition: var(--transition);
+  }
   .footer-col a:hover { color: var(--gold); padding-left: 4px; }
-  .footer-bottom { border-top: 1px solid #1f2937; padding-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom {
+    border-top: 1px solid #1f2937; padding-top: 30px;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 12px;
+  }
   .footer-bottom p { color: #6b7280; font-size: 13px; }
   .footer-gold { color: var(--gold); }
 
@@ -597,20 +662,32 @@ const homePageStyles = String.raw`
     animation: popupSlideUp 0.4s cubic-bezier(0.4,0,0.2,1);
     position: relative;
   }
-  @keyframes popupSlideUp { from { opacity: 0; transform: translateY(40px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes popupSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  }
   .popup-header {
     background: linear-gradient(135deg,var(--gold) 0%,#d4a017 100%);
     padding: 28px 30px; border-radius: 28px 28px 0 0;
     position: relative; overflow: hidden;
   }
-  .popup-header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(255,255,255,0.08); border-radius: 50%; }
-  .popup-header::after  { content: ''; position: absolute; bottom: -60px; left: -30px; width: 140px; height: 140px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+  .popup-header::before {
+    content: ''; position: absolute;
+    top: -40px; right: -40px; width: 160px; height: 160px;
+    background: rgba(255,255,255,0.08); border-radius: 50%;
+  }
+  .popup-header::after {
+    content: ''; position: absolute;
+    bottom: -60px; left: -30px; width: 140px; height: 140px;
+    background: rgba(255,255,255,0.06); border-radius: 50%;
+  }
   .popup-header-content { position: relative; z-index: 1; }
   .popup-header h3 { font-size: 22px; font-weight: 800; color: white; margin-bottom: 6px; }
   .popup-date-badge {
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,0.22); color: white;
-    padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 600;
+    padding: 6px 14px; border-radius: 50px;
+    font-size: 13px; font-weight: 600;
   }
   .popup-close {
     position: absolute; top: 20px; right: 20px;
@@ -622,7 +699,10 @@ const homePageStyles = String.raw`
   }
   .popup-close:hover { background: rgba(255,255,255,0.35); transform: rotate(90deg); }
   .popup-body    { padding: 28px 30px; }
-  .popup-subtitle { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 18px; }
+  .popup-subtitle {
+    font-size: 13px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-muted); margin-bottom: 18px;
+  }
   .slot-radio-group { display: flex; flex-direction: column; gap: 14px; }
   .slot-radio-item  { position: relative; }
   .slot-radio-item input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -632,7 +712,9 @@ const homePageStyles = String.raw`
     border-radius: 16px; cursor: pointer;
     transition: var(--transition); background: #fafafa; user-select: none;
   }
-  .slot-radio-item input[type="radio"]:checked + .slot-radio-label { border-color: var(--gold); background: var(--gold-pale); }
+  .slot-radio-item input[type="radio"]:checked + .slot-radio-label {
+    border-color: var(--gold); background: var(--gold-pale);
+  }
   .slot-radio-label:hover { border-color: var(--gold-border); background: var(--gold-pale); }
   .slot-radio-label.disabled { cursor: not-allowed; opacity: 0.58; pointer-events: none; }
   .slot-radio-custom {
@@ -640,12 +722,19 @@ const homePageStyles = String.raw`
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: var(--transition);
   }
-  .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom { border-color: var(--gold); background: var(--gold); }
-  .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+  .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom {
+    border-color: var(--gold); background: var(--gold);
+  }
+  .slot-radio-item input[type="radio"]:checked + .slot-radio-label .slot-radio-custom::after {
+    content: ''; width: 8px; height: 8px; background: white; border-radius: 50%;
+  }
   .slot-info { flex: 1; }
   .slot-name  { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
   .slot-time  { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-  .slot-status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+  .slot-status-badge {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+  }
   .badge-available { background: #dcfce7; color: #166534; }
   .badge-booked    { background: #fee2e2; color: #991b1b; }
   .badge-blocked   { background: #f1f5f9; color: #475569; }
@@ -705,8 +794,8 @@ const EMPTY_HOMEPAGE_CONTENT = {
   },
   our_story: { eyebrow: "", title: "", description: "" },
   creating_experiences: {
-    image: "", image_alt: "", badge_text: "", eyebrow: "",
-    title: "", description_1: "", description_2: "", points: [],
+    image: "", image_alt: "", badge_text: "",
+    eyebrow: "", title: "", description_1: "", description_2: "", points: [],
   },
   gallery: { eyebrow: "", title: "", description: "", images: [] },
   footer: { description: "", address: "", phone: "", email: "", copyright: "", tagline: "" },
@@ -736,111 +825,13 @@ const LEGEND_ITEMS = [
   { color: "#6c757d", label: "Blocked" },
 ];
 
-const CALENDAR_COLOR = {
+const CALENDAR_COLOR_MAP = {
   available: "#198754",
   booked: "#dc3545",
   blocked: "#6c757d",
   payment_in_progress: "#fd7e14",
   pending_approval: "#b8860b",
 };
-
-// ─── localStorage cache helpers ───────────────────────────────────────────────
-const lsGet = (key) => {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
-  catch { return null; }
-};
-const lsSet = (key, value) => {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* quota */ }
-};
-const lsDel = (key) => { try { localStorage.removeItem(key); } catch { /* noop */ } };
-
-// ─── sessionStorage helpers ───────────────────────────────────────────────────
-const ssGet = (key) => {
-  try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : null; }
-  catch { return null; }
-};
-const ssSet = (key, value) => {
-  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* quota */ }
-};
-const ssDel = (key) => { try { sessionStorage.removeItem(key); } catch { /* noop */ } };
-
-// ─── Homepage content cache (localStorage, TTL-based) ────────────────────────
-function getCachedHomepageContent() {
-  const ts = lsGet(HOMEPAGE_CACHE_TS_KEY);
-  const content = lsGet(HOMEPAGE_CACHE_KEY);
-  if (!content || !ts) return null;
-  if (Date.now() - ts > CACHE_TTL_MS) {
-    lsDel(HOMEPAGE_CACHE_KEY);
-    lsDel(HOMEPAGE_CACHE_TS_KEY);
-    return null;
-  }
-  return content;
-}
-
-function setCachedHomepageContent(content) {
-  lsSet(HOMEPAGE_CACHE_KEY, content);
-  lsSet(HOMEPAGE_CACHE_TS_KEY, Date.now());
-}
-
-// ─── Image-ratio cache (localStorage, permanent — ratios never change) ────────
-function getRatioCache() {
-  return lsGet(IMG_RATIO_CACHE_KEY) || {};
-}
-function setRatioCache(map) {
-  lsSet(IMG_RATIO_CACHE_KEY, map);
-}
-
-// ─── Auth helpers ─────────────────────────────────────────────────────────────
-function clearCustomerAuthSession() {
-  localStorage.removeItem(CUSTOMER_TOKEN_KEY);
-  localStorage.removeItem(CUSTOMER_USER_KEY);
-}
-function clearAllBookingSessionData() {
-  Object.keys(sessionStorage).forEach((k) => {
-    if (k === SELECTED_SLOT_KEY || k === ACTIVE_HOLD_KEY || k === BOOKING_DRAFT_KEY || k.startsWith(`${BOOKING_DRAFT_KEY}_`))
-      sessionStorage.removeItem(k);
-  });
-}
-
-// ─── Time / format helpers ────────────────────────────────────────────────────
-function formatCountdown(ms) {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-function parseServerDateTime(v) {
-  if (!v) return null;
-  const s = String(v);
-  return new Date(s.includes("T") ? s : s.replace(" ", "T")).getTime();
-}
-function getSlotExpiry(slot) { return parseServerDateTime(slot?.hold_expires_at_iso || slot?.hold_expires_at); }
-function getRemainingText(slot) {
-  const exp = getSlotExpiry(slot);
-  if (!exp) return "";
-  const rem = exp - Date.now();
-  return rem <= 0 ? "00:00" : formatCountdown(rem);
-}
-function formatSlotLabel(slot) { return `${slot.shift_name} (${slot.start_time} - ${slot.end_time})`; }
-function calcAmount(slot) { return Number(slot?.price || slot?.shift_price || slot?.total_amount || 0); }
-
-function calendarSlotTitle(slot) {
-  if (slot.slot_status === "payment_in_progress") return `${slot.shift_name} · In Progress ${getRemainingText(slot)}`;
-  if (slot.slot_status === "pending_approval") return `${slot.shift_name} · Pending Approval`;
-  return slot.calendar_title || `${slot.shift_name} · ${slot.slot_status}`;
-}
-
-function buildSlotEvent(slot) {
-  const color = CALENDAR_COLOR[slot.slot_status] || "#6c757d";
-  return {
-    id: String(slot.slot_id),
-    title: calendarSlotTitle(slot),
-    start: slot.slot_date,
-    allDay: true,
-    backgroundColor: color,
-    borderColor: color,
-    classNames: [`slot-${slot.slot_status}`],
-    extendedProps: { slot },
-  };
-}
 
 const STATUS_BADGE_MAP = {
   available: { label: "Available", cls: "badge-available" },
@@ -849,7 +840,105 @@ const STATUS_BADGE_MAP = {
   payment_in_progress: { label: "In Progress", cls: "badge-progress" },
   pending_approval: { label: "Pending Approval", cls: "badge-pending" },
 };
-const getStatusBadge = (s) => STATUS_BADGE_MAP[s] || { label: s, cls: "badge-blocked" };
+
+// ─── localStorage helpers ─────────────────────────────────────────────────────
+function lsGet(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch { return null; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage quota */ }
+}
+function lsDel(key) {
+  try { localStorage.removeItem(key); } catch { /* noop */ }
+}
+
+// ─── sessionStorage helpers ───────────────────────────────────────────────────
+function ssGet(key) {
+  try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch { return null; }
+}
+function ssSet(key, value) {
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* noop */ }
+}
+function ssDel(key) {
+  try { sessionStorage.removeItem(key); } catch { /* noop */ }
+}
+
+// ─── Homepage content cache ───────────────────────────────────────────────────
+function getCachedContent() {
+  const ts = lsGet(HOMEPAGE_CACHE_TS_KEY);
+  const content = lsGet(HOMEPAGE_CACHE_KEY);
+  if (!content || !ts || Date.now() - ts > CACHE_TTL_MS) {
+    lsDel(HOMEPAGE_CACHE_KEY);
+    lsDel(HOMEPAGE_CACHE_TS_KEY);
+    return null;
+  }
+  return content;
+}
+function setCachedContent(raw) {
+  lsSet(HOMEPAGE_CACHE_KEY, raw);
+  lsSet(HOMEPAGE_CACHE_TS_KEY, Date.now());
+}
+
+// ─── Image ratio cache ────────────────────────────────────────────────────────
+function getRatioCache() { return lsGet(IMG_RATIO_CACHE_KEY) || {}; }
+function saveRatioCache(map) { lsSet(IMG_RATIO_CACHE_KEY, map); }
+
+// ─── Auth helpers ─────────────────────────────────────────────────────────────
+function clearCustomerAuth() {
+  lsDel(CUSTOMER_TOKEN_KEY);
+  lsDel(CUSTOMER_USER_KEY);
+}
+function clearBookingSession() {
+  Object.keys(sessionStorage).forEach((k) => {
+    if (k === SELECTED_SLOT_KEY || k === ACTIVE_HOLD_KEY || k === BOOKING_DRAFT_KEY || k.startsWith(`${BOOKING_DRAFT_KEY}_`))
+      sessionStorage.removeItem(k);
+  });
+}
+
+// ─── Formatting helpers ───────────────────────────────────────────────────────
+function formatCountdown(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+function parseServerTime(v) {
+  if (!v) return null;
+  const s = String(v);
+  return new Date(s.includes("T") ? s : s.replace(" ", "T")).getTime();
+}
+function getSlotExpiry(slot) { return parseServerTime(slot?.hold_expires_at_iso || slot?.hold_expires_at); }
+function getRemainingText(slot) {
+  const exp = getSlotExpiry(slot);
+  if (!exp) return "";
+  const rem = exp - Date.now();
+  return rem <= 0 ? "00:00" : formatCountdown(rem);
+}
+function formatSlotLabel(slot) { return `${slot.shift_name} (${slot.start_time} - ${slot.end_time})`; }
+function calcAmount(slot) { return Number(slot?.price || slot?.shift_price || slot?.total_amount || 0); }
+function getStatusBadge(status) { return STATUS_BADGE_MAP[status] || { label: status, cls: "badge-blocked" }; }
+
+function getCalendarSlotTitle(slot) {
+  if (slot.slot_status === "payment_in_progress")
+    return `${slot.shift_name} · In Progress ${getRemainingText(slot)}`;
+  if (slot.slot_status === "pending_approval")
+    return `${slot.shift_name} · Pending Approval`;
+  return slot.calendar_title || `${slot.shift_name} · ${slot.slot_status}`;
+}
+
+function buildSlotEvent(slot) {
+  const color = CALENDAR_COLOR_MAP[slot.slot_status] || "#6c757d";
+  return {
+    id: String(slot.slot_id),
+    title: getCalendarSlotTitle(slot),
+    start: slot.slot_date,
+    allDay: true,
+    backgroundColor: color,
+    borderColor: color,
+    classNames: [`slot-${slot.slot_status}`],
+    extendedProps: { slot },
+  };
+}
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
 function normalizeApiData(payload) {
@@ -873,7 +962,7 @@ async function requestApi(endpoint, options = {}) {
   return payload;
 }
 
-// ─── Content normalization ────────────────────────────────────────────────────
+// ─── Content normalisation ────────────────────────────────────────────────────
 function resolveUrl(url) {
   if (!url) return "";
   if (/^https?:\/\//i.test(url)) return url;
@@ -900,9 +989,52 @@ function mergeContent(raw) {
   };
   c.hero.background_image = resolveUrl(c.hero.background_image);
   c.creating_experiences.image = resolveUrl(c.creating_experiences.image);
-  c.creating_experiences.points = Array.isArray(c.creating_experiences.points) ? c.creating_experiences.points.filter(Boolean) : [];
+  c.creating_experiences.points = Array.isArray(c.creating_experiences.points)
+    ? c.creating_experiences.points.filter(Boolean) : [];
   c.gallery.images = normalizeGalleryImages(c.gallery.images);
   return c;
+}
+
+// ─── Gallery helpers ──────────────────────────────────────────────────────────
+function getColCount() {
+  if (typeof window === "undefined") return 3;
+  if (window.innerWidth <= 480) return 1;
+  if (window.innerWidth <= 900) return 2;
+  return 3;
+}
+
+// Round-robin: instant, no async needed
+function distributeEven(images, cols) {
+  const columns = Array.from({ length: cols }, () => []);
+  images.forEach((img, i) => columns[i % cols].push(img));
+  return columns;
+}
+
+// Height-balanced using known aspect ratios
+function distributeBalanced(images, cols, ratioMap) {
+  const columns = Array.from({ length: cols }, () => []);
+  const heights = new Array(cols).fill(0);
+  images.forEach((img) => {
+    const ratio = ratioMap[img.url] ?? 0.75;
+    const idx = heights.indexOf(Math.min(...heights));
+    columns[idx].push(img);
+    heights[idx] += ratio;
+  });
+  return columns;
+}
+
+// Measure a single image's h/w ratio
+function measureRatio(url) {
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => resolve(0.75), 5000);
+    const img = new window.Image();
+    const done = (r) => { clearTimeout(timeout); resolve(r); };
+    img.onload = () => done(img.naturalWidth ? img.naturalHeight / img.naturalWidth : 0.75);
+    img.onerror = () => done(0.75);
+    img.src = url;
+    // Already cached by browser — fires synchronously
+    if (img.complete && img.naturalWidth) done(img.naturalHeight / img.naturalWidth);
+  });
 }
 
 // ─── Render helpers ───────────────────────────────────────────────────────────
@@ -924,90 +1056,84 @@ function FooterCopyright({ text }) {
   return <>{before}<span className="footer-gold">{brand}</span>{after}</>;
 }
 
-// ─── Gallery column distribution ──────────────────────────────────────────────
-function getColCount() {
-  if (typeof window === "undefined") return 3;
-  if (window.innerWidth <= 480) return 1;
-  if (window.innerWidth <= 900) return 2;
-  return 3;
-}
-
-/**
- * Height-balanced masonry using cached aspect ratios.
- * Unknown ratios default to 0.75 and are measured in the background,
- * then the layout is re-balanced and the ratios persisted to localStorage.
- */
-function distributeEven(images, cols) {
-  const columns = Array.from({ length: cols }, () => []);
-  images.forEach((img, i) => columns[i % cols].push(img));
-  return columns;
-}
-
-function distributeBalanced(images, cols, ratioMap) {
-  const columns = Array.from({ length: cols }, () => []);
-  const heights = new Array(cols).fill(0);
-  images.forEach((img) => {
-    const ratio = ratioMap[img.url] ?? 0.75;
-    const idx = heights.indexOf(Math.min(...heights));
-    columns[idx].push(img);
-    heights[idx] += ratio;
-  });
-  return columns;
-}
-
-/** Measure an image's h/w ratio — resolves immediately if already cached by browser. */
-function measureRatio(url) {
-  return new Promise((resolve) => {
-    const t = setTimeout(() => resolve(0.75), 4000);
-    const img = new window.Image();
-    img.crossOrigin = "anonymous";
-    const done = (r) => { clearTimeout(t); resolve(r); };
-    img.onload = () => done(img.naturalWidth ? img.naturalHeight / img.naturalWidth : 0.75);
-    img.onerror = () => done(0.75);
-    img.src = url;
-    if (img.complete && img.naturalWidth) done(img.naturalHeight / img.naturalWidth);
-  });
-}
-
-// ─── GalleryImage component ───────────────────────────────────────────────────
-// Simple, reliable approach:
-//   • img is display:block, width:100%, height:auto → natural aspect ratio preserved
-//   • starts opacity:0 → fades to opacity:1 on load (via class on the parent .gallery-item)
-//   • parent has min-height + shimmer via ::before until loaded
-//   • We add img-loaded class to the PARENT so the CSS ::before shimmer hides
-function GalleryImage({ url, alt, onLoaded }) {
-  const wrapRef = useRef(null);
-
-  function handleLoad() {
-    wrapRef.current?.classList.add("img-loaded");
-    onLoaded?.();
-  }
-
-  function handleError() {
-    // Still remove shimmer so we don't show a spinning placeholder forever
-    wrapRef.current?.classList.add("img-loaded");
-  }
-
-  // Handle already-cached images that fire load synchronously
+// ─── GalleryImage ─────────────────────────────────────────────────────────────
+//
+// THE FIX: image is ALWAYS rendered visible (no opacity:0).
+// A gold shimmer div sits ON TOP (z-index 2) and fades out when the image loads.
+// This means the image is visible underneath the shimmer from the very first paint.
+// Even if onLoad is never called, the image is still visible.
+//
+function GalleryImage({ url, alt }) {
+  const shimmerRef = useRef(null);
   const imgRef = useRef(null);
-  useEffect(() => {
-    const el = imgRef.current;
-    if (el?.complete) {
-      wrapRef.current?.classList.add("img-loaded");
+  const doneRef = useRef(false);
+
+  const markDone = useCallback(() => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    if (shimmerRef.current) {
+      shimmerRef.current.classList.add("done");
     }
   }, []);
 
+  useEffect(() => {
+    doneRef.current = false;
+
+    const img = imgRef.current;
+    if (!img) return;
+
+    // Case 1: already loaded (browser cache hit — complete before React mounts)
+    if (img.complete && img.naturalWidth > 0) {
+      markDone();
+      return;
+    }
+
+    // Case 2: src is empty or broken immediately
+    if (img.complete && img.naturalWidth === 0) {
+      markDone();
+      return;
+    }
+
+    // Case 3: poll as safety net in case onLoad fired before handler attached
+    const poll = setInterval(() => {
+      if (imgRef.current?.complete) {
+        markDone();
+        clearInterval(poll);
+      }
+    }, 80);
+
+    // Always clean up after 8s maximum
+    const maxTimer = setTimeout(() => {
+      markDone();
+      clearInterval(poll);
+    }, 8000);
+
+    return () => {
+      clearInterval(poll);
+      clearTimeout(maxTimer);
+    };
+  }, [url, markDone]);
+
   return (
-    <div className="gallery-item" ref={wrapRef}>
+    <div className="gallery-item">
+      {/*
+        img has no opacity tricks — it is always visible.
+        The shimmer overlays it and fades away.
+      */}
       <img
         ref={imgRef}
         src={url}
         alt={alt}
-        loading="lazy"
-        decoding="async"
-        onLoad={handleLoad}
-        onError={handleError}
+        onLoad={markDone}
+        onError={markDone}
       />
+      {/* Shimmer: z-index 2, sits above the image, fades out via .done class */}
+      <div
+        ref={shimmerRef}
+        className="gallery-shimmer"
+        aria-hidden="true"
+      />
+      {/* Hover overlay: z-index 4 */}
       <div className="gallery-overlay">
         <div className="gallery-overlay-icon">✦</div>
       </div>
@@ -1019,18 +1145,19 @@ function GalleryImage({ url, alt, onLoaded }) {
 export default function HomePage() {
   const navigate = useNavigate();
 
+  // Stable refs — never cause re-renders
   const calendarRef = useRef(null);
   const slotsByDateRef = useRef({});
   const bookingCtxRef = useRef(null);
   const statsRef = useRef(null);
   const popupCloseTimer = useRef(null);
   const calendarSizeTimer = useRef(null);
-  const aosObserver = useRef(null);
+  const aosObserverRef = useRef(null);
 
   // ── State ──────────────────────────────────────────────────────────────────
-  // Seed from localStorage cache instantly — no blank flash on refresh
+  // Seed from localStorage cache → instant render on refresh, no blank flash
   const [content, setContent] = useState(() => {
-    const cached = getCachedHomepageContent();
+    const cached = getCachedContent();
     return cached ? mergeContent(cached) : EMPTY_HOMEPAGE_CONTENT;
   });
 
@@ -1079,15 +1206,14 @@ export default function HomePage() {
     });
   }, [popupDate]);
 
-  // ── Gallery: instant layout then background-balance ───────────────────────
+  // ── Gallery layout ─────────────────────────────────────────────────────────
   //
-  //  Strategy (3 phases):
-  //  1. Immediately render columns using ratios from localStorage cache
-  //     → page shows images on first render, instant on refresh
-  //  2. Measure any UNKNOWN ratios in the background (lazy — doesn't block render)
-  //  3. Once measured, re-balance + persist ratios to localStorage
+  // Phase 1 (sync):   Read ratio cache from localStorage → balanced layout immediately
+  // Phase 1b (sync):  If some ratios unknown → even distribution immediately (images visible)
+  // Phase 2 (async):  Measure unknown ratios in background (non-blocking)
+  // Phase 3 (async):  Re-balance + persist ratios to localStorage
   //
-  const galleryImages = gallery.images; // stable ref used in effect dep
+  const galleryImages = gallery.images;
 
   useEffect(() => {
     if (!galleryImages.length) {
@@ -1096,38 +1222,32 @@ export default function HomePage() {
     }
 
     let mounted = true;
-
-    // Phase 1 — instant layout from cache
-    const ratioCache = getRatioCache();
     const cols = getColCount();
-
-    // Check if ALL ratios are already known
+    const ratioCache = getRatioCache();
     const allKnown = galleryImages.every((img) => ratioCache[img.url] !== undefined);
 
-    if (allKnown) {
-      setGalleryColumns(distributeBalanced(galleryImages, cols, ratioCache));
-    } else {
-      // Show even distribution immediately, then balance once ratios arrive
-      setGalleryColumns(distributeEven(galleryImages, cols));
+    // Phase 1 — immediate render
+    setGalleryColumns(
+      allKnown
+        ? distributeBalanced(galleryImages, cols, ratioCache)
+        : distributeEven(galleryImages, cols)
+    );
 
-      // Phase 2 — measure unknowns in background
+    if (!allKnown) {
+      // Phase 2+3 — background measurement and re-balance
       const unknowns = galleryImages.filter((img) => ratioCache[img.url] === undefined);
-
-      Promise.all(
-        unknowns.map((img) =>
-          measureRatio(img.url).then((ratio) => ({ url: img.url, ratio }))
-        )
-      ).then((results) => {
-        if (!mounted) return;
-        const updated = { ...getRatioCache() };
-        results.forEach(({ url, ratio }) => { updated[url] = ratio; });
-        setRatioCache(updated); // Phase 3 — persist
-        // Re-balance with full ratio map
-        setGalleryColumns(distributeBalanced(galleryImages, cols, updated));
-      });
+      Promise.all(unknowns.map((img) => measureRatio(img.url).then((r) => ({ url: img.url, ratio: r }))))
+        .then((results) => {
+          if (!mounted) return;
+          const updated = { ...getRatioCache() };
+          results.forEach(({ url, ratio }) => { updated[url] = ratio; });
+          saveRatioCache(updated);
+          setGalleryColumns(distributeBalanced(galleryImages, cols, updated));
+        })
+        .catch(() => { /* keep even distribution */ });
     }
 
-    // Responsive rebuild on resize
+    // Responsive rebuild
     let resizeTimer;
     function onResize() {
       clearTimeout(resizeTimer);
@@ -1152,21 +1272,21 @@ export default function HomePage() {
 
   // ── AOS ───────────────────────────────────────────────────────────────────
   const rerunAOS = useCallback(() => {
-    aosObserver.current?.disconnect();
+    aosObserverRef.current?.disconnect();
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("aos-animate"); }),
       { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
     );
     document.querySelectorAll("[data-aos]").forEach((el) => obs.observe(el));
-    aosObserver.current = obs;
+    aosObserverRef.current = obs;
   }, []);
 
   useEffect(() => {
     rerunAOS();
-    return () => aosObserver.current?.disconnect();
+    return () => aosObserverRef.current?.disconnect();
   }, [rerunAOS, calendarReady, content]);
 
-  // ── Calendar helpers ──────────────────────────────────────────────────────
+  // ── Calendar ──────────────────────────────────────────────────────────────
   const forceCalendarResize = useCallback(() => {
     clearTimeout(calendarSizeTimer.current);
     calendarSizeTimer.current = setTimeout(() => {
@@ -1183,7 +1303,7 @@ export default function HomePage() {
       if (!slot || slot.slot_status !== "payment_in_progress") return;
       const exp = getSlotExpiry(slot);
       if (exp && exp <= Date.now()) { needRefetch = true; return; }
-      ev.setProp("title", calendarSlotTitle(slot));
+      ev.setProp("title", getCalendarSlotTitle(slot));
     });
     if (needRefetch) api.refetchEvents();
   }, []);
@@ -1195,7 +1315,9 @@ export default function HomePage() {
     if (!token) { setIsCustomerLoggedIn(false); return null; }
     let user = localUser;
     try {
-      const data = normalizeApiData(await requestApi("/auth/panel", { method: "GET", headers: getAuthHeaders(token) }));
+      const data = normalizeApiData(
+        await requestApi("/auth/panel", { method: "GET", headers: getAuthHeaders(token) })
+      );
       user = data?.user || data?.customer || data || localUser;
       if (user && typeof user === "object") lsSet(CUSTOMER_USER_KEY, user);
     } catch { user = localUser; }
@@ -1209,7 +1331,9 @@ export default function HomePage() {
     const localUser = lsGet(CUSTOMER_USER_KEY);
     if (!token) return null;
     try {
-      const data = normalizeApiData(await requestApi("/auth/panel", { method: "GET", headers: getAuthHeaders(token) }));
+      const data = normalizeApiData(
+        await requestApi("/auth/panel", { method: "GET", headers: getAuthHeaders(token) })
+      );
       const user = data?.user || data?.customer || data || localUser;
       if (user && typeof user === "object") lsSet(CUSTOMER_USER_KEY, user);
       return user || localUser;
@@ -1231,7 +1355,9 @@ export default function HomePage() {
 
   // ── Slot loading ──────────────────────────────────────────────────────────
   const loadBookingContext = useCallback(async () => {
-    const data = normalizeApiData(await requestApi("/booking-context", { method: "GET", headers: { Accept: "application/json" } }));
+    const data = normalizeApiData(
+      await requestApi("/booking-context", { method: "GET", headers: { Accept: "application/json" } })
+    );
     bookingCtxRef.current = data;
     return data;
   }, []);
@@ -1239,9 +1365,18 @@ export default function HomePage() {
   const loadSlots = useCallback(async (fetchInfo, onSuccess, onFail) => {
     try {
       const hallId = String(bookingCtxRef.current?.default_hall_id || DEFAULT_HALL_ID);
-      const params = new URLSearchParams({ hall_id: hallId, from: fetchInfo.startStr.slice(0, 10), to: fetchInfo.endStr.slice(0, 10) });
-      const slots = normalizeApiData(await requestApi(`/calendar-slots?${params}`, { method: "GET", headers: { Accept: "application/json" } })) || [];
-      slotsByDateRef.current = slots.reduce((acc, s) => { (acc[s.slot_date] = acc[s.slot_date] || []).push(s); return acc; }, {});
+      const params = new URLSearchParams({
+        hall_id: hallId,
+        from: fetchInfo.startStr.slice(0, 10),
+        to: fetchInfo.endStr.slice(0, 10),
+      });
+      const slots = normalizeApiData(
+        await requestApi(`/calendar-slots?${params}`, { method: "GET", headers: { Accept: "application/json" } })
+      ) || [];
+      slotsByDateRef.current = slots.reduce((acc, s) => {
+        (acc[s.slot_date] = acc[s.slot_date] || []).push(s);
+        return acc;
+      }, {});
       onSuccess(slots.map(buildSlotEvent));
     } catch (err) { onFail(err); }
   }, []);
@@ -1262,14 +1397,18 @@ export default function HomePage() {
     setSelectedSlot(null); setPopupClosing(false); setPopupOpen(true);
   }, []);
 
-  const handleDateClick = useCallback((info) => { info.jsEvent.preventDefault(); openPopup(info.dateStr, slotsByDateRef.current[info.dateStr] || []); }, [openPopup]);
+  const handleDateClick = useCallback((info) => {
+    info.jsEvent.preventDefault();
+    openPopup(info.dateStr, slotsByDateRef.current[info.dateStr] || []);
+  }, [openPopup]);
+
   const handleEventClick = useCallback((info) => {
     const slot = info.event.extendedProps?.slot;
     if (!slot) return;
     openPopup(slot.slot_date, slotsByDateRef.current[slot.slot_date] || [slot]);
   }, [openPopup]);
 
-  // ── Booking proceed ───────────────────────────────────────────────────────
+  // ── Booking ───────────────────────────────────────────────────────────────
   const proceedWithSelected = useCallback(async () => {
     if (!selectedSlot || isProceeding) return;
     setIsProceeding(true);
@@ -1282,13 +1421,27 @@ export default function HomePage() {
       selected_at: new Date().toISOString(),
     };
     ssSet(SELECTED_SLOT_KEY, sel);
-    ssSet(BOOKING_DRAFT_KEY, { ...(ssGet(BOOKING_DRAFT_KEY) || {}), hall_id: selectedSlot.hall_id, booking_slot_id: selectedSlot.slot_id, booking_date: selectedSlot.slot_date, booking_slot_label: formatSlotLabel(selectedSlot), total_amount: calcAmount(selectedSlot) });
+    ssSet(BOOKING_DRAFT_KEY, {
+      ...(ssGet(BOOKING_DRAFT_KEY) || {}),
+      hall_id: selectedSlot.hall_id,
+      booking_slot_id: selectedSlot.slot_id,
+      booking_date: selectedSlot.slot_date,
+      booking_slot_label: formatSlotLabel(selectedSlot),
+      total_amount: calcAmount(selectedSlot),
+    });
     const user = await fetchCustomer();
-    if (!user) { setIsProceeding(false); navigate("/login?redirect=booking"); return; }
+    if (!user) {
+      setIsProceeding(false);
+      navigate("/login?redirect=booking");
+      return;
+    }
     if (String(user.user_type || "customer").toLowerCase() !== "customer") {
-      clearCustomerAuthSession(); setIsCustomerLoggedIn(false); setIsProceeding(false);
+      clearCustomerAuth();
+      setIsCustomerLoggedIn(false);
+      setIsProceeding(false);
       alert("Only customer accounts can place bookings. Please login with a customer account.");
-      navigate("/login?redirect=booking"); return;
+      navigate("/login?redirect=booking");
+      return;
     }
     setIsProceeding(false);
     navigate("/booking");
@@ -1297,37 +1450,38 @@ export default function HomePage() {
   // ── Logout ────────────────────────────────────────────────────────────────
   const handleLogout = useCallback(async () => {
     const token = localStorage.getItem(CUSTOMER_TOKEN_KEY);
-    try { if (token) await requestApi("/auth/logout", { method: "POST", headers: getAuthHeaders(token), body: JSON.stringify({}) }); } catch { /* noop */ }
+    try {
+      if (token) await requestApi("/auth/logout", {
+        method: "POST", headers: getAuthHeaders(token), body: JSON.stringify({}),
+      });
+    } catch { /* noop */ }
     await releaseHold();
-    clearCustomerAuthSession();
-    clearAllBookingSessionData();
+    clearCustomerAuth();
+    clearBookingSession();
     setIsCustomerLoggedIn(false);
     navigate("/", { replace: true });
   }, [navigate, releaseHold]);
 
-  // ── Bootstrap (parallel fetch + cache) ───────────────────────────────────
+  // ── Bootstrap: parallel API calls + cache ─────────────────────────────────
   useEffect(() => {
     let mounted = true;
-
     async function bootstrap() {
       const [contentResult] = await Promise.allSettled([
-        requestApi(`/homepage-content?t=${Date.now()}`, { method: "GET", headers: { Accept: "application/json" } }),
+        requestApi(`/homepage-content?t=${Date.now()}`, {
+          method: "GET", headers: { Accept: "application/json" },
+        }),
         refreshAuth(),
         loadBookingContext().catch(console.error),
       ]);
-
       if (!mounted) return;
-
       if (contentResult.status === "fulfilled") {
         const raw = normalizeApiData(contentResult.value);
         const merged = mergeContent(raw);
         setContent(merged);
-        setCachedHomepageContent(raw); // persist raw (not merged) for next load
+        setCachedContent(raw);
       }
-
       setCalendarReady(true);
     }
-
     bootstrap();
     return () => { mounted = false; };
   }, [loadBookingContext, refreshAuth]);
@@ -1350,8 +1504,10 @@ export default function HomePage() {
     }, 15_000);
     return () => {
       window.removeEventListener("resize", forceCalendarResize);
-      clearInterval(cdId); clearInterval(rfId);
-      clearTimeout(calendarSizeTimer.current); clearTimeout(popupCloseTimer.current);
+      clearInterval(cdId);
+      clearInterval(rfId);
+      clearTimeout(calendarSizeTimer.current);
+      clearTimeout(popupCloseTimer.current);
     };
   }, [forceCalendarResize, updateCountdowns]);
 
@@ -1373,7 +1529,12 @@ export default function HomePage() {
         const frames = 60; let frame = 0;
         const tid = setInterval(() => {
           frame++;
-          setCounterValues({ 500: Math.min(500, Math.floor(500 / frames * frame)), 1200: Math.min(1200, Math.floor(1200 / frames * frame)), 20: Math.min(20, Math.floor(20 / frames * frame)), 98: Math.min(98, Math.floor(98 / frames * frame)) });
+          setCounterValues({
+            500: Math.min(500, Math.floor(500 / frames * frame)),
+            1200: Math.min(1200, Math.floor(1200 / frames * frame)),
+            20: Math.min(20, Math.floor(20 / frames * frame)),
+            98: Math.min(98, Math.floor(98 / frames * frame)),
+          });
           if (frame >= frames) clearInterval(tid);
         }, 1500 / frames);
         obs.disconnect();
@@ -1406,12 +1567,21 @@ export default function HomePage() {
               <a href="#calendar-booking" className="btn nav-cta">Book Now</a>
               {isCustomerLoggedIn ? (
                 <>
-                  <Link to="/customer-panel" className="profile-icon-link" title="My Profile" aria-label="My Profile" style={{ display: "inline-flex" }}>
+                  <Link
+                    to="/customer-panel"
+                    className="profile-icon-link"
+                    title="My Profile"
+                    aria-label="My Profile"
+                    style={{ display: "inline-flex" }}
+                  >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21a8 8 0 0 0-16 0" /><circle cx="12" cy="7" r="4" />
+                      <path d="M20 21a8 8 0 0 0-16 0" />
+                      <circle cx="12" cy="7" r="4" />
                     </svg>
                   </Link>
-                  <button type="button" className="logout-btn" onClick={handleLogout}>Logout</button>
+                  <button type="button" className="logout-btn" onClick={handleLogout}>
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
@@ -1426,22 +1596,37 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero" id="top">
-        <div className="hero-bg" style={hero.background_image ? { backgroundImage: `url(${hero.background_image})` } : undefined} />
+        <div
+          className="hero-bg"
+          style={hero.background_image ? { backgroundImage: `url(${hero.background_image})` } : undefined}
+        />
         <div className="hero-overlay" />
         <div className="hero-particles">
           {particles.map((p) => <div key={p.id} className="particle" style={p.style} />)}
         </div>
         <div className="hero-content">
-          <h1>{hero.title}<br /><span>{hero.highlight}</span></h1>
+          <h1>
+            {hero.title}
+            <br />
+            <span>{hero.highlight}</span>
+          </h1>
           <p>{hero.subtitle}</p>
           <div className="hero-actions">
-            <a href={hero.primary_button_link || "#calendar-booking"} className="btn">{hero.primary_button_text}</a>
-            <a href={hero.secondary_button_link || "#about"} className="btn btn-outline">{hero.secondary_button_text}</a>
+            <a href={hero.primary_button_link || "#calendar-booking"} className="btn">
+              {hero.primary_button_text}
+            </a>
+            <a href={hero.secondary_button_link || "#about"} className="btn btn-outline">
+              {hero.secondary_button_text}
+            </a>
           </div>
         </div>
-        <button type="button" className="hero-scroll" aria-label="Scroll to statistics"
+        <button
+          type="button"
+          className="hero-scroll"
+          aria-label="Scroll to statistics"
           onClick={() => statsRef.current?.scrollIntoView({ behavior: "smooth" })}
-          style={{ background: "transparent", border: "none", padding: 0 }}>
+          style={{ background: "transparent", border: "none", padding: 0 }}
+        >
           <div className="scroll-indicator"><div className="scroll-dot" /></div>
         </button>
       </section>
@@ -1451,8 +1636,15 @@ export default function HomePage() {
         <div className="container">
           <div className="stats-inner">
             {STATS.map((item) => (
-              <div className="stat-item" data-aos="fade-up" data-aos-delay={item.delay || undefined} key={item.label}>
-                <span className="stat-number">{counterStarted ? `${counterValues[item.count]}+` : "0"}</span>
+              <div
+                className="stat-item"
+                data-aos="fade-up"
+                data-aos-delay={item.delay || undefined}
+                key={item.label}
+              >
+                <span className="stat-number">
+                  {counterStarted ? `${counterValues[item.count]}+` : "0"}
+                </span>
                 <span className="stat-label">{item.label}</span>
               </div>
             ))}
@@ -1466,7 +1658,10 @@ export default function HomePage() {
           <div className="section-title" data-aos="fade-up">
             <span className="section-eyebrow">Live Availability</span>
             <h2>Booking Calendar</h2>
-            <p>Browse available shifts and reserve your preferred date. Click any date or event to view shift availability and proceed with booking.</p>
+            <p>
+              Browse available shifts and reserve your preferred date. Click any date or event
+              to view shift availability and proceed with booking.
+            </p>
           </div>
           <div id="calendar" data-aos="zoom-in">
             {calendarReady ? (
@@ -1475,12 +1670,25 @@ export default function HomePage() {
                 plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 height="auto"
-                navLinks editable={false} selectable dayMaxEvents handleWindowResize windowResizeDelay={150} expandRows
-                headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,listYear" }}
+                navLinks
+                editable={false}
+                selectable
+                dayMaxEvents
+                handleWindowResize
+                windowResizeDelay={150}
+                expandRows
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,listYear",
+                }}
                 buttonText={{ today: "Today", month: "Month", listYear: "Year View" }}
                 events={loadSlots}
-                viewDidMount={forceCalendarResize} datesSet={forceCalendarResize} eventsSet={forceCalendarResize}
-                dateClick={handleDateClick} eventClick={handleEventClick}
+                viewDidMount={forceCalendarResize}
+                datesSet={forceCalendarResize}
+                eventsSet={forceCalendarResize}
+                dateClick={handleDateClick}
+                eventClick={handleEventClick}
               />
             ) : (
               <div className="calendar-loading">Loading booking calendar…</div>
@@ -1489,7 +1697,8 @@ export default function HomePage() {
           <div className="calendar-legend" data-aos="fade-up">
             {LEGEND_ITEMS.map(({ color, label }) => (
               <div className="legend-item" key={label}>
-                <div className="legend-dot" style={{ background: color }} />{label}
+                <div className="legend-dot" style={{ background: color }} />
+                {label}
               </div>
             ))}
           </div>
@@ -1508,26 +1717,39 @@ export default function HomePage() {
             <div className="about-img-wrap float" data-aos="fade-right">
               <div className="about-img-deco" />
               {exp.image && (
-                <img src={exp.image} alt={exp.image_alt || story.title || "Dhaka Ladies Club"} loading="lazy" decoding="async" />
+                <img
+                  src={exp.image}
+                  alt={exp.image_alt || story.title || "Dhaka Ladies Club"}
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
               <div className="about-img-badge">
                 <span>
                   {(exp.badge_text || "20+\nYears\nExcellence").split("\n").map((line, i, arr) => (
-                    <span key={`${line}-${i}`}>{line}{i < arr.length - 1 && <br />}</span>
+                    <span key={`${line}-${i}`}>
+                      {line}{i < arr.length - 1 && <br />}
+                    </span>
                   ))}
                 </span>
               </div>
             </div>
             <div className="about-text" data-aos="fade-left">
-              <span className="section-eyebrow" style={{ textAlign: "left" }}>{exp.eyebrow}</span>
+              <span className="section-eyebrow" style={{ textAlign: "left" }}>
+                {exp.eyebrow}
+              </span>
               <h3><HighlightedTitle title={exp.title} /></h3>
               <p>{exp.description_1}</p>
               <p>{exp.description_2}</p>
               <div className="about-features">
-                {exp.points.map((f, i) => <div className="about-feature-item" key={`${f}-${i}`}>{f}</div>)}
+                {exp.points.map((f, i) => (
+                  <div className="about-feature-item" key={`${f}-${i}`}>{f}</div>
+                ))}
               </div>
               <br />
-              <a href="#calendar-booking" className="btn" style={{ marginTop: "10px" }}>Book a Visit</a>
+              <a href="#calendar-booking" className="btn" style={{ marginTop: "10px" }}>
+                Book a Visit
+              </a>
             </div>
           </div>
         </div>
@@ -1541,18 +1763,15 @@ export default function HomePage() {
             <h2>{gallery.title}</h2>
             <p>{gallery.description}</p>
           </div>
-
           <div className="gallery-grid">
             {galleryColumns.map((col, ci) => (
               <div className="gallery-column" key={`col-${ci}`}>
                 {col.map((img, ii) => (
-                  <div
+                  <GalleryImage
                     key={img.id || `${ci}-${ii}`}
-                    data-aos="zoom-in"
-                    data-aos-delay={ii === 0 ? undefined : String(ii * 50 + 50)}
-                  >
-                    <GalleryImage url={img.url} alt={img.alt} />
-                  </div>
+                    url={img.url}
+                    alt={img.alt}
+                  />
                 ))}
               </div>
             ))}
@@ -1566,11 +1785,19 @@ export default function HomePage() {
           <div className="section-title" data-aos="fade-up">
             <span className="section-eyebrow">Why Choose Us</span>
             <h2>World-Class Features</h2>
-            <p>Smart booking system with live calendar and secure payments — designed for a seamless experience.</p>
+            <p>
+              Smart booking system with live calendar and secure payments —
+              designed for a seamless experience.
+            </p>
           </div>
           <div className="feature-grid">
             {FEATURE_CARDS.map((f) => (
-              <div className="feature-card" data-aos="zoom-in" data-aos-delay={f.delay || undefined} key={f.title}>
+              <div
+                className="feature-card"
+                data-aos="zoom-in"
+                data-aos-delay={f.delay || undefined}
+                key={f.title}
+              >
                 <div className="feature-icon-wrap">{f.icon}</div>
                 <h3>{f.title}</h3>
                 <p>{f.text}</p>
@@ -1582,11 +1809,17 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="booking-cta">
-        <div className="booking-cta-bg" style={hero.background_image ? { backgroundImage: `url(${hero.background_image})` } : undefined} />
+        <div
+          className="booking-cta-bg"
+          style={hero.background_image ? { backgroundImage: `url(${hero.background_image})` } : undefined}
+        />
         <div className="booking-cta-overlay" />
         <div className="container" data-aos="zoom-in">
           <h2>Plan Your <span>Dream Event</span> Today</h2>
-          <p>Make your celebrations unforgettable with Dhaka Ladies Club&apos;s premium event management services. Your perfect event begins with a single click.</p>
+          <p>
+            Make your celebrations unforgettable with Dhaka Ladies Club&apos;s premium
+            event management services. Your perfect event begins with a single click.
+          </p>
           <div className="hero-actions">
             <a href="#calendar-booking" className="btn">Check Availability</a>
             <a href="tel:+8801700000000" className="btn btn-outline">Contact Us</a>
@@ -1596,17 +1829,28 @@ export default function HomePage() {
 
       {/* ── Popup ── */}
       {popupOpen && (
-        <div id="popup" className={`popup active${popupClosing ? " closing" : ""}`}
-          role="dialog" aria-modal="true" aria-labelledby="popupTitle"
-          onClick={(e) => { if (e.target === e.currentTarget) closePopup(); }}>
+        <div
+          id="popup"
+          className={`popup active${popupClosing ? " closing" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="popupTitle"
+          onClick={(e) => { if (e.target === e.currentTarget) closePopup(); }}
+        >
           <div className="popup-box">
             <div className="popup-header">
-              <button type="button" className="popup-close" onClick={closePopup} aria-label="Close">✕</button>
+              <button type="button" className="popup-close" onClick={closePopup} aria-label="Close">
+                ✕
+              </button>
               <div className="popup-header-content">
                 <h3 id="popupTitle">Select Your Shift</h3>
-                <div className="popup-date-badge"><span>📅</span><span>{formattedPopupDate}</span></div>
+                <div className="popup-date-badge">
+                  <span>📅</span>
+                  <span>{formattedPopupDate}</span>
+                </div>
               </div>
             </div>
+
             <div className="popup-body">
               <p className="popup-subtitle">Available Shifts</p>
               {popupSlots.length > 0 ? (
@@ -1618,18 +1862,28 @@ export default function HomePage() {
                     const id = `slot_radio_${slot.slot_id}`;
                     return (
                       <div className="slot-radio-item" key={slot.slot_id}>
-                        <input type="radio" name="slotChoice" id={id} value={slot.slot_id} disabled={!ok}
+                        <input
+                          type="radio"
+                          name="slotChoice"
+                          id={id}
+                          value={slot.slot_id}
+                          disabled={!ok}
                           checked={String(selectedSlot?.slot_id || "") === String(slot.slot_id)}
-                          onChange={() => setSelectedSlot(slot)} />
+                          onChange={() => setSelectedSlot(slot)}
+                        />
                         <label htmlFor={id} className={`slot-radio-label${!ok ? " disabled" : ""}`}>
                           <div className="slot-radio-custom" />
                           <div className="slot-info">
                             <div className="slot-name">{slot.shift_name}</div>
                             <div className="slot-time">⏰ {slot.start_time} – {slot.end_time}</div>
                             {slot.slot_status === "payment_in_progress" && (
-                              <div className="slot-time" style={{ color: "#e65100" }}>Expires in: {getRemainingText(slot)}</div>
+                              <div className="slot-time" style={{ color: "#e65100" }}>
+                                Expires in: {getRemainingText(slot)}
+                              </div>
                             )}
-                            {amount > 0 && <div className="slot-price">৳ {Number(amount).toLocaleString()}</div>}
+                            {amount > 0 && (
+                              <div className="slot-price">৳ {Number(amount).toLocaleString()}</div>
+                            )}
                           </div>
                           <span className={`slot-status-badge ${badge.cls}`}>{badge.label}</span>
                         </label>
@@ -1646,14 +1900,23 @@ export default function HomePage() {
                 </div>
               )}
             </div>
+
             <div className="popup-footer">
-              <button type="button"
+              <button
+                type="button"
                 className={`btn popup-proceed-btn${isProceeding ? " loading" : ""}`}
-                onClick={proceedWithSelected} disabled={!selectedSlot || isProceeding}
-                style={{ opacity: selectedSlot ? 1 : 0.5, cursor: selectedSlot ? "pointer" : "not-allowed" }}>
+                onClick={proceedWithSelected}
+                disabled={!selectedSlot || isProceeding}
+                style={{
+                  opacity: selectedSlot ? 1 : 0.5,
+                  cursor: selectedSlot ? "pointer" : "not-allowed",
+                }}
+              >
                 {isProceeding ? "Checking login…" : "Continue to Booking →"}
               </button>
-              <button type="button" className="btn popup-close-btn" onClick={closePopup}>Cancel</button>
+              <button type="button" className="btn popup-close-btn" onClick={closePopup}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>
