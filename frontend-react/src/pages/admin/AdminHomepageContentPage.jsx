@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiRequest } from "../../services/api";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
 const ADMIN_USER_KEY = "dlc_admin_user_v1";
@@ -863,7 +862,49 @@ function buildAdminHeaders(json = true) {
 function normalizeApiData(payload) {
   return payload?.data !== undefined ? payload.data : payload;
 }
+function getContentFromResponse(result) {
+  if (result?.data?.content) {
+    return result.data.content;
+  }
 
+  if (result?.data?.gallery || result?.data?.hero || result?.data?.footer) {
+    return result.data;
+  }
+
+  if (result?.content) {
+    return result.content;
+  }
+
+  return result;
+}
+
+function getGalleryFilesFromResponse(result, fallback = []) {
+  if (Array.isArray(result?.gallery_files)) {
+    return result.gallery_files;
+  }
+
+  if (Array.isArray(result?.data?.gallery_files)) {
+    return result.data.gallery_files;
+  }
+
+  return fallback;
+}
+
+function buildSelectedGalleryImages(selectedUrls, galleryFiles) {
+  return selectedUrls
+    .map((url, index) => {
+      const file = galleryFiles.find((item) => item.url === url);
+
+      if (!file) return null;
+
+      return {
+        id: file.id || file.name?.split(".")[0] || `gallery_${index + 1}`,
+        url: file.url,
+        alt: `Gallery Image ${index + 1}`,
+      };
+    })
+    .filter(Boolean);
+}
 async function requestAdminApi(endpoint, options = {}) {
   const token = getAdminToken();
 
@@ -873,21 +914,13 @@ async function requestAdminApi(endpoint, options = {}) {
     throw error;
   }
 
-  const headers = {
-    ...buildAdminHeaders(true),
-    ...(options.headers || {}),
-  };
-
-  if (typeof apiRequest === "function") {
-    return apiRequest(endpoint, {
-      ...options,
-      headers,
-    });
-  }
-
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers,
+    cache: "no-store",
+    headers: {
+      ...buildAdminHeaders(true),
+      ...(options.headers || {}),
+    },
   });
 
   const result = await response.json().catch(() => ({}));
@@ -898,8 +931,11 @@ async function requestAdminApi(endpoint, options = {}) {
     throw error;
   }
 
-  if (!response.ok) {
-    const validationErrors = result.errors ? Object.values(result.errors).flat().join("\n") : "";
+  if (!response.ok || result.success === false) {
+    const validationErrors = result.errors
+      ? Object.values(result.errors).flat().join("\n")
+      : "";
+
     throw new Error(result.error || validationErrors || result.message || "Request failed.");
   }
 
@@ -1219,24 +1255,46 @@ export default function AdminHomepageContentPage() {
       setMessage({ type: "", text: "" });
 
       try {
+        const latestGalleryImages = buildSelectedGalleryImages(
+          selectedGalleryUrls,
+          galleryFiles
+        );
+
+        const contentToSave = {
+          ...customContent,
+          gallery: {
+            ...customContent.gallery,
+            images: latestGalleryImages,
+          },
+        };
+
         const result = await requestAdminApi("/admin/homepage-content", {
           method: "PUT",
-          body: JSON.stringify(customContent),
+          body: JSON.stringify(contentToSave),
         });
 
-        const nextContent = mergeContent(normalizeApiData(result));
+        const nextContent = mergeContent(getContentFromResponse(result));
+        const nextSelectedUrls = arrayValue(nextContent.gallery.images).map(
+          (image) => image.url
+        );
 
         setContent(nextContent);
-        setSelectedGalleryUrls(arrayValue(nextContent.gallery.images).map((image) => image.url));
+        setSelectedGalleryUrls(nextSelectedUrls);
         setAdvancedJson(JSON.stringify(nextContent, null, 2));
-        setMessage({ type: "success", text: "Homepage content saved successfully." });
+
+        setMessage({
+          type: "success",
+          text: "Homepage content saved successfully.",
+        });
+
+        await loadEditorData();
       } catch (error) {
         handleError(error, "Homepage content save failed.");
       } finally {
         setIsSaving(false);
       }
     },
-    [content, handleError]
+    [content, galleryFiles, handleError, loadEditorData, selectedGalleryUrls]
   );
 
   const uploadSectionImage = useCallback(
@@ -1301,26 +1359,41 @@ export default function AdminHomepageContentPage() {
     setMessage({ type: "", text: "" });
 
     try {
+      const latestSelectedImages = buildSelectedGalleryImages(
+        selectedGalleryUrls,
+        galleryFiles
+      );
+
       const result = await requestAdminApi("/admin/homepage-content/gallery/select", {
         method: "POST",
         body: JSON.stringify({
-          selected_urls: selectedGalleryUrls,
+          selected_urls: latestSelectedImages.map((image) => image.url),
         }),
       });
 
-      const nextContent = mergeContent(normalizeApiData(result));
+      const latestContent = mergeContent(getContentFromResponse(result));
+      const latestGalleryFiles = getGalleryFilesFromResponse(result, galleryFiles);
+      const latestSelectedUrls = arrayValue(latestContent.gallery.images).map(
+        (image) => image.url
+      );
 
-      setContent(nextContent);
-      setGalleryFiles(result.gallery_files || galleryFiles);
-      setSelectedGalleryUrls(arrayValue(nextContent.gallery.images).map((image) => image.url));
-      setAdvancedJson(JSON.stringify(nextContent, null, 2));
-      setMessage({ type: "success", text: "Selected homepage gallery images saved successfully." });
+      setContent(latestContent);
+      setGalleryFiles(latestGalleryFiles);
+      setSelectedGalleryUrls(latestSelectedUrls);
+      setAdvancedJson(JSON.stringify(latestContent, null, 2));
+
+      setMessage({
+        type: "success",
+        text: "Selected homepage gallery images saved successfully.",
+      });
+
+      await loadEditorData();
     } catch (error) {
       handleError(error, "Gallery selection save failed.");
     } finally {
       setIsSaving(false);
     }
-  }, [galleryFiles, handleError, selectedGalleryUrls]);
+  }, [galleryFiles, handleError, loadEditorData, selectedGalleryUrls]);
 
   const deleteGalleryFile = useCallback(
     async (file) => {

@@ -258,52 +258,82 @@ class HomepageContentController extends Controller
         ]);
     }
 
-    public function update(Request $request): JsonResponse
-    {
-        try {
-            $incoming = $request->all();
+public function update(Request $request): JsonResponse
+{
+    try {
+        $incoming = $request->all();
 
-            $allowedKeys = [
-                'nav',
-                'hero',
-                'stats',
-                'calendar_section',
-                'our_story',
-                'creating_experiences',
-                'gallery',
-                'features_section',
-                'booking_cta',
-                'footer',
-            ];
+        $allowedKeys = [
+            'nav',
+            'hero',
+            'stats',
+            'calendar_section',
+            'our_story',
+            'creating_experiences',
+            'gallery',
+            'features_section',
+            'booking_cta',
+            'footer',
+        ];
 
-            $incoming = Arr::only($incoming, $allowedKeys);
-            $current = $this->readContent();
+        $incoming = Arr::only($incoming, $allowedKeys);
+        $current = $this->readContent();
 
-            $updated = array_replace_recursive($current, $incoming);
+        $updated = array_replace_recursive($current, $incoming);
 
-            $updated['stats'] = array_values($updated['stats'] ?? []);
-            $updated['nav']['links'] = array_values($updated['nav']['links'] ?? []);
-            $updated['calendar_section']['legend'] = array_values($updated['calendar_section']['legend'] ?? []);
-            $updated['creating_experiences']['points'] = array_values($updated['creating_experiences']['points'] ?? []);
-            $updated['gallery']['images'] = array_values($updated['gallery']['images'] ?? []);
-            $updated['features_section']['cards'] = array_values($updated['features_section']['cards'] ?? []);
-            $updated['footer']['quick_links'] = array_values($updated['footer']['quick_links'] ?? []);
+        /*
+        |--------------------------------------------------------------------------
+        | Important:
+        | Numeric arrays must be replaced directly.
+        | array_replace_recursive can keep old array items.
+        |--------------------------------------------------------------------------
+        */
 
-            $this->writeContent($updated);
+        if (array_key_exists('stats', $incoming) && is_array($incoming['stats'])) {
+            $updated['stats'] = array_values($incoming['stats']);
+        }
 
-            return response()->json([
+        if (isset($incoming['nav']['links']) && is_array($incoming['nav']['links'])) {
+            $updated['nav']['links'] = array_values($incoming['nav']['links']);
+        }
+
+        if (isset($incoming['calendar_section']['legend']) && is_array($incoming['calendar_section']['legend'])) {
+            $updated['calendar_section']['legend'] = array_values($incoming['calendar_section']['legend']);
+        }
+
+        if (isset($incoming['creating_experiences']['points']) && is_array($incoming['creating_experiences']['points'])) {
+            $updated['creating_experiences']['points'] = array_values($incoming['creating_experiences']['points']);
+        }
+
+        if (isset($incoming['gallery']['images']) && is_array($incoming['gallery']['images'])) {
+            $updated['gallery']['images'] = array_values($incoming['gallery']['images']);
+        }
+
+        if (isset($incoming['features_section']['cards']) && is_array($incoming['features_section']['cards'])) {
+            $updated['features_section']['cards'] = array_values($incoming['features_section']['cards']);
+        }
+
+        if (isset($incoming['footer']['quick_links']) && is_array($incoming['footer']['quick_links'])) {
+            $updated['footer']['quick_links'] = array_values($incoming['footer']['quick_links']);
+        }
+
+        $this->writeContent($updated);
+
+        return response()
+            ->json([
                 'success' => true,
                 'message' => 'Homepage content updated successfully.',
                 'data' => $updated,
-            ]);
-        } catch (Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update homepage content.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    } catch (Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update homepage content.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function listGalleryFiles(): JsonResponse
     {
@@ -430,51 +460,70 @@ class HomepageContentController extends Controller
         }
     }
 
-    public function selectGalleryImages(Request $request): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'selected_urls' => ['present', 'array'],
-                'selected_urls.*' => ['string'],
-            ]);
+public function selectGalleryImages(Request $request): JsonResponse
+{
+    try {
+        $validated = $request->validate([
+            'selected_urls' => ['present', 'array'],
+            'selected_urls.*' => ['string'],
+        ]);
 
-            $content = $this->readContent();
-            $files = collect($this->getGalleryFilesArray())->keyBy('url');
+        $content = $this->readContent();
 
-            $selectedImages = [];
+        $selectedImages = [];
 
-            foreach ($validated['selected_urls'] as $index => $url) {
-                if (!$files->has($url)) {
-                    continue;
-                }
+        foreach ($validated['selected_urls'] as $index => $rawUrl) {
+            $url = $this->normalizeGalleryUrl($rawUrl);
 
-                $file = $files->get($url);
-
-                $selectedImages[] = [
-                    'id' => $file['id'],
-                    'url' => $file['url'],
-                    'alt' => 'Gallery Image ' . ($index + 1),
-                ];
+            if (!$url) {
+                continue;
             }
 
-            $content['gallery']['images'] = $selectedImages;
+            $absolutePath = $this->publicRoot() . $url;
 
-            $this->writeContent($content);
+            if (!File::exists($absolutePath) || !File::isFile($absolutePath)) {
+                continue;
+            }
 
-            return response()->json([
+            $filename = basename($url);
+            $id = pathinfo($filename, PATHINFO_FILENAME);
+
+            $selectedImages[] = [
+                'id' => $id,
+                'url' => $url,
+                'alt' => 'Gallery Image ' . ($index + 1),
+            ];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Important:
+        | Replace gallery images fully.
+        | Do not merge with old gallery images.
+        |--------------------------------------------------------------------------
+        */
+
+        $content['gallery']['images'] = array_values($selectedImages);
+
+        $this->writeContent($content);
+
+        return response()
+            ->json([
                 'success' => true,
                 'message' => 'Homepage gallery selection updated successfully.',
                 'data' => $content,
                 'gallery_files' => $this->getGalleryFilesArray(),
-            ]);
-        } catch (Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update gallery selection.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+                'selected_urls' => array_column($selectedImages, 'url'),
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    } catch (Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update gallery selection.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function deleteGalleryFile(Request $request): JsonResponse
     {
@@ -601,4 +650,27 @@ class HomepageContentController extends Controller
             File::delete($absolutePath);
         }
     }
+
+    private function normalizeGalleryUrl(?string $url): ?string
+{
+    if (!$url) {
+        return null;
+    }
+
+    $path = parse_url($url, PHP_URL_PATH);
+
+    if (!$path) {
+        return null;
+    }
+
+    if (!Str::startsWith($path, '/')) {
+        $path = '/' . $path;
+    }
+
+    if (!Str::startsWith($path, '/uploads/homepage/gallery/')) {
+        return null;
+    }
+
+    return $path;
+}
 }
