@@ -1986,13 +1986,18 @@ function getImageRatioReliable(url) {
     // Hard timeout — never hang forever
     const timeout = setTimeout(() => resolve(0.75), 3000);
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-
+    let finished = false;
     const finish = (ratio) => {
+      if (finished) return;
+      finished = true;
       clearTimeout(timeout);
       resolve(ratio);
     };
+
+    const img = new Image();
+    // Do NOT set crossOrigin here — it forces a CORS preflight on hosting
+    // servers that don't send CORS headers, causing onerror and potentially
+    // poisoning the browser's network cache for the real <img> tags in the DOM.
 
     img.onload = () => {
       const ratio =
@@ -2004,9 +2009,9 @@ function getImageRatioReliable(url) {
 
     img.onerror = () => finish(0.75);
 
-    // For already-cached images, naturalWidth is already set synchronously
     img.src = url;
 
+    // For already-cached images, naturalWidth is already set synchronously
     if (img.complete && img.naturalWidth) {
       const ratio =
         img.naturalHeight && img.naturalWidth
