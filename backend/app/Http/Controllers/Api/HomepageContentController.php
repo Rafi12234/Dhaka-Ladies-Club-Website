@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Throwable;
@@ -254,8 +255,12 @@ public function show(): JsonResponse
         ->header('Expires', '0');
 }
 
-public function adminShow(): JsonResponse
+public function adminShow(Request $request): JsonResponse
 {
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
     $content = $this->readContent();
 
     $content['_cache_version'] = File::exists($this->contentFile())
@@ -278,6 +283,10 @@ public function adminShow(): JsonResponse
 
 public function update(Request $request): JsonResponse
 {
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
     try {
         $incoming = $request->all();
 
@@ -353,18 +362,26 @@ public function update(Request $request): JsonResponse
     }
 }
 
-    public function listGalleryFiles(): JsonResponse
-    {
-        return response()->json([
+public function listGalleryFiles(Request $request): JsonResponse
+{
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
+    return response()->json([
             'success' => true,
             'message' => 'Gallery files loaded successfully.',
             'data' => $this->getGalleryFilesArray(),
         ]);
     }
 
-    public function uploadSectionImage(Request $request): JsonResponse
-    {
-        try {
+public function uploadSectionImage(Request $request): JsonResponse
+{
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
+    try {
             $validated = $request->validate([
                 'target' => [
                     'required',
@@ -436,9 +453,13 @@ public function update(Request $request): JsonResponse
         }
     }
 
-    public function uploadGalleryImages(Request $request): JsonResponse
-    {
-        try {
+public function uploadGalleryImages(Request $request): JsonResponse
+{
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
+    try {
             $validated = $request->validate([
                 'images' => ['required', 'array', 'min:1'],
                 'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
@@ -480,6 +501,10 @@ public function update(Request $request): JsonResponse
 
 public function selectGalleryImages(Request $request): JsonResponse
 {
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
     try {
         $validated = $request->validate([
             'selected_urls' => ['present', 'array'],
@@ -543,9 +568,13 @@ public function selectGalleryImages(Request $request): JsonResponse
     }
 }
 
-    public function deleteGalleryFile(Request $request): JsonResponse
-    {
-        try {
+public function deleteGalleryFile(Request $request): JsonResponse
+{
+    if (! $this->authenticatedAdmin($request)) {
+        return $this->unauthenticatedAdminResponse();
+    }
+
+    try {
             $validated = $request->validate([
                 'url' => ['required', 'string'],
             ]);
@@ -691,4 +720,26 @@ public function selectGalleryImages(Request $request): JsonResponse
 
     return $path;
 }
+    private function authenticatedAdmin(Request $request): ?object
+{
+    $token = $request->bearerToken();
+
+    if (! $token) {
+        return null;
+    }
+
+    return DB::table('users')
+        ->where('api_token_hash', hash('sha256', $token))
+        ->where('user_type', 'Super Admin')
+        ->where('status', 'active')
+        ->first();
+}
+
+    private function unauthenticatedAdminResponse(): JsonResponse
+{
+    return response()->json([
+        'message' => 'Unauthenticated admin.',
+    ], 401);
+}
+
 }
