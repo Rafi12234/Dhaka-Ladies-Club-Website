@@ -998,7 +998,15 @@ function resolveAssetUrl(url) {
   if (url.startsWith("/")) return url;
   return `/${url}`;
 }
+function adminPreviewUrl(url, version) {
+  const resolvedUrl = resolveAssetUrl(url);
 
+  if (!resolvedUrl) return "";
+
+  const separator = resolvedUrl.includes("?") ? "&" : "?";
+
+  return `${resolvedUrl}${separator}adminPreview=${version || Date.now()}`;
+}
 function getPath(object, path) {
   return path.split(".").reduce((current, key) => current?.[key], object);
 }
@@ -1159,6 +1167,7 @@ export default function AdminHomepageContentPage() {
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [selectedGalleryUrls, setSelectedGalleryUrls] = useState([]);
   const [advancedJson, setAdvancedJson] = useState("");
+  const [previewVersion, setPreviewVersion] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -1314,6 +1323,7 @@ export default function AdminHomepageContentPage() {
 
         setContent(nextContent);
         setAdvancedJson(JSON.stringify(nextContent, null, 2));
+        setPreviewVersion(Date.now());
         setMessage({ type: "success", text: "Image uploaded and JSON updated successfully." });
       } catch (error) {
         handleError(error, "Image upload failed.");
@@ -1622,7 +1632,11 @@ export default function AdminHomepageContentPage() {
               <Panel title="Hero Background Image" icon={<IconImage />}>
                 <div className="image-preview hero">
                   {content.hero.background_image ? (
-                    <img src={resolveAssetUrl(content.hero.background_image)} alt="Hero background" />
+                    <img
+                      key={`hero-${previewVersion}`}
+                      src={adminPreviewUrl(content.hero.background_image, previewVersion)}
+                      alt="Hero background"
+                    />
                   ) : (
                     <span>No image selected</span>
                   )}
@@ -1650,7 +1664,11 @@ export default function AdminHomepageContentPage() {
               <Panel title="Creating Experiences Image" icon={<IconImage />}>
                 <div className="image-preview">
                   {content.creating_experiences.image ? (
-                    <img src={resolveAssetUrl(content.creating_experiences.image)} alt="Creating Experiences" />
+                    <img
+                      key={`creating-experiences-${previewVersion}`}
+                      src={adminPreviewUrl(content.creating_experiences.image, previewVersion)}
+                      alt="Creating Experiences"
+                    />
                   ) : (
                     <span>No image selected</span>
                   )}
@@ -1955,7 +1973,11 @@ export default function AdminHomepageContentPage() {
               <Panel title="CTA Background Image" icon={<IconImage />}>
                 <div className="image-preview">
                   {content.booking_cta.background_image ? (
-                    <img src={resolveAssetUrl(content.booking_cta.background_image)} alt="CTA background" />
+                    <img
+                      key={`cta-${previewVersion}`}
+                      src={adminPreviewUrl(content.booking_cta.background_image, previewVersion)}
+                      alt="CTA background"
+                    />
                   ) : (
                     <span>No image selected</span>
                   )}
