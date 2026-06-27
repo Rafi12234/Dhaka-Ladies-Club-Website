@@ -17,8 +17,7 @@ use App\Http\Controllers\Api\PaymentController;
 |--------------------------------------------------------------------------
 | Public Website APIs
 |--------------------------------------------------------------------------
-| These APIs are needed by normal visitors. Do not protect these with auth,
-| otherwise homepage, calendar, and booking page will stop loading.
+| These are required for public homepage, calendar and booking page.
 */
 
 Route::middleware('throttle:60,1')->group(function () {
@@ -37,9 +36,9 @@ Route::middleware('throttle:60,1')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Public Customer Authentication APIs
+| Public Customer Auth APIs
 |--------------------------------------------------------------------------
-| Register and login must remain public.
+| Register and login must stay public.
 */
 
 Route::prefix('auth')->group(function () {
@@ -56,43 +55,41 @@ Route::prefix('auth')->group(function () {
 |--------------------------------------------------------------------------
 | Protected Customer APIs
 |--------------------------------------------------------------------------
-| These APIs must require login because they show/update customer data.
+| These APIs require customer login.
 */
 
-Route::prefix('auth')
-    ->middleware(['auth:sanctum'])
-    ->group(function () {
-        Route::get('/me', [CustomerAuthController::class, 'me'])
-            ->middleware('throttle:60,1')
-            ->name('api.auth.me');
+Route::prefix('auth')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/me', [CustomerAuthController::class, 'me'])
+        ->middleware('throttle:60,1')
+        ->name('api.auth.me');
 
-        Route::get('/panel', [CustomerAuthController::class, 'panel'])
-            ->middleware('throttle:60,1')
-            ->name('api.auth.panel');
+    Route::get('/panel', [CustomerAuthController::class, 'panel'])
+        ->middleware('throttle:60,1')
+        ->name('api.auth.panel');
 
-        Route::patch('/profile', [CustomerAuthController::class, 'updateProfile'])
-            ->middleware('throttle:20,1')
-            ->name('api.auth.profile.update');
+    Route::patch('/profile', [CustomerAuthController::class, 'updateProfile'])
+        ->middleware('throttle:20,1')
+        ->name('api.auth.profile.update');
 
-        Route::patch('/bookings/{bookingId}', [CustomerAuthController::class, 'updateBooking'])
-            ->middleware('throttle:20,1')
-            ->name('api.auth.bookings.update');
+    Route::patch('/bookings/{bookingId}', [CustomerAuthController::class, 'updateBooking'])
+        ->middleware('throttle:20,1')
+        ->name('api.auth.bookings.update');
 
-        Route::post('/change-password', [CustomerAuthController::class, 'changePassword'])
-            ->middleware('throttle:20,1')
-            ->name('api.auth.change-password');
+    Route::post('/change-password', [CustomerAuthController::class, 'changePassword'])
+        ->middleware('throttle:20,1')
+        ->name('api.auth.change-password');
 
-        Route::post('/logout', [CustomerAuthController::class, 'logout'])
-            ->middleware('throttle:20,1')
-            ->name('api.auth.logout');
-    });
+    Route::post('/logout', [CustomerAuthController::class, 'logout'])
+        ->middleware('throttle:20,1')
+        ->name('api.auth.logout');
+});
 
 /*
 |--------------------------------------------------------------------------
 | Booking Hold + Payment APIs
 |--------------------------------------------------------------------------
-| These remain public because guests can book. Security is handled by
-| throttling, validation, booking_id, hold_token, and backend checks.
+| These stay public because guest booking is allowed.
+| Security must be handled by validation, throttling, hold_token and backend checks.
 */
 
 Route::post('/booking-holds', [BookingHoldController::class, 'store'])
@@ -109,77 +106,70 @@ Route::post('/payments/process', [PaymentController::class, 'process'])
 
 /*
 |--------------------------------------------------------------------------
-| Public Admin Login API
+| Admin APIs
 |--------------------------------------------------------------------------
-| Admin login must remain public, otherwise admin cannot log in.
+| Important:
+| Do NOT use auth:sanctum here unless the admin login system is fully Sanctum-based.
+| Your admin controllers already use admin-token/custom admin authentication.
 */
 
-Route::post('/admin/login', [AdminAuthController::class, 'login'])
-    ->middleware('throttle:10,1')
-    ->name('api.admin.login');
+Route::prefix('admin')->middleware('throttle:30,1')->group(function () {
+    Route::post('/login', [AdminAuthController::class, 'login'])
+        ->middleware('throttle:10,1')
+        ->name('api.admin.login');
 
-/*
-|--------------------------------------------------------------------------
-| Protected Admin APIs
-|--------------------------------------------------------------------------
-| These APIs must be protected because they expose bookings, customer info,
-| dashboard data, approval/rejection actions, manual booking, and website CMS.
-*/
+    Route::get('/me', [AdminAuthController::class, 'me'])
+        ->name('api.admin.me');
 
-Route::prefix('admin')
-    ->middleware(['auth:sanctum', 'throttle:30,1'])
-    ->group(function () {
-        Route::get('/me', [AdminAuthController::class, 'me'])
-            ->name('api.admin.me');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->name('api.admin.logout');
 
-        Route::post('/logout', [AdminAuthController::class, 'logout'])
-            ->name('api.admin.logout');
+    Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])
+        ->name('api.admin.dashboard');
 
-        Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])
-            ->name('api.admin.dashboard');
+    Route::get('/bookings', [AdminDashboardController::class, 'bookings'])
+        ->name('api.admin.bookings');
 
-        Route::get('/bookings', [AdminDashboardController::class, 'bookings'])
-            ->name('api.admin.bookings');
+    Route::post('/bookings/{id}/approve', [AdminDashboardController::class, 'approveBooking'])
+        ->name('api.admin.bookings.approve');
 
-        Route::post('/bookings/{id}/approve', [AdminDashboardController::class, 'approveBooking'])
-            ->name('api.admin.bookings.approve');
+    Route::post('/bookings/{id}/reject', [AdminDashboardController::class, 'rejectBooking'])
+        ->name('api.admin.bookings.reject');
 
-        Route::post('/bookings/{id}/reject', [AdminDashboardController::class, 'rejectBooking'])
-            ->name('api.admin.bookings.reject');
+    Route::post('/manual-bookings', [AdminManualBookingController::class, 'store'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.manual-bookings.store');
 
-        Route::post('/manual-bookings', [AdminManualBookingController::class, 'store'])
-            ->middleware('throttle:20,1')
-            ->name('api.admin.manual-bookings.store');
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Homepage Content APIs
+    |--------------------------------------------------------------------------
+    | These should be protected inside controller or by your custom admin auth.
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Protected Admin Homepage Content APIs
-        |--------------------------------------------------------------------------
-        */
+    Route::prefix('homepage-content')->group(function () {
+        Route::get('/', [HomepageContentController::class, 'adminShow'])
+            ->name('api.admin.homepage-content.show');
 
-        Route::prefix('homepage-content')->group(function () {
-            Route::get('/', [HomepageContentController::class, 'adminShow'])
-                ->name('api.admin.homepage-content.show');
+        Route::put('/', [HomepageContentController::class, 'update'])
+            ->name('api.admin.homepage-content.update');
 
-            Route::put('/', [HomepageContentController::class, 'update'])
-                ->name('api.admin.homepage-content.update');
+        Route::get('/gallery-files', [HomepageContentController::class, 'listGalleryFiles'])
+            ->name('api.admin.homepage-content.gallery-files');
 
-            Route::get('/gallery-files', [HomepageContentController::class, 'listGalleryFiles'])
-                ->name('api.admin.homepage-content.gallery-files');
+        Route::post('/upload-section-image', [HomepageContentController::class, 'uploadSectionImage'])
+            ->name('api.admin.homepage-content.upload-section-image');
 
-            Route::post('/upload-section-image', [HomepageContentController::class, 'uploadSectionImage'])
-                ->name('api.admin.homepage-content.upload-section-image');
+        Route::post('/gallery/upload', [HomepageContentController::class, 'uploadGalleryImages'])
+            ->name('api.admin.homepage-content.gallery.upload');
 
-            Route::post('/gallery/upload', [HomepageContentController::class, 'uploadGalleryImages'])
-                ->name('api.admin.homepage-content.gallery.upload');
+        Route::post('/gallery/select', [HomepageContentController::class, 'selectGalleryImages'])
+            ->name('api.admin.homepage-content.gallery.select');
 
-            Route::post('/gallery/select', [HomepageContentController::class, 'selectGalleryImages'])
-                ->name('api.admin.homepage-content.gallery.select');
-
-            Route::delete('/gallery/file', [HomepageContentController::class, 'deleteGalleryFile'])
-                ->name('api.admin.homepage-content.gallery.delete-file');
-        });
+        Route::delete('/gallery/file', [HomepageContentController::class, 'deleteGalleryFile'])
+            ->name('api.admin.homepage-content.gallery.delete-file');
     });
+});
 
 /*
 |--------------------------------------------------------------------------
