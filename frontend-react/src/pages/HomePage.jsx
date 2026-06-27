@@ -1622,7 +1622,7 @@ export default function HomePage() {
               ) : (
                 <>
                   <Link to="/login" className="login-link">Login</Link>
-                  <Link to="/admin-login" className="admin-login-link">Admin Login</Link>
+
                 </>
               )}
             </div>
