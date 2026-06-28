@@ -1209,10 +1209,6 @@ async function loadSlots() {
           <Link to="/admin-calendar-slots" className="slots-sidebar-link active" onClick={() => setSidebarOpen(false)}>
             <IconCalendar size={15} /> Calendar Slots
           </Link>
-          <div className="slots-sidebar-section-title">Website</div>
-          <Link to="/" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconCalendar size={15} /> Public Website
-          </Link>
         </div>
 
         <div className="slots-sidebar-footer">
