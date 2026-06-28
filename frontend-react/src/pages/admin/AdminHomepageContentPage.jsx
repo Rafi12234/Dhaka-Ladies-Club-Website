@@ -1799,6 +1799,7 @@ export default function AdminHomepageContentPage() {
           <Link to="/admin-homepage-content" className="sidebar-link active" onClick={() => setSidebarOpen(false)}>
             <IconEdit /> Homepage Content
           </Link>
+          <Link to="/admin-calendar-slots">Calendar Slots</Link>
           <div className="sidebar-section-title">Website</div>
           <Link to="/" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconCalendar /> Public Website

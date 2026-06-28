@@ -122,6 +122,16 @@ Route::prefix('admin')->middleware('throttle:30,1')->group(function () {
     Route::post('/manual-bookings', [AdminManualBookingController::class, 'store'])
         ->middleware('throttle:20,1')
         ->name('api.admin.manual-bookings.store');
+        Route::get('/calendar-slots', [AdminCalendarSlotController::class, 'index'])
+        ->name('api.admin.calendar-slots.index');
+
+    Route::post('/calendar-slots/generate-until', [AdminCalendarSlotController::class, 'generateUntil'])
+        ->middleware('throttle:5,1')
+        ->name('api.admin.calendar-slots.generate-until');
+
+    Route::patch('/calendar-slots/status', [AdminCalendarSlotController::class, 'updateStatus'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.calendar-slots.status');
 });
 
 /*

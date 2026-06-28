@@ -1435,6 +1435,7 @@ export default function AdminDashboardPage() {
             Manual Booking
           </Link>
           <Link to="/admin-homepage-content" className="sidebar-link">
+          <Link to="/admin-calendar-slots">Calendar Slots</Link>
   <IconEdit />
   Homepage Content
 </Link>
