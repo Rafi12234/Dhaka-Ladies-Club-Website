@@ -44,186 +44,158 @@ function statusClass(status) {
   return "slot-default";
 }
 
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfMonth(year, month) {
+  return new Date(year, month, 1).getDay();
+}
+
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+
+const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
 async function adminApi(path, options = {}) {
   const token = localStorage.getItem(ADMIN_TOKEN_KEY);
-
   const headers = {
     Accept: "application/json",
-    ...(options.body instanceof FormData
-      ? {}
-      : { "Content-Type": "application/json" }),
+    ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {}),
   };
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
-
+  const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
   const text = await response.text();
   let data = null;
-
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = null;
-  }
-
+  try { data = text ? JSON.parse(text) : null; } catch { data = null; }
   if (!response.ok) {
-    const message =
-      data?.message ||
-      data?.error ||
-      `Request failed with status ${response.status}`;
+    const message = data?.message || data?.error || `Request failed with status ${response.status}`;
     throw new Error(message);
   }
-
   return data;
 }
 
-/* ── Icons ───────────────────────────────────────────────── */
+/* ── Icons ── */
 function IconBars({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
     </svg>
   );
 }
-
 function IconFile({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
     </svg>
   );
 }
-
 function IconPlus({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
   );
 }
-
 function IconCalendar({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   );
 }
-
 function IconEdit({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
     </svg>
   );
 }
-
 function IconLogout({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" y1="12" x2="9" y2="12" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
     </svg>
   );
 }
-
 function IconRefresh({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23 4 23 10 17 10" />
-      <polyline points="1 20 1 14 7 14" />
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
     </svg>
   );
 }
-
-function IconFilter({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
 function IconShield({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
   );
 }
-
 function IconCheck({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
     </svg>
   );
 }
-
 function IconX({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   );
 }
-
 function IconLock({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
     </svg>
   );
 }
-
 function IconInfo({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="8" x2="12" y2="12" />
-      <line x1="12" y1="16" x2="12.01" y2="16" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  );
+}
+function IconChevronLeft({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  );
+}
+function IconChevronRight({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  );
+}
+function IconClose({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  );
+}
+function IconFilter({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
     </svg>
   );
 }
 
-/* ── Page Styles ─────────────────────────────────────────── */
+/* ── Styles ── */
 const pageStyles = String.raw`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
-  *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
     --gold: #b8860b;
@@ -244,730 +216,697 @@ const pageStyles = String.raw`
     --radius: 20px;
   }
 
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  body.slots-layout {
-    overflow-x: hidden;
-  }
+  body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body.slots-layout { overflow-x: hidden; }
 
   ::-webkit-scrollbar { width: 7px; height: 7px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: rgba(184,134,11,0.3); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-  /* ── Sidebar ── */
+  /* Sidebar */
   .slots-sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 286px;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    position: fixed; top: 0; left: 0; bottom: 0; width: 286px;
+    background: rgba(255,255,255,0.97); backdrop-filter: blur(18px);
     border-right: 1px solid var(--gold-border);
     box-shadow: 8px 0 32px rgba(0,0,0,0.06);
-    z-index: 500;
-    padding: 22px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+    z-index: 500; padding: 22px 18px;
+    display: flex; flex-direction: column; gap: 18px;
   }
-
   .slots-sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    padding: 8px 8px 18px;
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none; padding: 8px 8px 18px;
     border-bottom: 1px solid var(--gold-border);
   }
-
-  .slots-sidebar-brand img {
-    width: 154px;
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .slots-sidebar-brand-title {
-    display: block;
-    margin-top: 6px;
-    color: var(--gold-dark);
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-  }
-
+  .slots-sidebar-brand img { width: 154px; max-width: 100%; height: auto; display: block; }
+  .slots-sidebar-brand-title { display: block; margin-top: 6px; color: var(--gold-dark); font-size: 13px; font-weight: 800; }
   .slots-admin-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    border-radius: 18px; background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
     border: 1px solid var(--gold-border);
   }
-
   .slots-admin-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    width: 34px; height: 34px; border-radius: 50%;
     background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 13px;
-    font-weight: 700;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;
   }
-
-  .slots-admin-label {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: 3px;
-  }
-
-  .slots-admin-name {
-    display: block;
-    color: var(--gold-dark);
-    font-size: 13px;
-    font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-  }
-
-  .slots-sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-
-  .slots-sidebar-section-title {
-    margin: 8px 10px 4px;
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.9px;
-  }
-
+  .slots-admin-label { display: block; color: var(--muted); font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+  .slots-admin-name { display: block; color: var(--gold-dark); font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  .slots-sidebar-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-right: 4px; }
+  .slots-sidebar-section-title { margin: 8px 10px 4px; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.9px; }
   .slots-sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 16px;
-    text-decoration: none;
-    border: 1px solid transparent;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--muted);
-    background: transparent;
-    transition: all var(--transition);
+    display: flex; align-items: center; gap: 11px; width: 100%; padding: 12px 14px;
+    border-radius: 16px; text-decoration: none; border: 1px solid transparent;
+    font-family: inherit; font-size: 14px; font-weight: 700; color: var(--muted);
+    background: transparent; transition: all var(--transition);
   }
-
-  .slots-sidebar-link:hover {
-    color: var(--gold-dark);
-    background: var(--gold-pale);
-    border-color: var(--gold-border);
-    transform: translateX(3px);
-  }
-
-  .slots-sidebar-link.active {
-    color: white;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    box-shadow: 0 10px 26px rgba(184,134,11,0.26);
-    border-color: transparent;
-  }
-
-  .slots-sidebar-footer {
-    padding-top: 14px;
-    border-top: 1px solid var(--gold-border);
-  }
-
+  .slots-sidebar-link:hover { color: var(--gold-dark); background: var(--gold-pale); border-color: var(--gold-border); transform: translateX(3px); }
+  .slots-sidebar-link.active { color: white; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); box-shadow: 0 10px 26px rgba(184,134,11,0.26); border-color: transparent; }
+  .slots-sidebar-footer { padding-top: 14px; border-top: 1px solid var(--gold-border); }
   .slots-sidebar-logout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 11px;
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 16px;
-    border: none;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: white;
-    background: linear-gradient(135deg, #c0392b, var(--red));
-    box-shadow: 0 8px 22px rgba(220,53,69,0.2);
-    transition: all var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 11px;
+    width: 100%; padding: 12px 14px; border-radius: 16px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+    color: white; background: linear-gradient(135deg, #c0392b, var(--red));
+    box-shadow: 0 8px 22px rgba(220,53,69,0.2); transition: all var(--transition);
   }
+  .slots-sidebar-logout:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(220,53,69,0.32); }
 
-  .slots-sidebar-logout:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(220,53,69,0.32);
-  }
-
-  /* ── Mobile Topbar ── */
+  /* Mobile */
   .slots-mobile-topbar {
-    display: none;
-    position: sticky;
-    top: 0;
-    z-index: 450;
-    height: 64px;
-    background: rgba(255,255,255,0.96);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--gold-border);
-    padding: 0 16px;
-    align-items: center;
-    justify-content: space-between;
+    display: none; position: sticky; top: 0; z-index: 450; height: 64px;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--gold-border); padding: 0 16px;
+    align-items: center; justify-content: space-between;
     box-shadow: 0 4px 18px rgba(0,0,0,0.05);
   }
-
   .slots-mobile-topbar img { height: 36px; }
-
   .slots-sidebar-toggle {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    border: 1px solid var(--gold-border);
-    background: var(--gold-pale);
-    color: var(--gold-dark);
-    font-size: 22px;
-    cursor: pointer;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 42px; height: 42px; border-radius: 12px;
+    border: 1px solid var(--gold-border); background: var(--gold-pale);
+    color: var(--gold-dark); font-size: 22px; cursor: pointer; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
   }
-
-  .slots-sidebar-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
-    z-index: 480;
-  }
-
+  .slots-sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 480; }
   .slots-sidebar-backdrop.show { display: block; }
 
-  /* ── Main ── */
-  .slots-main {
-    margin-left: 286px;
-    min-height: 100vh;
-  }
+  /* Main layout */
+  .slots-main { margin-left: 286px; min-height: 100vh; }
+  .slots-container { width: 92%; max-width: 1280px; margin: auto; padding: 36px 0 60px; }
 
-  .slots-container {
-    width: 92%;
-    max-width: 1280px;
-    margin: auto;
-    padding: 36px 0 60px;
-  }
-
-  /* ── Page Header ── */
-  .slots-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-  }
-
+  /* Page header */
+  .slots-page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
   .slots-page-title h1 {
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-size: 32px; font-weight: 800; letter-spacing: -0.5px;
     background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-    margin-bottom: 6px;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1.2; margin-bottom: 6px;
   }
+  .slots-page-title .muted { font-size: 13.5px; color: var(--muted); font-weight: 400; }
 
-  .slots-page-title .muted {
-    font-size: 13.5px;
-    color: var(--muted);
-    font-weight: 400;
-  }
+  /* Banners */
+  .slots-banner { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-radius: 14px; margin-bottom: 22px; font-size: 13.5px; font-weight: 600; }
+  .slots-banner.success { background: rgba(25,135,84,0.08); color: #137333; border: 1px solid #b7e1c1; }
+  .slots-banner.error { background: rgba(220,53,69,0.08); color: #b42318; border: 1px solid #f5b5b5; }
 
-  /* ── Banner ── */
-  .slots-banner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-    border-radius: 14px;
-    margin-bottom: 22px;
-    font-size: 13.5px;
-    font-weight: 600;
-  }
-
-  .slots-banner.success {
-    background: rgba(25,135,84,0.08);
-    color: #137333;
-    border: 1px solid #b7e1c1;
-  }
-
-  .slots-banner.error {
-    background: rgba(220,53,69,0.08);
-    color: #b42318;
-    border: 1px solid #f5b5b5;
-  }
-
-  /* ── Section Label ── */
+  /* Section label */
   .slots-section-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
   }
+  .slots-section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold-border), transparent); }
 
-  .slots-section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--gold-border), transparent);
-  }
+  /* Two col */
+  .slots-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
 
-  /* ── Two-col grid ── */
-  .slots-two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
+  /* Panel */
+  .slots-panel { background: var(--white); border: 1px solid var(--gold-border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-card); transition: box-shadow var(--transition); }
+  .slots-panel:hover { box-shadow: var(--shadow-hover); }
+  .slots-panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding-bottom: 16px; border-bottom: 1px solid rgba(184,134,11,0.12); }
+  .slots-panel-icon { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 3px 10px var(--gold-glow); }
+  .slots-panel-header h2 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
+  .slots-panel-subtitle { font-size: 13px; color: var(--muted); margin: 14px 0 20px; line-height: 1.6; }
 
-  /* ── Panel / Card ── */
-  .slots-panel {
-    background: var(--white);
-    border: 1px solid var(--gold-border);
-    border-radius: var(--radius);
-    padding: 28px;
-    box-shadow: var(--shadow-card);
-    transition: box-shadow var(--transition);
-  }
-
-  .slots-panel:hover {
-    box-shadow: var(--shadow-hover);
-  }
-
-  .slots-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 6px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(184,134,11,0.12);
-  }
-
-  .slots-panel-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    flex-shrink: 0;
-    box-shadow: 0 3px 10px var(--gold-glow);
-  }
-
-  .slots-panel-header h2 {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin: 0;
-  }
-
-  .slots-panel-subtitle {
-    font-size: 13px;
-    color: var(--muted);
-    margin: 14px 0 20px;
-    line-height: 1.6;
-  }
-
-  /* ── Form Fields ── */
-  .slots-field {
-    margin-bottom: 16px;
-  }
-
-  .slots-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gold-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 7px;
-  }
-
-  .slots-input,
-  .slots-select {
-    width: 100%;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 11px 14px;
-    font-family: inherit;
-    font-size: 13.5px;
-    color: var(--text);
-    background: var(--bg);
-    outline: none;
+  /* Form */
+  .slots-field { margin-bottom: 16px; }
+  .slots-label { display: block; font-size: 12px; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+  .slots-input, .slots-select {
+    width: 100%; border: 1.5px solid #e0e0e0; border-radius: 12px; padding: 11px 14px;
+    font-family: inherit; font-size: 13.5px; color: var(--text); background: var(--bg); outline: none;
     transition: border-color var(--transition), box-shadow var(--transition);
   }
+  .slots-input:focus, .slots-select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); background: var(--white); }
 
-  .slots-input:focus,
-  .slots-select:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow);
+  /* Buttons */
+  .slots-btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 12px 20px; margin-top: 6px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: white; font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer;
+    transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
+    position: relative; overflow: hidden;
+  }
+  .slots-btn-primary::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%); transform: skewX(-20deg) translateX(-150%); transition: transform 0.6s ease; }
+  .slots-btn-primary:hover::before { transform: skewX(-20deg) translateX(250%); }
+  .slots-btn-primary:hover:not(:disabled) { box-shadow: 0 8px 24px var(--gold-glow); transform: translateY(-1px); }
+  .slots-btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+
+  .slots-btn-action-green { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 8px; background: rgba(25,135,84,0.1); color: #137333; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; border: 1px solid #b7e1c1; transition: background var(--transition), transform var(--transition); }
+  .slots-btn-action-green:hover:not(:disabled) { background: rgba(25,135,84,0.18); transform: translateY(-1px); }
+  .slots-btn-action-green:disabled { opacity: 0.6; cursor: not-allowed; }
+  .slots-btn-action-red { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 8px; background: rgba(220,53,69,0.08); color: #b42318; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; border: 1px solid #f5b5b5; transition: background var(--transition), transform var(--transition); }
+  .slots-btn-action-red:hover:not(:disabled) { background: rgba(220,53,69,0.15); transform: translateY(-1px); }
+  .slots-btn-action-red:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Status badges */
+  .slot-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 50px; font-size: 11.5px; font-weight: 700; }
+  .slot-available { background: rgba(25,135,84,0.1); color: #137333; border: 1px solid #b7e1c1; }
+  .slot-booked { background: rgba(180,35,24,0.09); color: #b42318; border: 1px solid #f5b5b5; }
+  .slot-blocked { background: rgba(108,114,125,0.1); color: #495057; border: 1px solid #ced4da; }
+  .slot-progress { background: rgba(133,90,0,0.1); color: #856404; border: 1px solid #ffe08a; }
+  .slot-pending { background: rgba(10,88,202,0.09); color: #0a58ca; border: 1px solid #b6d4fe; }
+  .slot-default { background: rgba(108,117,125,0.1); color: #495057; border: 1px solid #dee2e6; }
+  .slots-locked-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; }
+
+  /* ── Calendar ── */
+  .cal-wrapper { background: var(--white); border: 1px solid var(--gold-border); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; transition: box-shadow var(--transition); }
+  .cal-wrapper:hover { box-shadow: var(--shadow-hover); }
+
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px; border-bottom: 1px solid rgba(184,134,11,0.12);
+    background: linear-gradient(135deg, rgba(184,134,11,0.05), rgba(184,134,11,0.02));
+  }
+  .cal-header-left { display: flex; align-items: center; gap: 14px; }
+  .cal-panel-icon { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 3px 10px var(--gold-glow); }
+  .cal-header h2 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
+  .cal-header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .cal-nav { display: flex; align-items: center; gap: 10px; }
+  .cal-nav-btn {
+    width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--gold-border);
+    background: var(--white); color: var(--gold-dark); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition); font-family: inherit;
+  }
+  .cal-nav-btn:hover { background: var(--gold-pale); border-color: var(--gold); transform: scale(1.05); }
+  .cal-month-label { font-size: 17px; font-weight: 800; color: var(--text); min-width: 190px; text-align: center; letter-spacing: -0.3px; }
+  .cal-today-btn {
+    padding: 8px 16px; border-radius: 10px; border: 1.5px solid var(--gold-border);
+    background: var(--white); color: var(--gold-dark); cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700;
+    transition: all var(--transition);
+  }
+  .cal-today-btn:hover { background: var(--gold-pale); border-color: var(--gold); }
+
+  /* Legend */
+  .cal-legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 12px 28px; border-bottom: 1px solid rgba(184,134,11,0.08); background: var(--bg); }
+  .cal-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  .cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .cal-legend-dot.avail { background: #137333; }
+  .cal-legend-dot.booked { background: #b42318; }
+  .cal-legend-dot.blocked { background: #6b7280; }
+  .cal-legend-dot.progress { background: #856404; }
+  .cal-legend-dot.pending { background: #0a58ca; }
+
+  /* Summary strip */
+  .cal-summary-strip { display: flex; gap: 0; border-bottom: 1px solid rgba(184,134,11,0.1); }
+  .cal-summary-item { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(184,134,11,0.08); }
+  .cal-summary-item:last-child { border-right: none; }
+  .cal-summary-val { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
+  .cal-summary-lbl { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
+  .cal-summary-item.s-avail .cal-summary-val { color: #137333; }
+  .cal-summary-item.s-booked .cal-summary-val { color: #b42318; }
+  .cal-summary-item.s-blocked .cal-summary-val { color: #6b7280; }
+  .cal-summary-item.s-progress .cal-summary-val { color: #856404; }
+  .cal-summary-item.s-pending .cal-summary-val { color: #0a58ca; }
+
+  /* Grid */
+  .cal-day-headers { display: grid; grid-template-columns: repeat(7, 1fr); background: linear-gradient(135deg, rgba(184,134,11,0.06), rgba(184,134,11,0.02)); border-bottom: 1px solid rgba(184,134,11,0.12); }
+  .cal-day-header { padding: 12px 4px; text-align: center; font-size: 11px; font-weight: 800; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.7px; }
+
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal-cell {
+    min-height: 110px; padding: 10px 8px 8px;
+    border-right: 1px solid rgba(234,215,166,0.4);
+    border-bottom: 1px solid rgba(234,215,166,0.4);
+    position: relative; cursor: pointer;
+    transition: background var(--transition);
     background: var(--white);
   }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell:hover:not(.cal-cell-empty) { background: rgba(184,134,11,0.035); }
+  .cal-cell.cal-cell-empty { background: rgba(250,247,242,0.6); cursor: default; }
+  .cal-cell.cal-cell-today { background: rgba(184,134,11,0.06); }
+  .cal-cell.cal-cell-today::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); }
+  .cal-cell.cal-cell-selected { background: rgba(184,134,11,0.1); outline: 2px solid var(--gold); outline-offset: -2px; }
+  .cal-cell-past { opacity: 0.55; }
 
-  /* ── Buttons ── */
-  .slots-btn-primary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 12px 20px;
-    margin-top: 6px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    color: white;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 13.5px;
-    cursor: pointer;
-    transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
-    position: relative;
-    overflow: hidden;
+  .cal-date-num {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    width: 26px; height: 26px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 6px; transition: all var(--transition);
   }
+  .cal-cell-today .cal-date-num { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white; box-shadow: 0 3px 8px var(--gold-glow); }
 
-  .slots-btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
-    transform: skewX(-20deg) translateX(-150%);
-    transition: transform 0.6s ease;
+  .cal-slots-list { display: flex; flex-direction: column; gap: 3px; }
+  .cal-slot-chip {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 7px; border-radius: 6px;
+    font-size: 10.5px; font-weight: 700; cursor: pointer;
+    transition: transform var(--transition), filter var(--transition);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border: 1px solid transparent;
   }
+  .cal-slot-chip:hover { transform: scale(1.03); filter: brightness(0.94); }
+  .cal-slot-chip.chip-available { background: rgba(25,135,84,0.12); color: #137333; border-color: #b7e1c1; }
+  .cal-slot-chip.chip-booked { background: rgba(180,35,24,0.1); color: #b42318; border-color: #f5b5b5; }
+  .cal-slot-chip.chip-blocked { background: rgba(108,114,125,0.1); color: #495057; border-color: #ced4da; }
+  .cal-slot-chip.chip-progress { background: rgba(133,90,0,0.1); color: #856404; border-color: #ffe08a; }
+  .cal-slot-chip.chip-pending { background: rgba(10,88,202,0.09); color: #0a58ca; border-color: #b6d4fe; }
+  .cal-slot-chip.chip-default { background: rgba(108,117,125,0.1); color: #495057; border-color: #dee2e6; }
 
-  .slots-btn-primary:hover::before {
-    transform: skewX(-20deg) translateX(250%);
+  .cal-chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .chip-available .cal-chip-dot { background: #137333; }
+  .chip-booked .cal-chip-dot { background: #b42318; }
+  .chip-blocked .cal-chip-dot { background: #6b7280; }
+  .chip-progress .cal-chip-dot { background: #856404; }
+  .chip-pending .cal-chip-dot { background: #0a58ca; }
+  .chip-default .cal-chip-dot { background: #495057; }
+
+  .cal-more-chips { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; padding: 0 4px; }
+  .cal-empty-day { font-size: 10.5px; color: rgba(107,114,128,0.45); font-style: italic; padding: 0 2px; }
+
+  /* Loading overlay */
+  .cal-loading-overlay {
+    position: absolute; inset: 0; background: rgba(250,247,242,0.8);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); z-index: 5;
   }
-
-  .slots-btn-primary:hover:not(:disabled) {
-    box-shadow: 0 8px 24px var(--gold-glow);
-    transform: translateY(-1px);
+  .cal-spinner {
+    width: 32px; height: 32px; border: 3px solid var(--gold-border);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .slots-btn-primary:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
+  /* ── Day Detail Modal ── */
+  .cal-modal-backdrop {
+    position: fixed; inset: 0; background: rgba(26,26,46,0.45);
+    backdrop-filter: blur(4px); z-index: 900;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
   }
-
-  .slots-btn-secondary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 22px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    color: white;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 13.5px;
-    cursor: pointer;
-    white-space: nowrap;
-    align-self: flex-end;
-    transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .slots-btn-secondary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
-    transform: skewX(-20deg) translateX(-150%);
-    transition: transform 0.6s ease;
-  }
-
-  .slots-btn-secondary:hover::before {
-    transform: skewX(-20deg) translateX(250%);
-  }
-
-  .slots-btn-secondary:hover:not(:disabled) {
-    box-shadow: 0 8px 24px var(--gold-glow);
-    transform: translateY(-1px);
-  }
-
-  .slots-btn-secondary:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
-
-  .slots-btn-action-green {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 7px 13px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(25,135,84,0.1);
-    color: #137333;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 12px;
-    cursor: pointer;
-    border: 1px solid #b7e1c1;
-    transition: background var(--transition), transform var(--transition);
-  }
-
-  .slots-btn-action-green:hover:not(:disabled) {
-    background: rgba(25,135,84,0.18);
-    transform: translateY(-1px);
-  }
-
-  .slots-btn-action-green:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .slots-btn-action-red {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 7px 13px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(220,53,69,0.08);
-    color: #b42318;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 12px;
-    cursor: pointer;
-    border: 1px solid #f5b5b5;
-    transition: background var(--transition), transform var(--transition);
-  }
-
-  .slots-btn-action-red:hover:not(:disabled) {
-    background: rgba(220,53,69,0.15);
-    transform: translateY(-1px);
-  }
-
-  .slots-btn-action-red:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* ── Summary cards ── */
-  .slots-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .slots-summary-card {
-    background: var(--bg);
+  .cal-modal {
+    background: var(--white); border-radius: 24px;
     border: 1px solid var(--gold-border);
-    border-radius: 14px;
-    padding: 16px 14px;
-    text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+    width: 100%; max-width: 520px;
+    max-height: 90vh; overflow-y: auto;
+    animation: modalIn 0.25s cubic-bezier(0.22,1,0.36,1) both;
   }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-  .slots-summary-card .sum-value {
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 5px;
-    transition: color var(--transition);
+  .cal-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid rgba(184,134,11,0.12);
+    position: sticky; top: 0; background: var(--white); z-index: 2;
+    border-radius: 24px 24px 0 0;
   }
-
-  .slots-summary-card:hover .sum-value {
-    color: var(--gold);
+  .cal-modal-date { font-size: 18px; font-weight: 800; color: var(--text); }
+  .cal-modal-day { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+  .cal-modal-close {
+    width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--gold-border);
+    background: var(--bg); color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition); flex-shrink: 0;
   }
+  .cal-modal-close:hover { background: #fde8e8; border-color: #f5b5b5; color: #b42318; }
 
-  .slots-summary-card .sum-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+  .cal-modal-body { padding: 20px 24px 24px; }
+  .cal-modal-empty { text-align: center; color: var(--muted); font-style: italic; padding: 24px 0; font-size: 13.5px; }
+
+  .cal-modal-slot {
+    border: 1px solid var(--gold-border); border-radius: 16px;
+    padding: 16px 18px; margin-bottom: 12px;
+    background: var(--bg); transition: box-shadow var(--transition);
   }
+  .cal-modal-slot:last-child { margin-bottom: 0; }
+  .cal-modal-slot:hover { box-shadow: 0 4px 16px rgba(184,134,11,0.12); }
 
-  .slots-summary-card.avail  { border-top: 3px solid #137333; }
-  .slots-summary-card.booked { border-top: 3px solid #b42318; }
-  .slots-summary-card.blockd { border-top: 3px solid #6b7280; }
-  .slots-summary-card.progrs { border-top: 3px solid #856404; }
-  .slots-summary-card.pendng { border-top: 3px solid #0a58ca; }
+  .cal-modal-slot-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .cal-modal-shift { font-size: 14px; font-weight: 700; color: var(--text); }
+  .cal-modal-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  /* ── Filter row ── */
-  .slots-filter-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 16px;
-    align-items: flex-end;
-    margin-bottom: 20px;
+  .cal-modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cal-modal-action-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 10px; border: none;
+    font-family: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer;
+    transition: all var(--transition);
   }
+  .cal-modal-action-btn.green { background: rgba(25,135,84,0.1); color: #137333; border: 1px solid #b7e1c1; }
+  .cal-modal-action-btn.green:hover:not(:disabled) { background: rgba(25,135,84,0.2); transform: translateY(-1px); }
+  .cal-modal-action-btn.red { background: rgba(220,53,69,0.08); color: #b42318; border: 1px solid #f5b5b5; }
+  .cal-modal-action-btn.red:hover:not(:disabled) { background: rgba(220,53,69,0.16); transform: translateY(-1px); }
+  .cal-modal-action-btn.muted-btn { background: rgba(107,114,128,0.08); color: var(--muted); border: 1px solid #e0e0e0; cursor: default; }
+  .cal-modal-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  /* ── Table ── */
-  .slots-table-wrap {
-    overflow-x: auto;
-    border-radius: 14px;
-    border: 1px solid rgba(234,215,166,0.5);
-  }
+  .cal-modal-locked { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px 14px; border-radius: 10px; background: rgba(107,114,128,0.07); border: 1px solid #e0e0e0; }
 
-  .slots-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 700px;
-  }
-
-  .slots-table thead tr {
-    background: linear-gradient(135deg, rgba(184,134,11,0.07), rgba(184,134,11,0.03));
-  }
-
-  .slots-table th {
-    padding: 13px 16px;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--gold-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    text-align: left;
-    white-space: nowrap;
-    border-bottom: 2px solid rgba(184,134,11,0.15);
-  }
-
-  .slots-table td {
-    padding: 13px 16px;
-    font-size: 13px;
-    color: var(--text);
-    border-bottom: 1px solid rgba(234,215,166,0.35);
-    vertical-align: middle;
-  }
-
-  .slots-table tbody tr {
-    transition: background var(--transition);
-  }
-
-  .slots-table tbody tr:hover {
-    background: rgba(184,134,11,0.04);
-  }
-
-  .slots-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  .slots-table .td-empty {
-    text-align: center;
-    color: var(--muted);
-    font-style: italic;
-    padding: 32px;
-  }
-
-  /* ── Status Badges ── */
-  .slot-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 11px;
-    border-radius: 50px;
-    font-size: 11.5px;
-    font-weight: 700;
-  }
-
-  .slot-available   { background: rgba(25,135,84,0.1);   color: #137333; border: 1px solid #b7e1c1; }
-  .slot-booked      { background: rgba(180,35,24,0.09);  color: #b42318; border: 1px solid #f5b5b5; }
-  .slot-blocked     { background: rgba(108,114,125,0.1); color: #495057; border: 1px solid #ced4da; }
-  .slot-progress    { background: rgba(133,90,0,0.1);    color: #856404; border: 1px solid #ffe08a; }
-  .slot-pending     { background: rgba(10,88,202,0.09);  color: #0a58ca; border: 1px solid #b6d4fe; }
-  .slot-default     { background: rgba(108,117,125,0.1); color: #495057; border: 1px solid #dee2e6; }
-
-  /* locked text */
-  .slots-locked-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  /* date cell */
-  .slots-date-cell {
-    font-family: 'Courier New', monospace;
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--gold-dark);
-    background: var(--gold-pale);
-    padding: 3px 8px;
-    border-radius: 6px;
-    border: 1px solid var(--gold-border);
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  /* shift cell */
-  .slots-shift-name { font-weight: 600; }
-  .slots-shift-time { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-  /* ── Responsive ── */
+  /* Responsive */
   @media (max-width: 980px) {
-    .slots-sidebar {
-      transform: translateX(-105%);
-      transition: transform var(--transition);
-    }
+    .slots-sidebar { transform: translateX(-105%); transition: transform var(--transition); }
     .slots-sidebar.open { transform: translateX(0); }
     .slots-main { margin-left: 0; }
     .slots-mobile-topbar { display: flex; }
   }
-
   @media (max-width: 860px) {
     .slots-two-col { grid-template-columns: 1fr; }
-    .slots-summary-grid { grid-template-columns: repeat(3, 1fr); }
-    .slots-filter-row { grid-template-columns: 1fr 1fr; }
-    .slots-btn-secondary { grid-column: 1 / -1; }
+    .cal-cell { min-height: 80px; padding: 7px 4px 6px; }
+    .cal-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; }
+    .cal-legend { padding: 10px 18px; }
+    .cal-month-label { min-width: 140px; font-size: 14px; }
   }
-
   @media (max-width: 560px) {
-    .slots-summary-grid { grid-template-columns: repeat(2, 1fr); }
     .slots-page-title h1 { font-size: 26px; }
     .slots-container { padding: 20px 0 40px; }
+    .cal-cell { min-height: 60px; padding: 5px 3px 4px; }
+    .cal-date-num { font-size: 11px; width: 22px; height: 22px; }
+    .cal-slot-chip { font-size: 9px; padding: 2px 5px; }
+    .cal-summary-val { font-size: 16px; }
+    .cal-summary-lbl { font-size: 9px; }
   }
 `;
 
-/* ── Component ────────────────────────────────────────────── */
+/* ── Helper: chip class from status ── */
+function chipClass(status) {
+  const v = String(status || "").toLowerCase();
+  if (v === "available") return "chip-available";
+  if (v === "booked") return "chip-booked";
+  if (v === "blocked") return "chip-blocked";
+  if (v === "payment_in_progress") return "chip-progress";
+  if (v === "pending_approval") return "chip-pending";
+  return "chip-default";
+}
+
+/* ── Day Detail Modal ── */
+function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
+  const today = todayString();
+  const isPast = dateStr < today;
+
+  const d = new Date(dateStr + "T00:00:00");
+  const dayName = d.toLocaleDateString("en-US", { weekday: "long" });
+  const formattedDate = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="cal-modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="cal-modal" role="dialog" aria-modal="true">
+        <div className="cal-modal-header">
+          <div>
+            <div className="cal-modal-date">{formattedDate}</div>
+            <div className="cal-modal-day">{dayName}{isPast ? " · Past date" : ""}</div>
+          </div>
+          <button className="cal-modal-close" type="button" onClick={onClose} aria-label="Close">
+            <IconClose size={15} />
+          </button>
+        </div>
+
+        <div className="cal-modal-body">
+          {slots.length === 0 ? (
+            <p className="cal-modal-empty">No slots found for this date.</p>
+          ) : (
+            slots.map((slot) => {
+              const status = String(slot.slot_status || "").toLowerCase();
+              const isLocked = status === "booked" || status === "payment_in_progress" || status === "pending_approval";
+              const isBlocked = status === "blocked";
+              const isAvailable = status === "available";
+
+              return (
+                <div className="cal-modal-slot" key={slot.id || slot.shift_id}>
+                  <div className="cal-modal-slot-top">
+                    <div>
+                      <div className="cal-modal-shift">{slot.shift_name || `Shift #${slot.shift_id}`}</div>
+                      {slot.start_time && slot.end_time && (
+                        <div className="cal-modal-time">{slot.start_time} – {slot.end_time}</div>
+                      )}
+                    </div>
+                    <span className={`slot-badge ${statusClass(status)}`}>
+                      {formatStatus(status)}
+                    </span>
+                  </div>
+
+                  <div className="cal-modal-actions">
+                    {isLocked ? (
+                      <span className="cal-modal-locked">
+                        <IconLock size={12} /> Locked — cannot be changed
+                      </span>
+                    ) : isBlocked ? (
+                      <button
+                        className="cal-modal-action-btn green"
+                        type="button"
+                        disabled={savingStatus}
+                        onClick={() => onUpdate(slot, "available")}
+                      >
+                        <IconCheck size={12} /> Make Available
+                      </button>
+                    ) : isAvailable ? (
+                      <button
+                        className="cal-modal-action-btn red"
+                        type="button"
+                        disabled={savingStatus}
+                        onClick={() => onUpdate(slot, "blocked")}
+                      >
+                        <IconX size={12} /> Block This Slot
+                      </button>
+                    ) : (
+                      <span className="cal-modal-action-btn muted-btn">
+                        No actions available
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Calendar View ── */
+function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage, setError }) {
+  const today = new Date();
+  const [calYear, setCalYear] = useState(today.getFullYear());
+  const [calMonth, setCalMonth] = useState(today.getMonth());
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const todayStr = todayString();
+
+  /* Build a map: dateStr → slot[] */
+  const slotsByDate = useMemo(() => {
+    const map = {};
+    slots.forEach((slot) => {
+      const d = slot.slot_date;
+      if (!map[d]) map[d] = [];
+      map[d].push(slot);
+    });
+    return map;
+  }, [slots]);
+
+  /* Summary for this month's visible slots */
+  const calSummary = useMemo(() => {
+    const acc = { available: 0, booked: 0, blocked: 0, paymentInProgress: 0, pendingApproval: 0 };
+    const prefix = `${String(calYear)}-${String(calMonth + 1).padStart(2, "0")}`;
+    Object.entries(slotsByDate).forEach(([date, daySlots]) => {
+      if (!date.startsWith(prefix)) return;
+      daySlots.forEach((s) => {
+        const st = String(s.slot_status || "").toLowerCase();
+        if (st === "available") acc.available++;
+        else if (st === "booked") acc.booked++;
+        else if (st === "blocked") acc.blocked++;
+        else if (st === "payment_in_progress") acc.paymentInProgress++;
+        else if (st === "pending_approval") acc.pendingApproval++;
+      });
+    });
+    return acc;
+  }, [slotsByDate, calYear, calMonth]);
+
+  const daysInMonth = getDaysInMonth(calYear, calMonth);
+  const firstDay = getFirstDayOfMonth(calYear, calMonth);
+
+  function prevMonth() {
+    if (calMonth === 0) { setCalYear((y) => y - 1); setCalMonth(11); }
+    else setCalMonth((m) => m - 1);
+  }
+  function nextMonth() {
+    if (calMonth === 11) { setCalYear((y) => y + 1); setCalMonth(0); }
+    else setCalMonth((m) => m + 1);
+  }
+  function goToday() {
+    setCalYear(today.getFullYear());
+    setCalMonth(today.getMonth());
+  }
+
+  const selectedSlots = selectedDate ? (slotsByDate[selectedDate] || []) : [];
+
+  async function handleUpdate(slot, newStatus) {
+    const confirmed = window.confirm(
+      `Mark "${slot.shift_name || "this shift"}" on ${slot.slot_date} as ${newStatus}?`
+    );
+    if (!confirmed) return;
+    await onQuickUpdate(slot, newStatus);
+  }
+
+  /* Build calendar cells */
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) {
+    cells.push({ empty: true, key: `empty-${i}` });
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cells.push({ empty: false, day: d, dateStr });
+  }
+
+  return (
+    <>
+      <div className="cal-wrapper" style={{ position: "relative" }}>
+
+        {/* Header */}
+        <div className="cal-header">
+          <div className="cal-header-left">
+            <div className="cal-panel-icon">
+              <IconCalendar size={16} />
+            </div>
+            <div>
+              <h2>View &amp; Manage Slots</h2>
+              <div className="cal-header-sub">Click any date to view shift details and take actions</div>
+            </div>
+          </div>
+
+          <div className="cal-nav">
+            <button className="cal-today-btn" type="button" onClick={goToday}>Today</button>
+            <button className="cal-nav-btn" type="button" onClick={prevMonth} aria-label="Previous month">
+              <IconChevronLeft size={15} />
+            </button>
+            <span className="cal-month-label">{MONTH_NAMES[calMonth]} {calYear}</span>
+            <button className="cal-nav-btn" type="button" onClick={nextMonth} aria-label="Next month">
+              <IconChevronRight size={15} />
+            </button>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="cal-legend">
+          <div className="cal-legend-item"><span className="cal-legend-dot avail" />Available</div>
+          <div className="cal-legend-item"><span className="cal-legend-dot booked" />Booked</div>
+          <div className="cal-legend-item"><span className="cal-legend-dot blocked" />Blocked</div>
+          <div className="cal-legend-item"><span className="cal-legend-dot progress" />In Progress</div>
+          <div className="cal-legend-item"><span className="cal-legend-dot pending" />Pending Approval</div>
+        </div>
+
+        {/* Summary strip */}
+        <div className="cal-summary-strip">
+          <div className="cal-summary-item s-avail">
+            <div className="cal-summary-val">{calSummary.available}</div>
+            <div className="cal-summary-lbl">Available</div>
+          </div>
+          <div className="cal-summary-item s-booked">
+            <div className="cal-summary-val">{calSummary.booked}</div>
+            <div className="cal-summary-lbl">Booked</div>
+          </div>
+          <div className="cal-summary-item s-blocked">
+            <div className="cal-summary-val">{calSummary.blocked}</div>
+            <div className="cal-summary-lbl">Blocked</div>
+          </div>
+          <div className="cal-summary-item s-progress">
+            <div className="cal-summary-val">{calSummary.paymentInProgress}</div>
+            <div className="cal-summary-lbl">In Progress</div>
+          </div>
+          <div className="cal-summary-item s-pending">
+            <div className="cal-summary-val">{calSummary.pendingApproval}</div>
+            <div className="cal-summary-lbl">Pending</div>
+          </div>
+        </div>
+
+        {/* Day name headers */}
+        <div className="cal-day-headers">
+          {DAY_NAMES.map((d) => (
+            <div className="cal-day-header" key={d}>{d}</div>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="cal-grid" style={{ position: "relative" }}>
+          {loading && (
+            <div className="cal-loading-overlay" style={{ borderRadius: 0 }}>
+              <div className="cal-spinner" />
+            </div>
+          )}
+          {cells.map((cell) => {
+            if (cell.empty) {
+              return <div className="cal-cell cal-cell-empty" key={cell.key} />;
+            }
+
+            const { dateStr, day } = cell;
+            const daySlots = slotsByDate[dateStr] || [];
+            const isToday = dateStr === todayStr;
+            const isPast = dateStr < todayStr;
+            const isSelected = dateStr === selectedDate;
+            const CHIP_LIMIT = 3;
+            const visibleSlots = daySlots.slice(0, CHIP_LIMIT);
+            const extraCount = daySlots.length - CHIP_LIMIT;
+
+            let cellCls = "cal-cell";
+            if (isToday) cellCls += " cal-cell-today";
+            if (isSelected) cellCls += " cal-cell-selected";
+            if (isPast) cellCls += " cal-cell-past";
+
+            return (
+              <div
+                key={dateStr}
+                className={cellCls}
+                onClick={() => setSelectedDate(isSelected ? null : dateStr)}
+                title={`${dateStr} — ${daySlots.length} shift(s)`}
+              >
+                <div className="cal-date-num">{day}</div>
+
+                <div className="cal-slots-list">
+                  {daySlots.length === 0 ? (
+                    <span className="cal-empty-day">No slots</span>
+                  ) : (
+                    <>
+                      {visibleSlots.map((slot) => {
+                        const st = String(slot.slot_status || "").toLowerCase();
+                        return (
+                          <div
+                            key={slot.id || slot.shift_id}
+                            className={`cal-slot-chip ${chipClass(st)}`}
+                            title={`${slot.shift_name || "Shift"}: ${formatStatus(st)}`}
+                          >
+                            <span className="cal-chip-dot" />
+                            {slot.shift_name || `S#${slot.shift_id}`}
+                          </div>
+                        );
+                      })}
+                      {extraCount > 0 && (
+                        <div className="cal-more-chips">+{extraCount} more</div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Day detail modal */}
+      {selectedDate && (
+        <DayModal
+          dateStr={selectedDate}
+          slots={selectedSlots}
+          onClose={() => setSelectedDate(null)}
+          onUpdate={handleUpdate}
+          savingStatus={savingStatus}
+        />
+      )}
+    </>
+  );
+}
+
+/* ── Main Page ── */
 export default function AdminCalendarSlotsPage() {
   const navigate = useNavigate();
 
@@ -985,10 +924,7 @@ export default function AdminCalendarSlotsPage() {
   const [shifts, setShifts] = useState([]);
   const [slots, setSlots] = useState([]);
 
-  const [startDate, setStartDate] = useState(todayString());
-  const [endDate, setEndDate] = useState(addDaysString(30));
   const [untilDate, setUntilDate] = useState(addDaysString(365));
-
   const [manualDate, setManualDate] = useState(todayString());
   const [manualShiftId, setManualShiftId] = useState("");
   const [manualStatus, setManualStatus] = useState("blocked");
@@ -996,40 +932,20 @@ export default function AdminCalendarSlotsPage() {
   const adminName = admin?.name || "Admin";
   const adminInitial = (adminName || "A").charAt(0).toUpperCase();
 
-  /* ── Summary ── */
-  const summary = useMemo(() => {
-    return slots.reduce(
-      (acc, slot) => {
-        const s = String(slot.slot_status || "").toLowerCase();
-        if (s === "available") acc.available += 1;
-        else if (s === "booked") acc.booked += 1;
-        else if (s === "blocked") acc.blocked += 1;
-        else if (s === "payment_in_progress") acc.paymentInProgress += 1;
-        else if (s === "pending_approval") acc.pendingApproval += 1;
-        else acc.other += 1;
-        return acc;
-      },
-      { available: 0, booked: 0, blocked: 0, paymentInProgress: 0, pendingApproval: 0, other: 0 }
-    );
-  }, [slots]);
-
-  /* ── API calls ── */
-  async function loadBookingContext() {
-    const data = await adminApi("/booking-context", { method: "GET" });
-    const context = data?.data || data || {};
-    const loadedShifts = Array.isArray(context.shifts) ? context.shifts : [];
-    setShifts(loadedShifts);
-    if (loadedShifts.length > 0 && !manualShiftId) {
-      setManualShiftId(String(loadedShifts[0].id));
-    }
-  }
-
+  /* Load a broad range so the calendar always has data */
   async function loadSlots() {
     setLoading(true);
     setError("");
     setMessage("");
     try {
-      const query = new URLSearchParams({ start_date: startDate, end_date: endDate });
+      const start = new Date();
+      start.setMonth(start.getMonth() - 1);
+      const end = new Date();
+      end.setMonth(end.getMonth() + 13);
+      const query = new URLSearchParams({
+        start_date: start.toISOString().slice(0, 10),
+        end_date: end.toISOString().slice(0, 10),
+      });
       const data = await adminApi(`/admin/calendar-slots?${query.toString()}`, { method: "GET" });
       setSlots(data?.data?.slots || []);
     } catch (err) {
@@ -1044,12 +960,21 @@ export default function AdminCalendarSlotsPage() {
     }
   }
 
+  async function loadBookingContext() {
+    const data = await adminApi("/booking-context", { method: "GET" });
+    const context = data?.data || data || {};
+    const loadedShifts = Array.isArray(context.shifts) ? context.shifts : [];
+    setShifts(loadedShifts);
+    if (loadedShifts.length > 0 && !manualShiftId) {
+      setManualShiftId(String(loadedShifts[0].id));
+    }
+  }
+
   async function generateUntil() {
     const confirmed = window.confirm(
       `This will create/update all slots from today until ${untilDate}.\nAlready booked slots will remain booked.\n\nContinue?`
     );
     if (!confirmed) return;
-
     setGenerating(true);
     setError("");
     setMessage("");
@@ -1097,11 +1022,6 @@ export default function AdminCalendarSlotsPage() {
   }
 
   async function quickUpdateSlot(slot, newStatus) {
-    const confirmed = window.confirm(
-      `Mark "${slot.shift_name || "this shift"}" on ${slot.slot_date} as ${newStatus}?`
-    );
-    if (!confirmed) return;
-
     setSavingStatus(true);
     setError("");
     setMessage("");
@@ -1136,7 +1056,6 @@ export default function AdminCalendarSlotsPage() {
     }
   }
 
-  /* ── Effects ── */
   useEffect(() => {
     document.body.classList.add("slots-layout");
     return () => document.body.classList.remove("slots-layout");
@@ -1144,18 +1063,14 @@ export default function AdminCalendarSlotsPage() {
 
   useEffect(() => {
     loadBookingContext().catch(() => setError("Failed to load shift information."));
-  }, []);
-
-  useEffect(() => {
     loadSlots();
   }, []);
 
-  /* ── Render ── */
   return (
     <>
       <style>{pageStyles}</style>
 
-      {/* ── Sidebar ── */}
+      {/* Sidebar */}
       <aside className={`slots-sidebar${sidebarOpen ? " open" : ""}`}>
         <Link to="/" className="slots-sidebar-brand">
           <div>
@@ -1174,347 +1089,138 @@ export default function AdminCalendarSlotsPage() {
 
         <div className="slots-sidebar-menu">
           <div className="slots-sidebar-section-title">Dashboard</div>
-
-          <Link to="/admin-dashboard" className="slots-sidebar-link"
-            onClick={() => setSidebarOpen(false)}>
+          <Link to="/admin-dashboard" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconBars size={15} /> Overview
           </Link>
-
-          <Link to="/admin-bookings" className="slots-sidebar-link"
-            onClick={() => setSidebarOpen(false)}>
+          <Link to="/admin-bookings" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconFile size={15} /> Bookings
           </Link>
-
-          <Link to="/admin-manual-booking" className="slots-sidebar-link"
-            onClick={() => setSidebarOpen(false)}>
+          <Link to="/admin-manual-booking" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconPlus size={15} /> Manual Booking
           </Link>
-
-          <Link to="/admin-homepage-content" className="slots-sidebar-link"
-            onClick={() => setSidebarOpen(false)}>
+          <Link to="/admin-homepage-content" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
             <IconEdit size={15} /> Homepage Content
           </Link>
-
-          <Link to="/admin-calendar-slots" className="slots-sidebar-link active"
-            onClick={() => setSidebarOpen(false)}>
+          <Link to="/admin-calendar-slots" className="slots-sidebar-link active" onClick={() => setSidebarOpen(false)}>
             <IconCalendar size={15} /> Calendar Slots
+          </Link>
+          <div className="slots-sidebar-section-title">Website</div>
+          <Link to="/" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
+            <IconCalendar size={15} /> Public Website
           </Link>
         </div>
 
         <div className="slots-sidebar-footer">
-          <button className="slots-sidebar-logout" type="button"
-            onClick={logoutAdmin} disabled={isLoggingOut}>
+          <button className="slots-sidebar-logout" type="button" onClick={logoutAdmin} disabled={isLoggingOut}>
             <IconLogout size={15} />
             {isLoggingOut ? "Logging out…" : "Logout"}
           </button>
         </div>
       </aside>
 
-      {/* Backdrop */}
       <div className={`slots-sidebar-backdrop${sidebarOpen ? " show" : ""}`}
         onClick={() => setSidebarOpen(false)} />
 
-      {/* ── Main ── */}
       <main className="slots-main">
-
-        {/* Mobile topbar */}
         <div className="slots-mobile-topbar">
-          <button className="slots-sidebar-toggle" type="button"
-            onClick={() => setSidebarOpen(true)}>☰</button>
+          <button className="slots-sidebar-toggle" type="button" onClick={() => setSidebarOpen(true)}>☰</button>
           <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
         </div>
 
         <div className="slots-container">
-
           {/* Page header */}
           <div className="slots-page-header">
             <div className="slots-page-title">
               <h1>Calendar Slot Management</h1>
-              <p className="muted">
-                Generate available slots, block specific dates and protect booked slots.
-              </p>
+              <p className="muted">Generate available slots, block specific dates and protect booked slots.</p>
             </div>
           </div>
 
           {/* Banners */}
           {message && (
             <div className="slots-banner success">
-              <IconCheck size={16} />
-              <span>{message}</span>
+              <IconCheck size={16} /><span>{message}</span>
             </div>
           )}
           {error && (
             <div className="slots-banner error">
-              <IconInfo size={16} />
-              <span>{error}</span>
+              <IconInfo size={16} /><span>{error}</span>
             </div>
           )}
 
-          {/* ── Section 1: Generate + Manual ── */}
+          {/* Config panels */}
           <p className="slots-section-label">Slot Configuration</p>
-
           <div className="slots-two-col">
 
-            {/* Generate Panel */}
+            {/* Generate */}
             <div className="slots-panel">
               <div className="slots-panel-header">
-                <div className="slots-panel-icon">
-                  <IconRefresh size={16} />
-                </div>
+                <div className="slots-panel-icon"><IconRefresh size={16} /></div>
                 <h2>Generate Available Slots</h2>
               </div>
-
               <p className="slots-panel-subtitle">
-                Select a target date. All slots from today until that date will be
-                marked available. Slots that are already booked will remain unchanged.
+                Select a target date. All slots from today until that date will be marked available.
+                Slots that are already booked will remain unchanged.
               </p>
-
               <div className="slots-field">
                 <label className="slots-label">Available Until Date</label>
-                <input
-                  className="slots-input"
-                  type="date"
-                  value={untilDate}
-                  min={todayString()}
-                  onChange={(e) => setUntilDate(e.target.value)}
-                />
+                <input className="slots-input" type="date" value={untilDate} min={todayString()} onChange={(e) => setUntilDate(e.target.value)} />
               </div>
-
-              <button
-                className="slots-btn-primary"
-                type="button"
-                disabled={generating}
-                onClick={generateUntil}
-              >
+              <button className="slots-btn-primary" type="button" disabled={generating} onClick={generateUntil}>
                 <IconRefresh size={14} />
                 {generating ? "Updating…" : "Generate / Update Slots"}
               </button>
             </div>
 
-            {/* Manual Panel */}
+            {/* Manual */}
             <div className="slots-panel">
               <div className="slots-panel-header">
-                <div className="slots-panel-icon">
-                  <IconShield size={16} />
-                </div>
+                <div className="slots-panel-icon"><IconShield size={16} /></div>
                 <h2>Manual Slot Status</h2>
               </div>
-
               <p className="slots-panel-subtitle">
                 Override a specific date and shift. You can block or unblock any slot.
                 Booked slots are protected and cannot be changed.
               </p>
-
               <div className="slots-field">
                 <label className="slots-label">Date</label>
-                <input
-                  className="slots-input"
-                  type="date"
-                  value={manualDate}
-                  min={todayString()}
-                  onChange={(e) => setManualDate(e.target.value)}
-                />
+                <input className="slots-input" type="date" value={manualDate} min={todayString()} onChange={(e) => setManualDate(e.target.value)} />
               </div>
-
               <div className="slots-field">
                 <label className="slots-label">Shift</label>
-                <select
-                  className="slots-select"
-                  value={manualShiftId}
-                  onChange={(e) => setManualShiftId(e.target.value)}
-                >
-                  {shifts.length === 0 && (
-                    <option value="">Loading shifts…</option>
-                  )}
+                <select className="slots-select" value={manualShiftId} onChange={(e) => setManualShiftId(e.target.value)}>
+                  {shifts.length === 0 && <option value="">Loading shifts…</option>}
                   {shifts.map((shift) => (
                     <option key={shift.id} value={shift.id}>
-                      {shift.name}
-                      {shift.start_time && shift.end_time
-                        ? ` (${shift.start_time} – ${shift.end_time})`
-                        : ""}
+                      {shift.name}{shift.start_time && shift.end_time ? ` (${shift.start_time} – ${shift.end_time})` : ""}
                     </option>
                   ))}
                 </select>
               </div>
-
               <div className="slots-field">
                 <label className="slots-label">Status</label>
-                <select
-                  className="slots-select"
-                  value={manualStatus}
-                  onChange={(e) => setManualStatus(e.target.value)}
-                >
+                <select className="slots-select" value={manualStatus} onChange={(e) => setManualStatus(e.target.value)}>
                   <option value="blocked">Blocked</option>
                   <option value="available">Available</option>
                 </select>
               </div>
-
-              <button
-                className="slots-btn-primary"
-                type="button"
-                disabled={savingStatus}
-                onClick={updateManualStatus}
-              >
+              <button className="slots-btn-primary" type="button" disabled={savingStatus} onClick={updateManualStatus}>
                 <IconShield size={14} />
                 {savingStatus ? "Saving…" : "Update Slot Status"}
               </button>
             </div>
           </div>
 
-          {/* ── Section 2: View Slots ── */}
+          {/* Calendar */}
           <p className="slots-section-label">Slot Overview</p>
-
-          <div className="slots-panel">
-
-            {/* Filter row */}
-            <div className="slots-panel-header">
-              <div className="slots-panel-icon">
-                <IconCalendar size={16} />
-              </div>
-              <h2>View &amp; Manage Slots</h2>
-            </div>
-
-            <p className="slots-panel-subtitle">
-              Filter by date range to view and quickly update individual slot statuses.
-            </p>
-
-            <div className="slots-filter-row">
-              <div>
-                <label className="slots-label">Start Date</label>
-                <input
-                  className="slots-input"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="slots-label">End Date</label>
-                <input
-                  className="slots-input"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-              <button
-                className="slots-btn-secondary"
-                type="button"
-                disabled={loading}
-                onClick={loadSlots}
-              >
-                <IconFilter size={14} />
-                {loading ? "Loading…" : "Load Slots"}
-              </button>
-            </div>
-
-            {/* Summary */}
-            <div className="slots-summary-grid">
-              <div className="slots-summary-card avail">
-                <div className="sum-value">{summary.available}</div>
-                <div className="sum-label">Available</div>
-              </div>
-              <div className="slots-summary-card booked">
-                <div className="sum-value">{summary.booked}</div>
-                <div className="sum-label">Booked</div>
-              </div>
-              <div className="slots-summary-card blockd">
-                <div className="sum-value">{summary.blocked}</div>
-                <div className="sum-label">Blocked</div>
-              </div>
-              <div className="slots-summary-card progrs">
-                <div className="sum-value">{summary.paymentInProgress}</div>
-                <div className="sum-label">In Progress</div>
-              </div>
-              <div className="slots-summary-card pendng">
-                <div className="sum-value">{summary.pendingApproval}</div>
-                <div className="sum-label">Pending</div>
-              </div>
-            </div>
-
-            {/* Table */}
-            <div className="slots-table-wrap">
-              <table className="slots-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Shift</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {slots.length === 0 ? (
-                    <tr>
-                      <td className="td-empty" colSpan="5">
-                        {loading ? "Loading slots…" : "No slots found for the selected date range."}
-                      </td>
-                    </tr>
-                  ) : (
-                    slots.map((slot) => {
-                      const status = String(slot.slot_status || "").toLowerCase();
-                      const isLocked =
-                        status === "booked" ||
-                        status === "payment_in_progress" ||
-                        status === "pending_approval";
-                      const isBlocked = status === "blocked";
-
-                      return (
-                        <tr key={slot.id}>
-                          <td>
-                            <span className="slots-date-cell">{slot.slot_date}</span>
-                          </td>
-                          <td>
-                            <div className="slots-shift-name">
-                              {slot.shift_name || `Shift #${slot.shift_id}`}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="slots-shift-time">
-                              {slot.start_time && slot.end_time
-                                ? `${slot.start_time} – ${slot.end_time}`
-                                : "—"}
-                            </div>
-                          </td>
-                          <td>
-                            <span className={`slot-badge ${statusClass(status)}`}>
-                              {formatStatus(status)}
-                            </span>
-                          </td>
-                          <td>
-                            {isLocked ? (
-                              <span className="slots-locked-label">
-                                <IconLock size={12} /> Locked
-                              </span>
-                            ) : isBlocked ? (
-                              <button
-                                className="slots-btn-action-green"
-                                type="button"
-                                disabled={savingStatus}
-                                onClick={() => quickUpdateSlot(slot, "available")}
-                              >
-                                <IconCheck size={12} /> Make Available
-                              </button>
-                            ) : (
-                              <button
-                                className="slots-btn-action-red"
-                                type="button"
-                                disabled={savingStatus}
-                                onClick={() => quickUpdateSlot(slot, "blocked")}
-                              >
-                                <IconX size={12} /> Block
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <CalendarView
+            slots={slots}
+            loading={loading}
+            savingStatus={savingStatus}
+            onQuickUpdate={quickUpdateSlot}
+            setMessage={setMessage}
+            setError={setError}
+          />
         </div>
       </main>
     </>
