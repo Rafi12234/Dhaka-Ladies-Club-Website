@@ -132,7 +132,7 @@ class AdminCalendarSlotController extends Controller
         $created = 0;
         $updatedToAvailable = 0;
         $keptLocked = 0;
-        $lockedStatuses = ['booked', 'payment_in_progress', 'pending_approval'];
+        $lockedStatuses = ['booked', 'payment_in_progress', 'pending_approval', 'blocked'];
 
         try {
             DB::transaction(function () use (
@@ -195,7 +195,7 @@ class AdminCalendarSlotController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Calendar slots updated successfully. Booked, payment in progress, and pending approval slots were not changed.',
+                'message' => 'Calendar slots updated successfully. Booked, payment in progress, pending approval, and blocked slots were not changed.',
                 'data' => [
                     'from_date' => $startDate->toDateString(),
                     'until_date' => $untilDate->toDateString(),

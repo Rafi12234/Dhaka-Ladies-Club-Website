@@ -1079,7 +1079,7 @@ async function loadSlots() {
       });
       const result = data?.data || {};
       setMessage(
-        `Done — Created: ${result.created || 0} · Updated to available: ${result.updated_to_available || 0} · Kept locked: ${result.kept_locked ?? result.kept_booked ?? 0}`
+        `Done — Created new available slots: ${result.created || 0} · Existing available refreshed: ${result.updated_to_available || 0} · Protected unchanged slots: ${result.kept_locked ?? result.kept_booked ?? 0}`
       );
       await loadSlots();
     } catch (err) {
@@ -1239,7 +1239,7 @@ async function loadSlots() {
             <div className="slots-page-title">
               <h1>Calendar Slot Management</h1>
               <p className="muted">
-                Generate available slots, block specific dates and protect booked slots.
+                Generate available slots, block specific dates, and protect booked/payment/pending/blocked slots.
               </p>
             </div>
           </div>
