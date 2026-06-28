@@ -1787,14 +1787,10 @@ export default function AdminBookingsPage() {
           <IconEdit />
             Homepage Content
           </Link>
-          <Link to="/admin-calendar-slots">Calendar Slots</Link>
-
-          <div className="sidebar-section-title">Website</div>
-
-          <Link to="/" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconCalendar />
-            Public Website
-          </Link>
+          <Link to="/admin-calendar-slots" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
+                      <IconPlus />
+                      Calendar Slots
+                    </Link>
         </div>
 
         <div className="sidebar-footer">

@@ -1443,13 +1443,6 @@ export default function AdminDashboardPage() {
             <IconPlus />
             Calendar Slots
           </Link>
-
-          <div className="sidebar-section-title">Website</div>
-
-          <Link to="/" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconCalendar />
-            Public Website
-          </Link>
         </div>
 
         <div className="sidebar-footer">
