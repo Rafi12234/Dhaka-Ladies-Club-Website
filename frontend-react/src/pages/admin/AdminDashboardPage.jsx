@@ -1435,7 +1435,10 @@ export default function AdminDashboardPage() {
             Manual Booking
           </Link>
           <Link to="/admin-homepage-content" className="sidebar-link">
-          <Link to="/admin-calendar-slots">Calendar Slots</Link>
+          <Link to="/admin-calendar-slots" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
+            <IconPlus />
+            Calendar Slots
+          </Link>
   <IconEdit />
   Homepage Content
 </Link>
