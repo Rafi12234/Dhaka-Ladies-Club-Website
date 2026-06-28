@@ -1024,34 +1024,35 @@ export default function AdminCalendarSlotsPage() {
   const adminInitial = (adminName || "A").charAt(0).toUpperCase();
 
   /* ── BACKEND GUARD: start_date is always today — never request past dates ── */
-  async function loadSlots() {
-    setLoading(true);
-    setError("");
-    setMessage("");
-    try {
-      const start = todayString(); // ← never earlier than today
-      const end = new Date();
-      end.setMonth(end.getMonth() + 13);
-      const query = new URLSearchParams({
-        start_date: start,
-        end_date: end.toISOString().slice(0, 10),
-      });
-      const data = await adminApi(
-        `/admin/calendar-slots?${query.toString()}`,
-        { method: "GET" }
-      );
-      setSlots(data?.data?.slots || []);
-    } catch (err) {
-      if (String(err.message || "").toLowerCase().includes("unauthenticated")) {
-        localStorage.removeItem(ADMIN_TOKEN_KEY);
-        navigate("/admin-login");
-        return;
-      }
-      setError(err.message || "Failed to load calendar slots.");
-    } finally {
-      setLoading(false);
+async function loadSlots() {
+  setLoading(true);
+  setError("");
+  setMessage("");
+  try {
+    const start = todayString();
+    const end = "2099-12-31"; // ← always fetch everything the server has
+
+    const query = new URLSearchParams({
+      start_date: start,
+      end_date: end,
+    });
+
+    const data = await adminApi(
+      `/admin/calendar-slots?${query.toString()}`,
+      { method: "GET" }
+    );
+    setSlots(data?.data?.slots || []);
+  } catch (err) {
+    if (String(err.message || "").toLowerCase().includes("unauthenticated")) {
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      navigate("/admin-login");
+      return;
     }
+    setError(err.message || "Failed to load calendar slots.");
+  } finally {
+    setLoading(false);
   }
+}
 
   async function loadBookingContext() {
     const data = await adminApi("/booking-context", { method: "GET" });
