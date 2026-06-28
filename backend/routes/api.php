@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminAuthController;
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminManualBookingController;
+use App\Http\Controllers\Api\AdminCalendarSlotController;
 use App\Http\Controllers\Api\BookingContextController;
 use App\Http\Controllers\Api\BookingHoldController;
 use App\Http\Controllers\Api\CalendarSlotController;
