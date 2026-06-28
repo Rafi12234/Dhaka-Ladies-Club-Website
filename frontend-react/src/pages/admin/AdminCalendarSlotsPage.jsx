@@ -44,6 +44,16 @@ function statusClass(status) {
   return "slot-default";
 }
 
+function chipClass(status) {
+  const v = String(status || "").toLowerCase();
+  if (v === "available") return "chip-available";
+  if (v === "booked") return "chip-booked";
+  if (v === "blocked") return "chip-blocked";
+  if (v === "payment_in_progress") return "chip-progress";
+  if (v === "pending_approval") return "chip-pending";
+  return "chip-default";
+}
+
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
@@ -56,7 +66,6 @@ const MONTH_NAMES = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December",
 ];
-
 const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 async function adminApi(path, options = {}) {
@@ -81,113 +90,138 @@ async function adminApi(path, options = {}) {
 /* ── Icons ── */
 function IconBars({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/>
+      <line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/>
     </svg>
   );
 }
 function IconFile({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
     </svg>
   );
 }
 function IconPlus({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
     </svg>
   );
 }
 function IconCalendar({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
     </svg>
   );
 }
 function IconEdit({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
     </svg>
   );
 }
 function IconLogout({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
     </svg>
   );
 }
 function IconRefresh({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10"/>
+      <polyline points="1 20 1 14 7 14"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
     </svg>
   );
 }
 function IconShield({ size = 15 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
   );
 }
 function IconCheck({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   );
 }
 function IconX({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   );
 }
 function IconLock({ size = 13 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
     </svg>
   );
 }
 function IconInfo({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
   );
 }
 function IconChevronLeft({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6"/>
     </svg>
   );
 }
 function IconChevronRight({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 18 15 12 9 6"/>
     </svg>
   );
 }
 function IconClose({ size = 16 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  );
-}
-function IconFilter({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   );
 }
@@ -224,7 +258,7 @@ const pageStyles = String.raw`
   ::-webkit-scrollbar-thumb { background: rgba(184,134,11,0.3); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-  /* Sidebar */
+  /* ── Sidebar ── */
   .slots-sidebar {
     position: fixed; top: 0; left: 0; bottom: 0; width: 286px;
     background: rgba(255,255,255,0.97); backdrop-filter: blur(18px);
@@ -242,7 +276,8 @@ const pageStyles = String.raw`
   .slots-sidebar-brand-title { display: block; margin-top: 6px; color: var(--gold-dark); font-size: 13px; font-weight: 800; }
   .slots-admin-card {
     display: flex; align-items: center; gap: 12px; padding: 14px;
-    border-radius: 18px; background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--gold-pale), rgba(255,255,255,0.9));
     border: 1px solid var(--gold-border);
   }
   .slots-admin-avatar {
@@ -273,7 +308,7 @@ const pageStyles = String.raw`
   }
   .slots-sidebar-logout:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(220,53,69,0.32); }
 
-  /* Mobile */
+  /* ── Mobile ── */
   .slots-mobile-topbar {
     display: none; position: sticky; top: 0; z-index: 450; height: 64px;
     background: rgba(255,255,255,0.96); backdrop-filter: blur(16px);
@@ -291,11 +326,10 @@ const pageStyles = String.raw`
   .slots-sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 480; }
   .slots-sidebar-backdrop.show { display: block; }
 
-  /* Main layout */
+  /* ── Layout ── */
   .slots-main { margin-left: 286px; min-height: 100vh; }
   .slots-container { width: 92%; max-width: 1280px; margin: auto; padding: 36px 0 60px; }
 
-  /* Page header */
   .slots-page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
   .slots-page-title h1 {
     font-size: 32px; font-weight: 800; letter-spacing: -0.5px;
@@ -305,12 +339,12 @@ const pageStyles = String.raw`
   }
   .slots-page-title .muted { font-size: 13.5px; color: var(--muted); font-weight: 400; }
 
-  /* Banners */
+  /* ── Banners ── */
   .slots-banner { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-radius: 14px; margin-bottom: 22px; font-size: 13.5px; font-weight: 600; }
   .slots-banner.success { background: rgba(25,135,84,0.08); color: #137333; border: 1px solid #b7e1c1; }
   .slots-banner.error { background: rgba(220,53,69,0.08); color: #b42318; border: 1px solid #f5b5b5; }
 
-  /* Section label */
+  /* ── Section label ── */
   .slots-section-label {
     font-size: 11px; font-weight: 700; color: var(--muted);
     text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
@@ -318,10 +352,10 @@ const pageStyles = String.raw`
   }
   .slots-section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold-border), transparent); }
 
-  /* Two col */
+  /* ── Two col ── */
   .slots-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
 
-  /* Panel */
+  /* ── Panel ── */
   .slots-panel { background: var(--white); border: 1px solid var(--gold-border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-card); transition: box-shadow var(--transition); }
   .slots-panel:hover { box-shadow: var(--shadow-hover); }
   .slots-panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding-bottom: 16px; border-bottom: 1px solid rgba(184,134,11,0.12); }
@@ -329,7 +363,7 @@ const pageStyles = String.raw`
   .slots-panel-header h2 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
   .slots-panel-subtitle { font-size: 13px; color: var(--muted); margin: 14px 0 20px; line-height: 1.6; }
 
-  /* Form */
+  /* ── Form ── */
   .slots-field { margin-bottom: 16px; }
   .slots-label { display: block; font-size: 12px; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
   .slots-input, .slots-select {
@@ -339,7 +373,7 @@ const pageStyles = String.raw`
   }
   .slots-input:focus, .slots-select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); background: var(--white); }
 
-  /* Buttons */
+  /* ── Buttons ── */
   .slots-btn-primary {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 12px 20px; margin-top: 6px; border: none; border-radius: 12px;
@@ -353,14 +387,7 @@ const pageStyles = String.raw`
   .slots-btn-primary:hover:not(:disabled) { box-shadow: 0 8px 24px var(--gold-glow); transform: translateY(-1px); }
   .slots-btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
 
-  .slots-btn-action-green { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 8px; background: rgba(25,135,84,0.1); color: #137333; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; border: 1px solid #b7e1c1; transition: background var(--transition), transform var(--transition); }
-  .slots-btn-action-green:hover:not(:disabled) { background: rgba(25,135,84,0.18); transform: translateY(-1px); }
-  .slots-btn-action-green:disabled { opacity: 0.6; cursor: not-allowed; }
-  .slots-btn-action-red { display: inline-flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 8px; background: rgba(220,53,69,0.08); color: #b42318; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer; border: 1px solid #f5b5b5; transition: background var(--transition), transform var(--transition); }
-  .slots-btn-action-red:hover:not(:disabled) { background: rgba(220,53,69,0.15); transform: translateY(-1px); }
-  .slots-btn-action-red:disabled { opacity: 0.6; cursor: not-allowed; }
-
-  /* Status badges */
+  /* ── Status badges ── */
   .slot-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 50px; font-size: 11.5px; font-weight: 700; }
   .slot-available { background: rgba(25,135,84,0.1); color: #137333; border: 1px solid #b7e1c1; }
   .slot-booked { background: rgba(180,35,24,0.09); color: #b42318; border: 1px solid #f5b5b5; }
@@ -370,20 +397,25 @@ const pageStyles = String.raw`
   .slot-default { background: rgba(108,117,125,0.1); color: #495057; border: 1px solid #dee2e6; }
   .slots-locked-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; }
 
-  /* ── Calendar ── */
-  .cal-wrapper { background: var(--white); border: 1px solid var(--gold-border); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; transition: box-shadow var(--transition); }
+  /* ── Calendar wrapper ── */
+  .cal-wrapper {
+    background: var(--white); border: 1px solid var(--gold-border);
+    border-radius: var(--radius); box-shadow: var(--shadow-card);
+    overflow: hidden; transition: box-shadow var(--transition);
+  }
   .cal-wrapper:hover { box-shadow: var(--shadow-hover); }
 
+  /* Calendar header */
   .cal-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 20px 28px; border-bottom: 1px solid rgba(184,134,11,0.12);
     background: linear-gradient(135deg, rgba(184,134,11,0.05), rgba(184,134,11,0.02));
+    flex-wrap: wrap; gap: 14px;
   }
   .cal-header-left { display: flex; align-items: center; gap: 14px; }
   .cal-panel-icon { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 3px 10px var(--gold-glow); }
   .cal-header h2 { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
   .cal-header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
   .cal-nav { display: flex; align-items: center; gap: 10px; }
   .cal-nav-btn {
     width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--gold-border);
@@ -396,8 +428,7 @@ const pageStyles = String.raw`
   .cal-today-btn {
     padding: 8px 16px; border-radius: 10px; border: 1.5px solid var(--gold-border);
     background: var(--white); color: var(--gold-dark); cursor: pointer;
-    font-family: inherit; font-size: 12.5px; font-weight: 700;
-    transition: all var(--transition);
+    font-family: inherit; font-size: 12.5px; font-weight: 700; transition: all var(--transition);
   }
   .cal-today-btn:hover { background: var(--gold-pale); border-color: var(--gold); }
 
@@ -412,7 +443,7 @@ const pageStyles = String.raw`
   .cal-legend-dot.pending { background: #0a58ca; }
 
   /* Summary strip */
-  .cal-summary-strip { display: flex; gap: 0; border-bottom: 1px solid rgba(184,134,11,0.1); }
+  .cal-summary-strip { display: flex; border-bottom: 1px solid rgba(184,134,11,0.1); }
   .cal-summary-item { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(184,134,11,0.08); }
   .cal-summary-item:last-child { border-right: none; }
   .cal-summary-val { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
@@ -423,11 +454,14 @@ const pageStyles = String.raw`
   .cal-summary-item.s-progress .cal-summary-val { color: #856404; }
   .cal-summary-item.s-pending .cal-summary-val { color: #0a58ca; }
 
-  /* Grid */
+  /* Day name headers */
   .cal-day-headers { display: grid; grid-template-columns: repeat(7, 1fr); background: linear-gradient(135deg, rgba(184,134,11,0.06), rgba(184,134,11,0.02)); border-bottom: 1px solid rgba(184,134,11,0.12); }
   .cal-day-header { padding: 12px 4px; text-align: center; font-size: 11px; font-weight: 800; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.7px; }
 
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  /* ── Calendar grid cells ── */
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); position: relative; }
+
+  /* Base cell — future/today dates */
   .cal-cell {
     min-height: 110px; padding: 10px 8px 8px;
     border-right: 1px solid rgba(234,215,166,0.4);
@@ -437,13 +471,43 @@ const pageStyles = String.raw`
     background: var(--white);
   }
   .cal-cell:nth-child(7n) { border-right: none; }
-  .cal-cell:hover:not(.cal-cell-empty) { background: rgba(184,134,11,0.035); }
-  .cal-cell.cal-cell-empty { background: rgba(250,247,242,0.6); cursor: default; }
-  .cal-cell.cal-cell-today { background: rgba(184,134,11,0.06); }
-  .cal-cell.cal-cell-today::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); }
-  .cal-cell.cal-cell-selected { background: rgba(184,134,11,0.1); outline: 2px solid var(--gold); outline-offset: -2px; }
-  .cal-cell-past { opacity: 0.55; }
+  .cal-cell:hover { background: rgba(184,134,11,0.035); }
 
+  /* Empty filler cells (before day 1) */
+  .cal-cell-empty {
+    background: rgba(250,247,242,0.5);
+    cursor: default;
+    min-height: 110px;
+    border-right: 1px solid rgba(234,215,166,0.4);
+    border-bottom: 1px solid rgba(234,215,166,0.4);
+  }
+  .cal-cell-empty:nth-child(7n) { border-right: none; }
+
+  /* ── PAST DAY CELL — only shows the greyed date number, nothing else ── */
+  .cal-cell-past {
+    min-height: 110px; padding: 10px 8px 8px;
+    border-right: 1px solid rgba(234,215,166,0.4);
+    border-bottom: 1px solid rgba(234,215,166,0.4);
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(0,0,0,0.012),
+      rgba(0,0,0,0.012) 2px,
+      transparent 2px,
+      transparent 10px
+    );
+    cursor: not-allowed;
+    position: relative;
+  }
+  .cal-cell-past:nth-child(7n) { border-right: none; }
+
+  /* Today highlight */
+  .cal-cell-today { background: rgba(184,134,11,0.06); }
+  .cal-cell-today::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); }
+
+  /* Selected cell */
+  .cal-cell-selected { background: rgba(184,134,11,0.1); outline: 2px solid var(--gold); outline-offset: -2px; }
+
+  /* Date number */
   .cal-date-num {
     font-size: 13px; font-weight: 700; color: var(--text);
     width: 26px; height: 26px; border-radius: 8px;
@@ -452,6 +516,16 @@ const pageStyles = String.raw`
   }
   .cal-cell-today .cal-date-num { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: white; box-shadow: 0 3px 8px var(--gold-glow); }
 
+  /* Past date number — muted */
+  .cal-date-num-past {
+    font-size: 13px; font-weight: 500;
+    color: rgba(107,114,128,0.45);
+    width: 26px; height: 26px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0;
+  }
+
+  /* Slot chips */
   .cal-slots-list { display: flex; flex-direction: column; gap: 3px; }
   .cal-slot-chip {
     display: flex; align-items: center; gap: 4px;
@@ -478,42 +552,34 @@ const pageStyles = String.raw`
   .chip-default .cal-chip-dot { background: #495057; }
 
   .cal-more-chips { font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; padding: 0 4px; }
-  .cal-empty-day { font-size: 10.5px; color: rgba(107,114,128,0.45); font-style: italic; padding: 0 2px; }
+  .cal-empty-day { font-size: 10.5px; color: rgba(107,114,128,0.4); font-style: italic; padding: 0 2px; }
 
   /* Loading overlay */
   .cal-loading-overlay {
-    position: absolute; inset: 0; background: rgba(250,247,242,0.8);
-    display: flex; align-items: center; justify-content: center;
-    border-radius: var(--radius); z-index: 5;
+    position: absolute; inset: 0; background: rgba(250,247,242,0.82);
+    display: flex; align-items: center; justify-content: center; z-index: 5;
   }
-  .cal-spinner {
-    width: 32px; height: 32px; border: 3px solid var(--gold-border);
-    border-top-color: var(--gold); border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  .cal-spinner { width: 32px; height: 32px; border: 3px solid var(--gold-border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── Day Detail Modal ── */
+  /* ── Day detail modal ── */
   .cal-modal-backdrop {
     position: fixed; inset: 0; background: rgba(26,26,46,0.45);
     backdrop-filter: blur(4px); z-index: 900;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
   }
   .cal-modal {
     background: var(--white); border-radius: 24px;
     border: 1px solid var(--gold-border);
     box-shadow: 0 24px 80px rgba(0,0,0,0.18);
-    width: 100%; max-width: 520px;
-    max-height: 90vh; overflow-y: auto;
+    width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
     animation: modalIn 0.25s cubic-bezier(0.22,1,0.36,1) both;
   }
   @keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
   .cal-modal-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 22px 24px 18px;
-    border-bottom: 1px solid rgba(184,134,11,0.12);
+    padding: 22px 24px 18px; border-bottom: 1px solid rgba(184,134,11,0.12);
     position: sticky; top: 0; background: var(--white); z-index: 2;
     border-radius: 24px 24px 0 0;
   }
@@ -526,9 +592,7 @@ const pageStyles = String.raw`
     transition: all var(--transition); flex-shrink: 0;
   }
   .cal-modal-close:hover { background: #fde8e8; border-color: #f5b5b5; color: #b42318; }
-
   .cal-modal-body { padding: 20px 24px 24px; }
-  .cal-modal-empty { text-align: center; color: var(--muted); font-style: italic; padding: 24px 0; font-size: 13.5px; }
 
   .cal-modal-slot {
     border: 1px solid var(--gold-border); border-radius: 16px;
@@ -537,12 +601,11 @@ const pageStyles = String.raw`
   }
   .cal-modal-slot:last-child { margin-bottom: 0; }
   .cal-modal-slot:hover { box-shadow: 0 4px 16px rgba(184,134,11,0.12); }
-
   .cal-modal-slot-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
   .cal-modal-shift { font-size: 14px; font-weight: 700; color: var(--text); }
   .cal-modal-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
   .cal-modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
   .cal-modal-action-btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 14px; border-radius: 10px; border: none;
@@ -553,12 +616,10 @@ const pageStyles = String.raw`
   .cal-modal-action-btn.green:hover:not(:disabled) { background: rgba(25,135,84,0.2); transform: translateY(-1px); }
   .cal-modal-action-btn.red { background: rgba(220,53,69,0.08); color: #b42318; border: 1px solid #f5b5b5; }
   .cal-modal-action-btn.red:hover:not(:disabled) { background: rgba(220,53,69,0.16); transform: translateY(-1px); }
-  .cal-modal-action-btn.muted-btn { background: rgba(107,114,128,0.08); color: var(--muted); border: 1px solid #e0e0e0; cursor: default; }
   .cal-modal-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
   .cal-modal-locked { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px 14px; border-radius: 10px; background: rgba(107,114,128,0.07); border: 1px solid #e0e0e0; }
 
-  /* Responsive */
+  /* ── Responsive ── */
   @media (max-width: 980px) {
     .slots-sidebar { transform: translateX(-105%); transition: transform var(--transition); }
     .slots-sidebar.open { transform: translateX(0); }
@@ -567,42 +628,29 @@ const pageStyles = String.raw`
   }
   @media (max-width: 860px) {
     .slots-two-col { grid-template-columns: 1fr; }
-    .cal-cell { min-height: 80px; padding: 7px 4px 6px; }
-    .cal-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; }
+    .cal-cell, .cal-cell-past, .cal-cell-empty { min-height: 80px; padding: 7px 4px 6px; }
+    .cal-header { padding: 16px 18px; }
     .cal-legend { padding: 10px 18px; }
     .cal-month-label { min-width: 140px; font-size: 14px; }
   }
   @media (max-width: 560px) {
     .slots-page-title h1 { font-size: 26px; }
     .slots-container { padding: 20px 0 40px; }
-    .cal-cell { min-height: 60px; padding: 5px 3px 4px; }
-    .cal-date-num { font-size: 11px; width: 22px; height: 22px; }
+    .cal-cell, .cal-cell-past, .cal-cell-empty { min-height: 60px; padding: 5px 3px 4px; }
+    .cal-date-num, .cal-date-num-past { font-size: 11px; width: 22px; height: 22px; }
     .cal-slot-chip { font-size: 9px; padding: 2px 5px; }
     .cal-summary-val { font-size: 16px; }
     .cal-summary-lbl { font-size: 9px; }
   }
 `;
 
-/* ── Helper: chip class from status ── */
-function chipClass(status) {
-  const v = String(status || "").toLowerCase();
-  if (v === "available") return "chip-available";
-  if (v === "booked") return "chip-booked";
-  if (v === "blocked") return "chip-blocked";
-  if (v === "payment_in_progress") return "chip-progress";
-  if (v === "pending_approval") return "chip-pending";
-  return "chip-default";
-}
-
 /* ── Day Detail Modal ── */
 function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
-  const today = todayString();
-  const isPast = dateStr < today;
-
   const d = new Date(dateStr + "T00:00:00");
   const dayName = d.toLocaleDateString("en-US", { weekday: "long" });
   const formattedDate = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+  // Close on Escape
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
@@ -610,12 +658,15 @@ function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
   }, [onClose]);
 
   return (
-    <div className="cal-modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="cal-modal-backdrop"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <div className="cal-modal" role="dialog" aria-modal="true">
         <div className="cal-modal-header">
           <div>
             <div className="cal-modal-date">{formattedDate}</div>
-            <div className="cal-modal-day">{dayName}{isPast ? " · Past date" : ""}</div>
+            <div className="cal-modal-day">{dayName}</div>
           </div>
           <button className="cal-modal-close" type="button" onClick={onClose} aria-label="Close">
             <IconClose size={15} />
@@ -624,11 +675,16 @@ function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
 
         <div className="cal-modal-body">
           {slots.length === 0 ? (
-            <p className="cal-modal-empty">No slots found for this date.</p>
+            <p style={{ textAlign: "center", color: "var(--muted)", fontStyle: "italic", padding: "24px 0", fontSize: "13.5px" }}>
+              No slots found for this date.
+            </p>
           ) : (
             slots.map((slot) => {
               const status = String(slot.slot_status || "").toLowerCase();
-              const isLocked = status === "booked" || status === "payment_in_progress" || status === "pending_approval";
+              const isLocked =
+                status === "booked" ||
+                status === "payment_in_progress" ||
+                status === "pending_approval";
               const isBlocked = status === "blocked";
               const isAvailable = status === "available";
 
@@ -636,9 +692,13 @@ function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
                 <div className="cal-modal-slot" key={slot.id || slot.shift_id}>
                   <div className="cal-modal-slot-top">
                     <div>
-                      <div className="cal-modal-shift">{slot.shift_name || `Shift #${slot.shift_id}`}</div>
+                      <div className="cal-modal-shift">
+                        {slot.shift_name || `Shift #${slot.shift_id}`}
+                      </div>
                       {slot.start_time && slot.end_time && (
-                        <div className="cal-modal-time">{slot.start_time} – {slot.end_time}</div>
+                        <div className="cal-modal-time">
+                          {slot.start_time} – {slot.end_time}
+                        </div>
                       )}
                     </div>
                     <span className={`slot-badge ${statusClass(status)}`}>
@@ -670,9 +730,7 @@ function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
                         <IconX size={12} /> Block This Slot
                       </button>
                     ) : (
-                      <span className="cal-modal-action-btn muted-btn">
-                        No actions available
-                      </span>
+                      <span className="cal-modal-locked">No actions available</span>
                     )}
                   </div>
                 </div>
@@ -686,29 +744,31 @@ function DayModal({ dateStr, slots, onClose, onUpdate, savingStatus }) {
 }
 
 /* ── Calendar View ── */
-function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage, setError }) {
+function CalendarView({ slots, loading, savingStatus, onQuickUpdate }) {
   const today = new Date();
+  const todayStr = todayString(); // "YYYY-MM-DD"
+
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
   const [selectedDate, setSelectedDate] = useState(null);
 
-  const todayStr = todayString();
-
-  /* Build a map: dateStr → slot[] */
+  /* Build date → slot[] map, but ONLY for today-and-future dates */
   const slotsByDate = useMemo(() => {
     const map = {};
     slots.forEach((slot) => {
       const d = slot.slot_date;
+      // ── FRONTEND GUARD: silently drop any past-date slots from the map ──
+      if (d < todayStr) return;
       if (!map[d]) map[d] = [];
       map[d].push(slot);
     });
     return map;
-  }, [slots]);
+  }, [slots, todayStr]);
 
-  /* Summary for this month's visible slots */
+  /* Month summary — only future/today slots count */
   const calSummary = useMemo(() => {
     const acc = { available: 0, booked: 0, blocked: 0, paymentInProgress: 0, pendingApproval: 0 };
-    const prefix = `${String(calYear)}-${String(calMonth + 1).padStart(2, "0")}`;
+    const prefix = `${calYear}-${String(calMonth + 1).padStart(2, "0")}`;
     Object.entries(slotsByDate).forEach(([date, daySlots]) => {
       if (!date.startsWith(prefix)) return;
       daySlots.forEach((s) => {
@@ -729,19 +789,20 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
   function prevMonth() {
     if (calMonth === 0) { setCalYear((y) => y - 1); setCalMonth(11); }
     else setCalMonth((m) => m - 1);
+    setSelectedDate(null);
   }
   function nextMonth() {
     if (calMonth === 11) { setCalYear((y) => y + 1); setCalMonth(0); }
     else setCalMonth((m) => m + 1);
+    setSelectedDate(null);
   }
   function goToday() {
     setCalYear(today.getFullYear());
     setCalMonth(today.getMonth());
+    setSelectedDate(null);
   }
 
-  const selectedSlots = selectedDate ? (slotsByDate[selectedDate] || []) : [];
-
-  async function handleUpdate(slot, newStatus) {
+  async function handleModalUpdate(slot, newStatus) {
     const confirmed = window.confirm(
       `Mark "${slot.shift_name || "this shift"}" on ${slot.slot_date} as ${newStatus}?`
     );
@@ -749,15 +810,22 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
     await onQuickUpdate(slot, newStatus);
   }
 
-  /* Build calendar cells */
+  /* Build cell descriptors */
   const cells = [];
   for (let i = 0; i < firstDay; i++) {
-    cells.push({ empty: true, key: `empty-${i}` });
+    cells.push({ type: "empty", key: `empty-${i}` });
   }
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    cells.push({ empty: false, day: d, dateStr });
+    // ── Classify each day ──
+    const isPast = dateStr < todayStr;
+    const isToday = dateStr === todayStr;
+    cells.push({ type: "day", day: d, dateStr, isPast, isToday });
   }
+
+  const selectedSlots = selectedDate ? (slotsByDate[selectedDate] || []) : [];
+
+  const CHIP_LIMIT = 3;
 
   return (
     <>
@@ -771,7 +839,9 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
             </div>
             <div>
               <h2>View &amp; Manage Slots</h2>
-              <div className="cal-header-sub">Click any date to view shift details and take actions</div>
+              <div className="cal-header-sub">
+                Click any current or future date to view shifts and take actions
+              </div>
             </div>
           </div>
 
@@ -794,9 +864,14 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
           <div className="cal-legend-item"><span className="cal-legend-dot blocked" />Blocked</div>
           <div className="cal-legend-item"><span className="cal-legend-dot progress" />In Progress</div>
           <div className="cal-legend-item"><span className="cal-legend-dot pending" />Pending Approval</div>
+          {/* ── Visual cue for past days ── */}
+          <div className="cal-legend-item" style={{ marginLeft: "auto" }}>
+            <span style={{ width: 10, height: 10, borderRadius: 3, background: "repeating-linear-gradient(-45deg,rgba(0,0,0,0.12),rgba(0,0,0,0.12) 1px,transparent 1px,transparent 4px)", display: "inline-block", flexShrink: 0 }} />
+            Past (read-only)
+          </div>
         </div>
 
-        {/* Summary strip */}
+        {/* Month summary */}
         <div className="cal-summary-strip">
           <div className="cal-summary-item s-avail">
             <div className="cal-summary-val">{calSummary.available}</div>
@@ -820,7 +895,7 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
           </div>
         </div>
 
-        {/* Day name headers */}
+        {/* Day headers */}
         <div className="cal-day-headers">
           {DAY_NAMES.map((d) => (
             <div className="cal-day-header" key={d}>{d}</div>
@@ -828,37 +903,53 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
         </div>
 
         {/* Grid */}
-        <div className="cal-grid" style={{ position: "relative" }}>
+        <div className="cal-grid">
           {loading && (
-            <div className="cal-loading-overlay" style={{ borderRadius: 0 }}>
+            <div className="cal-loading-overlay">
               <div className="cal-spinner" />
             </div>
           )}
+
           {cells.map((cell) => {
-            if (cell.empty) {
-              return <div className="cal-cell cal-cell-empty" key={cell.key} />;
+
+            /* ── Empty filler ── */
+            if (cell.type === "empty") {
+              return <div className="cal-cell-empty" key={cell.key} />;
             }
 
-            const { dateStr, day } = cell;
+            const { dateStr, day, isPast, isToday } = cell;
+
+            /* ── PAST DAY — render a locked, non-interactive cell ── */
+            if (isPast) {
+              return (
+                <div
+                  key={dateStr}
+                  className="cal-cell-past"
+                  title="Past date — read only"
+                >
+                  {/* Only the date number, muted, no chips, no hover action */}
+                  <div className="cal-date-num-past">{day}</div>
+                  {/* Nothing else rendered for past days */}
+                </div>
+              );
+            }
+
+            /* ── TODAY or FUTURE — fully interactive ── */
             const daySlots = slotsByDate[dateStr] || [];
-            const isToday = dateStr === todayStr;
-            const isPast = dateStr < todayStr;
             const isSelected = dateStr === selectedDate;
-            const CHIP_LIMIT = 3;
             const visibleSlots = daySlots.slice(0, CHIP_LIMIT);
             const extraCount = daySlots.length - CHIP_LIMIT;
 
             let cellCls = "cal-cell";
             if (isToday) cellCls += " cal-cell-today";
             if (isSelected) cellCls += " cal-cell-selected";
-            if (isPast) cellCls += " cal-cell-past";
 
             return (
               <div
                 key={dateStr}
                 className={cellCls}
                 onClick={() => setSelectedDate(isSelected ? null : dateStr)}
-                title={`${dateStr} — ${daySlots.length} shift(s)`}
+                title={`${dateStr} — ${daySlots.length} shift(s). Click to manage.`}
               >
                 <div className="cal-date-num">{day}</div>
 
@@ -892,13 +983,13 @@ function CalendarView({ slots, loading, savingStatus, onQuickUpdate, setMessage,
         </div>
       </div>
 
-      {/* Day detail modal */}
+      {/* Modal — only ever opened for today/future dates */}
       {selectedDate && (
         <DayModal
           dateStr={selectedDate}
           slots={selectedSlots}
           onClose={() => setSelectedDate(null)}
-          onUpdate={handleUpdate}
+          onUpdate={handleModalUpdate}
           savingStatus={savingStatus}
         />
       )}
@@ -932,21 +1023,23 @@ export default function AdminCalendarSlotsPage() {
   const adminName = admin?.name || "Admin";
   const adminInitial = (adminName || "A").charAt(0).toUpperCase();
 
-  /* Load a broad range so the calendar always has data */
+  /* ── BACKEND GUARD: start_date is always today — never request past dates ── */
   async function loadSlots() {
     setLoading(true);
     setError("");
     setMessage("");
     try {
-      const start = new Date();
-      start.setMonth(start.getMonth() - 1);
+      const start = todayString(); // ← never earlier than today
       const end = new Date();
       end.setMonth(end.getMonth() + 13);
       const query = new URLSearchParams({
-        start_date: start.toISOString().slice(0, 10),
+        start_date: start,
         end_date: end.toISOString().slice(0, 10),
       });
-      const data = await adminApi(`/admin/calendar-slots?${query.toString()}`, { method: "GET" });
+      const data = await adminApi(
+        `/admin/calendar-slots?${query.toString()}`,
+        { method: "GET" }
+      );
       setSlots(data?.data?.slots || []);
     } catch (err) {
       if (String(err.message || "").toLowerCase().includes("unauthenticated")) {
@@ -1000,6 +1093,11 @@ export default function AdminCalendarSlotsPage() {
       setError("Please select date, shift and status.");
       return;
     }
+    /* ── FRONTEND GUARD: block manual update for past dates ── */
+    if (manualDate < todayString()) {
+      setError("You cannot modify slots for past dates.");
+      return;
+    }
     setSavingStatus(true);
     setError("");
     setMessage("");
@@ -1022,6 +1120,12 @@ export default function AdminCalendarSlotsPage() {
   }
 
   async function quickUpdateSlot(slot, newStatus) {
+    /* ── FRONTEND GUARD: should never be called for past dates
+         (modal never opens for them), but double-check anyway ── */
+    if (slot.slot_date < todayString()) {
+      setError("You cannot modify slots for past dates.");
+      return;
+    }
     setSavingStatus(true);
     setError("");
     setMessage("");
@@ -1118,8 +1222,10 @@ export default function AdminCalendarSlotsPage() {
         </div>
       </aside>
 
-      <div className={`slots-sidebar-backdrop${sidebarOpen ? " show" : ""}`}
-        onClick={() => setSidebarOpen(false)} />
+      <div
+        className={`slots-sidebar-backdrop${sidebarOpen ? " show" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       <main className="slots-main">
         <div className="slots-mobile-topbar">
@@ -1128,15 +1234,15 @@ export default function AdminCalendarSlotsPage() {
         </div>
 
         <div className="slots-container">
-          {/* Page header */}
           <div className="slots-page-header">
             <div className="slots-page-title">
               <h1>Calendar Slot Management</h1>
-              <p className="muted">Generate available slots, block specific dates and protect booked slots.</p>
+              <p className="muted">
+                Generate available slots, block specific dates and protect booked slots.
+              </p>
             </div>
           </div>
 
-          {/* Banners */}
           {message && (
             <div className="slots-banner success">
               <IconCheck size={16} /><span>{message}</span>
@@ -1148,31 +1254,41 @@ export default function AdminCalendarSlotsPage() {
             </div>
           )}
 
-          {/* Config panels */}
           <p className="slots-section-label">Slot Configuration</p>
-          <div className="slots-two-col">
 
-            {/* Generate */}
+          <div className="slots-two-col">
+            {/* Generate panel */}
             <div className="slots-panel">
               <div className="slots-panel-header">
                 <div className="slots-panel-icon"><IconRefresh size={16} /></div>
                 <h2>Generate Available Slots</h2>
               </div>
               <p className="slots-panel-subtitle">
-                Select a target date. All slots from today until that date will be marked available.
-                Slots that are already booked will remain unchanged.
+                Select a target date. All slots from today until that date will be marked
+                available. Slots that are already booked will remain unchanged.
               </p>
               <div className="slots-field">
                 <label className="slots-label">Available Until Date</label>
-                <input className="slots-input" type="date" value={untilDate} min={todayString()} onChange={(e) => setUntilDate(e.target.value)} />
+                <input
+                  className="slots-input"
+                  type="date"
+                  value={untilDate}
+                  min={todayString()}
+                  onChange={(e) => setUntilDate(e.target.value)}
+                />
               </div>
-              <button className="slots-btn-primary" type="button" disabled={generating} onClick={generateUntil}>
+              <button
+                className="slots-btn-primary"
+                type="button"
+                disabled={generating}
+                onClick={generateUntil}
+              >
                 <IconRefresh size={14} />
                 {generating ? "Updating…" : "Generate / Update Slots"}
               </button>
             </div>
 
-            {/* Manual */}
+            {/* Manual panel */}
             <div className="slots-panel">
               <div className="slots-panel-header">
                 <div className="slots-panel-icon"><IconShield size={16} /></div>
@@ -1184,42 +1300,63 @@ export default function AdminCalendarSlotsPage() {
               </p>
               <div className="slots-field">
                 <label className="slots-label">Date</label>
-                <input className="slots-input" type="date" value={manualDate} min={todayString()} onChange={(e) => setManualDate(e.target.value)} />
+                {/* min={todayString()} prevents picking a past date from the date-picker UI */}
+                <input
+                  className="slots-input"
+                  type="date"
+                  value={manualDate}
+                  min={todayString()}
+                  onChange={(e) => setManualDate(e.target.value)}
+                />
               </div>
               <div className="slots-field">
                 <label className="slots-label">Shift</label>
-                <select className="slots-select" value={manualShiftId} onChange={(e) => setManualShiftId(e.target.value)}>
+                <select
+                  className="slots-select"
+                  value={manualShiftId}
+                  onChange={(e) => setManualShiftId(e.target.value)}
+                >
                   {shifts.length === 0 && <option value="">Loading shifts…</option>}
                   {shifts.map((shift) => (
                     <option key={shift.id} value={shift.id}>
-                      {shift.name}{shift.start_time && shift.end_time ? ` (${shift.start_time} – ${shift.end_time})` : ""}
+                      {shift.name}
+                      {shift.start_time && shift.end_time
+                        ? ` (${shift.start_time} – ${shift.end_time})`
+                        : ""}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="slots-field">
                 <label className="slots-label">Status</label>
-                <select className="slots-select" value={manualStatus} onChange={(e) => setManualStatus(e.target.value)}>
+                <select
+                  className="slots-select"
+                  value={manualStatus}
+                  onChange={(e) => setManualStatus(e.target.value)}
+                >
                   <option value="blocked">Blocked</option>
                   <option value="available">Available</option>
                 </select>
               </div>
-              <button className="slots-btn-primary" type="button" disabled={savingStatus} onClick={updateManualStatus}>
+              <button
+                className="slots-btn-primary"
+                type="button"
+                disabled={savingStatus}
+                onClick={updateManualStatus}
+              >
                 <IconShield size={14} />
                 {savingStatus ? "Saving…" : "Update Slot Status"}
               </button>
             </div>
           </div>
 
-          {/* Calendar */}
           <p className="slots-section-label">Slot Overview</p>
+
           <CalendarView
             slots={slots}
             loading={loading}
             savingStatus={savingStatus}
             onQuickUpdate={quickUpdateSlot}
-            setMessage={setMessage}
-            setError={setError}
           />
         </div>
       </main>
