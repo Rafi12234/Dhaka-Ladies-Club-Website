@@ -1912,7 +1912,6 @@ export default function AdminManualBookingPage() {
             Manual Booking
           </Link>
           <Link to="/admin-homepage-content" className="sidebar-link">
-          <Link to="/admin-calendar-slots">Calendar Slots</Link>
           <IconEdit />
             Homepage Content
           </Link>
@@ -1920,7 +1919,7 @@ export default function AdminManualBookingPage() {
                       <IconPlus />
                       Calendar Slots
                     </Link>
-        </div>
+         </div>
 
         <div className="sidebar-footer">
           <button className="sidebar-logout" type="button" onClick={logoutAdmin} disabled={isLoggingOut}>
