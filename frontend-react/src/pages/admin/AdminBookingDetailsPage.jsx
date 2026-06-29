@@ -662,7 +662,7 @@ function ChargeRow({ row, idx, categories, onUpdate, onRemove, onSave, canRemove
           {/* Amount */}
           <div className="form-group">
             <label>
-              <Icon.money /> Amount
+              <Icon.Taka /> Amount
             </label>
             <input
               type="number"
