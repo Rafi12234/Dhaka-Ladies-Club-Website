@@ -571,115 +571,132 @@ export default function AdminBookingDetailsPage() {
             </div>
 
             {/* ══ EXTRA CHARGES ══ */}
-            <SectionDivider icon={<IconClipboard size={18} />} title="Extra Charges" />
+{/* ══ EXTRA CHARGES ══ */}
+<SectionDivider icon={<IconClipboard size={18} />} title="Extra Charges" />
 
-            {/* Saved charges table */}
-            <div className="charges-section">
-              {charges.length === 0 && rows.length === 0 ? (
-                <div className="no-charges">
-                  <span className="no-charges-icon"><IconClipboard size={36} /></span>
-                  <p>No extra charges added yet</p>
-                </div>
-              ) : charges.length > 0 ? (
-                <div className="charges-table-wrap">
-                  <table className="charges-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 36 }}>#</th>
-                        <th>Charge</th>
-                        <th>Method</th>
-                        <th>Status</th>
-                        <th>Notes</th>
-                        <th className="right">Amount</th>
-                        <th className="no-print center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {charges.map((charge, idx) => (
-                        <tr
-                          key={charge.id}
-                          className={`charge-row${deletingId === charge.id ? " deleting" : ""}${updatingId === charge.id ? " updating" : ""}`}
-                        >
-                          <td className="row-num">{idx + 1}</td>
-                          <td className="charge-title">{charge.title}</td>
-                          <td>
-                            <span className="method-tag">
-                              {charge.payment_method || "cash"}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`status-badge ${charge.payment_status}`}>
-                              <span className="badge-dot" />
-                              {charge.payment_status}
-                            </span>
-                          </td>
-                          <td className="notes-cell">{charge.notes || "—"}</td>
-                          <td className="right amount-cell">{money(charge.amount)}</td>
-                          <td className="no-print center">
-                            <div className="action-group">
-                              {charge.payment_status === "due" ? (
-                                <button
-                                  className="tbl-btn paid"
-                                  type="button"
-                                  disabled={updatingId === charge.id}
-                                  onClick={() => updateChargeStatus(charge, "paid")}
-                                  title="Mark as Paid"
-                                >
-                                  <IconCheck size={13} />
-                                  {updatingId === charge.id ? "…" : "Mark Paid"}
-                                </button>
-                              ) : (
-                                <button
-                                  className="tbl-btn due"
-                                  type="button"
-                                  disabled={updatingId === charge.id}
-                                  onClick={() => updateChargeStatus(charge, "due")}
-                                  title="Mark as Due"
-                                >
-                                  <IconUndo size={13} />
-                                  {updatingId === charge.id ? "…" : "Mark Due"}
-                                </button>
-                              )}
-                              <button
-                                className="tbl-btn delete"
-                                type="button"
-                                disabled={deletingId === charge.id}
-                                onClick={() => deleteCharge(charge)}
-                                title="Delete charge"
-                              >
-                                <IconTrash size={13} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : null}
-            </div>
-
-            {/* ══ INLINE ROW FORMS ══ */}
-            <div className="row-forms-area no-print">
-              {rows.map((row, idx) => (
-                <ChargeRowForm
-                  key={row._id}
-                  row={row}
-                  idx={idx}
-                  categories={categories}
-                  onChange={(field, value) => updateRow(row._id, field, value)}
-                  onSave={() => saveRow(row._id)}
-                  onRemove={() => removeRow(row._id)}
-                />
-              ))}
-
-              <button className="add-row-btn" type="button" onClick={addRow}>
-                <span className="add-row-circle">
-                  <IconPlus size={20} />
+{/* Saved charges table */}
+<div className="charges-section">
+  {charges.length === 0 && rows.length === 0 ? (
+    <div className="no-charges">
+      <span className="no-charges-icon"><IconClipboard size={36} /></span>
+      <p>No extra charges added yet</p>
+    </div>
+  ) : charges.length > 0 ? (
+    <div className="charges-table-wrap">
+      <table className="charges-table">
+        <thead>
+          <tr>
+            <th style={{ width: 36 }}>#</th>
+            <th>Charge</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th className="right">Amount</th>
+            <th className="no-print center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {charges.map((charge, idx) => (
+            <tr
+              key={charge.id}
+              className={`charge-row${deletingId === charge.id ? " deleting" : ""}${updatingId === charge.id ? " updating" : ""}`}
+            >
+              <td className="row-num">{idx + 1}</td>
+              <td className="charge-title">{charge.title}</td>
+              <td>
+                <span className="method-tag">
+                  {charge.payment_method || "cash"}
                 </span>
-                <span className="add-row-text">Add Extra Charge</span>
-              </button>
-            </div>
+              </td>
+              <td>
+                <span className={`status-badge ${charge.payment_status}`}>
+                  <span className="badge-dot" />
+                  {charge.payment_status}
+                </span>
+              </td>
+              <td className="notes-cell">{charge.notes || "—"}</td>
+              <td className="right amount-cell">{money(charge.amount)}</td>
+              <td className="no-print center">
+                <div className="action-group">
+                  {charge.payment_status === "due" ? (
+                    <button
+                      className="tbl-btn paid"
+                      type="button"
+                      disabled={updatingId === charge.id}
+                      onClick={() => updateChargeStatus(charge, "paid")}
+                      title="Mark as Paid"
+                    >
+                      <IconCheck size={13} />
+                      {updatingId === charge.id ? "…" : "Mark Paid"}
+                    </button>
+                  ) : (
+                    <button
+                      className="tbl-btn due"
+                      type="button"
+                      disabled={updatingId === charge.id}
+                      onClick={() => updateChargeStatus(charge, "due")}
+                      title="Mark as Due"
+                    >
+                      <IconUndo size={13} />
+                      {updatingId === charge.id ? "…" : "Mark Due"}
+                    </button>
+                  )}
+                  <button
+                    className="tbl-btn delete"
+                    type="button"
+                    disabled={deletingId === charge.id}
+                    onClick={() => deleteCharge(charge)}
+                    title="Delete charge"
+                  >
+                    <IconTrash size={13} />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : null}
+</div>
+
+{/* ══ INLINE ROW FORMS — only for active bookings ══ */}
+{["cancelled", "canceled", "rejected"].includes(
+  String(booking.booking_status).toLowerCase()
+) ? (
+  <div className="blocked-notice no-print">
+    <div className="blocked-notice-icon">
+      <IconAlertCircle size={20} />
+    </div>
+    <div>
+      <p className="blocked-notice-title">Extra charges are disabled</p>
+      <p className="blocked-notice-desc">
+        This booking is <strong>{booking.booking_status}</strong>. Extra charges cannot be added to cancelled or rejected bookings.
+      </p>
+    </div>
+  </div>
+) : (
+  <div className="row-forms-area no-print">
+    {rows.map((row, idx) => (
+      <ChargeRowForm
+        key={row._id}
+        row={row}
+        idx={idx}
+        categories={categories}
+        onChange={(field, value) => updateRow(row._id, field, value)}
+        onSave={() => saveRow(row._id)}
+        onRemove={() => removeRow(row._id)}
+      />
+    ))}
+
+    <button className="add-row-btn" type="button" onClick={addRow}>
+      <span className="add-row-circle">
+        <IconPlus size={20} />
+      </span>
+      <span className="add-row-text">Add Extra Charge</span>
+    </button>
+  </div>
+)}
 
             {/* ══ TOTALS ══ */}
             <SectionDivider icon={<IconBarChart size={18} />} title="Summary" />
@@ -1788,7 +1805,46 @@ const styles = `
   .footer-logo  { width: 96px; opacity: .8; }
   .footer-brand p, .footer-meta p { font-size: 12px; color: var(--text-muted); font-weight: 500; }
   .footer-meta { text-align: right; }
-
+/* ── BLOCKED NOTICE ── */
+.blocked-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 16px 40px 10px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fdf2f2, var(--red-bg));
+  border: 1.5px solid #f5c6cb;
+  animation: cardFadeIn .4s ease;
+}
+.blocked-notice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--red-bg);
+  border: 1px solid #f5c6cb;
+  color: var(--red);
+  flex-shrink: 0;
+}
+.blocked-notice-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--red);
+  margin-bottom: 3px;
+}
+.blocked-notice-desc {
+  font-size: 13px;
+  color: #8b1a24;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.blocked-notice-desc strong {
+  font-weight: 800;
+  text-transform: capitalize;
+}
   /* ── RESPONSIVE ── */
   @media (max-width: 1100px) {
     .info-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
