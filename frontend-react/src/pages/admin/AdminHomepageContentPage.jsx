@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
@@ -1538,7 +1539,6 @@ export default function AdminHomepageContentPage() {
   const navigate = useNavigate();
 
   const [admin, setAdmin] = useState(() => getStoredAdmin() || {});
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
   const [content, setContent] = useState(() => clone(emptyContent));
   const [galleryFiles, setGalleryFiles] = useState([]);
@@ -1547,11 +1547,10 @@ export default function AdminHomepageContentPage() {
   const [previewVersion, setPreviewVersion] = useState(Date.now());
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const adminName = admin?.name || "Admin";
-  const adminInitial = useMemo(() => (adminName || "A").charAt(0).toUpperCase(), [adminName]);
+  
 
   const selectedGalleryFiles = useMemo(() => {
     return selectedGalleryUrls
@@ -1725,20 +1724,6 @@ export default function AdminHomepageContentPage() {
     setSelectedGalleryUrls((prev) => prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]);
   }, []);
 
-  const logoutAdmin = useCallback(async () => {
-    if (isLoggingOut) return;
-    setIsLoggingOut(true);
-    try {
-      await requestAdminApi("/admin/logout", { method: "POST", body: JSON.stringify({}) });
-    } catch { }
-    finally {
-      localStorage.removeItem(ADMIN_TOKEN_KEY);
-      localStorage.removeItem(ADMIN_USER_KEY);
-      setIsLoggingOut(false);
-      navigate("/admin-login");
-    }
-  }, [isLoggingOut, navigate]);
-
   useEffect(() => {
     if (!getAdminToken()) { redirectToLogin(); return; }
     document.body.classList.add("admin-layout");
@@ -1771,48 +1756,8 @@ export default function AdminHomepageContentPage() {
       <style>{adminHomepageStyles}</style>
 
       {/* ── SIDEBAR (unchanged) ── */}
-      <aside className={`admin-sidebar ${sidebarOpen ? "open" : ""}`.trim()}>
-        <Link to="/" className="sidebar-brand">
-          <div>
-            <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
-            <span className="sidebar-title">Admin Portal</span>
-          </div>
-        </Link>
-        <div className="sidebar-admin-card">
-          <div className="admin-avatar">{adminInitial}</div>
-          <div className="sidebar-admin-meta">
-            <span className="sidebar-admin-label">Signed in as</span>
-            <span className="sidebar-admin-name">{adminName}</span>
-          </div>
-        </div>
-        <div className="sidebar-menu">
-          <div className="sidebar-section-title">Dashboard</div>
-          <Link to="/admin-dashboard" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconBars size={15} /> Overview
-          </Link>
-          <Link to="/admin-bookings" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconFile size={15} /> Bookings
-          </Link>
-          <Link to="/admin-manual-booking" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconPlus /> Manual Booking
-          </Link>
-          <Link to="/admin-homepage-content" className="sidebar-link active" onClick={() => setSidebarOpen(false)}>
-            <IconEdit /> Homepage Content
-          </Link>
-          <Link to="/admin-calendar-slots" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-                      <IconPlus />
-                      Calendar Slots
-                    </Link>
-        </div>
-        <div className="sidebar-footer">
-          <button className="sidebar-logout" type="button" onClick={logoutAdmin} disabled={isLoggingOut}>
-            <IconLogout />
-            {isLoggingOut ? "Logging out..." : "Logout"}
-          </button>
-        </div>
-      </aside>
 
-      <div className={`sidebar-backdrop ${sidebarOpen ? "show" : ""}`.trim()} onClick={() => setSidebarOpen(false)} />
+      <Sidebar admin={admin} />
 
       <main className="admin-main">
         {/* Mobile topbar */}

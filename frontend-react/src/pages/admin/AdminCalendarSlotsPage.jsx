@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
 const ADMIN_USER_KEY = "dlc_admin_user_v1";
@@ -1021,7 +1022,6 @@ export default function AdminCalendarSlotsPage() {
   const [manualStatus, setManualStatus] = useState("blocked");
 
   const adminName = admin?.name || "Admin";
-  const adminInitial = (adminName || "A").charAt(0).toUpperCase();
 
   /* ── BACKEND GUARD: start_date is always today — never request past dates ── */
 async function loadSlots() {

@@ -5,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import { apiRequest, adminHeaders } from "../../services/api";
+import Sidebar from "../../components/Sidebar";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -1532,13 +1533,12 @@ export default function AdminManualBookingPage() {
   const [result, setResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isContextLoading, setIsContextLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
 
   const adminName = admin?.name || "Admin";
   const adminEmail = admin?.email || "—";
   const adminType = admin?.user_type || "—";
-  const adminInitial = (adminName || "A").charAt(0).toUpperCase();
+
 
   const totalAmount = getSlotAmount(selectedSlot);
   const paidAmount = Math.max(Number(form.paid_amount || 0), 0);
@@ -1824,25 +1824,6 @@ export default function AdminManualBookingPage() {
     ]
   );
 
-  const logoutAdmin = useCallback(async () => {
-    if (isLoggingOut) return;
-
-    setIsLoggingOut(true);
-
-    try {
-      await requestAdminApi("/auth/logout", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-    } catch {
-      // Local admin session must still be cleared.
-    } finally {
-      localStorage.removeItem(ADMIN_TOKEN_KEY);
-      localStorage.removeItem(ADMIN_USER_KEY);
-      setIsLoggingOut(false);
-      navigate("/admin-login");
-    }
-  }, [isLoggingOut, navigate]);
 
   useEffect(() => {
     if (!getAdminToken()) {
@@ -1878,61 +1859,7 @@ export default function AdminManualBookingPage() {
     <>
       <style>{manualBookingStyles}</style>
 
-      <aside className={`admin-sidebar ${sidebarOpen ? "open" : ""}`.trim()}>
-        <Link to="/" className="sidebar-brand">
-          <div>
-            <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
-            <span className="sidebar-title">Admin Portal</span>
-          </div>
-        </Link>
-
-        <div className="sidebar-admin-card">
-          <div className="admin-avatar">{adminInitial}</div>
-          <div className="sidebar-admin-meta">
-            <span className="sidebar-admin-label">Signed in as</span>
-            <span className="sidebar-admin-name">{adminName}</span>
-          </div>
-        </div>
-
-        <div className="sidebar-menu">
-          <div className="sidebar-section-title">Dashboard</div>
-
-          <Link to="/admin-dashboard" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconBars />
-            Overview
-          </Link>
-
-          <Link to="/admin-bookings" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconFile />
-            Bookings
-          </Link>
-
-          <Link to="/admin-manual-booking" className="sidebar-link active" onClick={() => setSidebarOpen(false)}>
-            <IconPlus />
-            Manual Booking
-          </Link>
-          <Link to="/admin-homepage-content" className="sidebar-link">
-          <IconEdit />
-            Homepage Content
-          </Link>
-          <Link to="/admin-calendar-slots" className="sidebar-link" onClick={() => setSidebarOpen(false)}>
-                      <IconPlus />
-                      Calendar Slots
-                    </Link>
-         </div>
-
-        <div className="sidebar-footer">
-          <button className="sidebar-logout" type="button" onClick={logoutAdmin} disabled={isLoggingOut}>
-            <IconLogout />
-            {isLoggingOut ? "Logging out..." : "Logout"}
-          </button>
-        </div>
-      </aside>
-
-      <div
-        className={`sidebar-backdrop ${sidebarOpen ? "show" : ""}`.trim()}
-        onClick={() => setSidebarOpen(false)}
-      />
+      <Sidebar admin={admin} />
 
       <main className="admin-main">
         <div className="admin-mobile-topbar">
