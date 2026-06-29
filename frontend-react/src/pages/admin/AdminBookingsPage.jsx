@@ -1250,6 +1250,17 @@ const adminBookingsStyles = String.raw`
     display: block;
   }
 
+  .btn-view {
+  background: rgba(13, 110, 253, 0.10);
+  color: #0d47a1;
+  border: 1px solid rgba(13, 110, 253, 0.22);
+}
+
+.btn-view:hover {
+  background: #0d6efd;
+  color: white;
+  transform: translateY(-2px);
+}
   @media (max-width: 980px) {
     .admin-sidebar {
       transform: translateX(-105%);
@@ -1931,32 +1942,42 @@ export default function AdminBookingsPage() {
                           </td>
 
                           <td>
-                            {canApproveReject(row) ? (
-                              <div className="action-buttons">
-                                <button
-                                  className="btn-action btn-approve"
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() => updateBookingApproval(row.id, "approve")}
-                                >
-                                  {isCurrentActionLoading ? "Working..." : "Approve"}
-                                </button>
+  <div className="action-buttons">
+    <button
+      className="btn-action btn-view"
+      type="button"
+      onClick={() => navigate(`/admin-booking-details/${row.id}`)}
+    >
+      👁 View
+    </button>
 
-                                <button
-                                  className="btn-action btn-reject"
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() => updateBookingApproval(row.id, "reject")}
-                                >
-                                  {isCurrentActionLoading ? "Working..." : "Reject"}
-                                </button>
-                              </div>
-                            ) : source === "offline" ? (
-                              <span className="cell-sub">Office booking</span>
-                            ) : (
-                              <span className="cell-sub">No action</span>
-                            )}
-                          </td>
+    {canApproveReject(row) ? (
+      <>
+        <button
+          className="btn-action btn-approve"
+          type="button"
+          disabled={isActionLoading}
+          onClick={() => updateBookingApproval(row.id, "approve")}
+        >
+          {isCurrentActionLoading ? "Working..." : "Approve"}
+        </button>
+
+        <button
+          className="btn-action btn-reject"
+          type="button"
+          disabled={isActionLoading}
+          onClick={() => updateBookingApproval(row.id, "reject")}
+        >
+          {isCurrentActionLoading ? "Working..." : "Reject"}
+        </button>
+      </>
+    ) : source === "offline" ? (
+      <span className="cell-sub">Office booking</span>
+    ) : (
+      <span className="cell-sub">No action</span>
+    )}
+  </div>
+</td>
                         </tr>
                       );
                     })
