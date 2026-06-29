@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
@@ -208,9 +207,7 @@ export default function AdminBookingDetailsPage() {
   return (
     <>
       <style>{styles}</style>
-      <Sidebar />
-
-      <main className="admin-main invoice-page">
+      <main className="invoice-page">
         <div className="invoice-actions no-print">
           <Link className="back-link" to="/admin-bookings">
             ← Back to Bookings
