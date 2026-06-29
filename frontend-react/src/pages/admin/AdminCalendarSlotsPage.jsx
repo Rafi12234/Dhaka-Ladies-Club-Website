@@ -1003,8 +1003,6 @@ export default function AdminCalendarSlotsPage() {
   const navigate = useNavigate();
 
   const [admin] = useState(() => getStoredAdmin() || {});
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -1176,53 +1174,7 @@ async function loadSlots() {
       <style>{pageStyles}</style>
 
       {/* Sidebar */}
-      <aside className={`slots-sidebar${sidebarOpen ? " open" : ""}`}>
-        <Link to="/" className="slots-sidebar-brand">
-          <div>
-            <img src="/assets/img/dlclogo_long.png" alt="Dhaka Ladies Club" />
-            <span className="slots-sidebar-brand-title">Admin Portal</span>
-          </div>
-        </Link>
-
-        <div className="slots-admin-card">
-          <div className="slots-admin-avatar">{adminInitial}</div>
-          <div>
-            <span className="slots-admin-label">Signed in as</span>
-            <span className="slots-admin-name">{adminName}</span>
-          </div>
-        </div>
-
-        <div className="slots-sidebar-menu">
-          <div className="slots-sidebar-section-title">Dashboard</div>
-          <Link to="/admin-dashboard" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconBars size={15} /> Overview
-          </Link>
-          <Link to="/admin-bookings" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconFile size={15} /> Bookings
-          </Link>
-          <Link to="/admin-manual-booking" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconPlus size={15} /> Manual Booking
-          </Link>
-          <Link to="/admin-homepage-content" className="slots-sidebar-link" onClick={() => setSidebarOpen(false)}>
-            <IconEdit size={15} /> Homepage Content
-          </Link>
-          <Link to="/admin-calendar-slots" className="slots-sidebar-link active" onClick={() => setSidebarOpen(false)}>
-            <IconCalendar size={15} /> Calendar Slots
-          </Link>
-        </div>
-
-        <div className="slots-sidebar-footer">
-          <button className="slots-sidebar-logout" type="button" onClick={logoutAdmin} disabled={isLoggingOut}>
-            <IconLogout size={15} />
-            {isLoggingOut ? "Logging out…" : "Logout"}
-          </button>
-        </div>
-      </aside>
-
-      <div
-        className={`slots-sidebar-backdrop${sidebarOpen ? " show" : ""}`}
-        onClick={() => setSidebarOpen(false)}
-      />
+      <Sidebar admin={admin} />
 
       <main className="slots-main">
         <div className="slots-mobile-topbar">
