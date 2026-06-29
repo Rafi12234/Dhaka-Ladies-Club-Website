@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CalendarSlotController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\HomepageContentController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\AdminBookingInvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,6 +134,28 @@ Route::prefix('admin')->middleware('throttle:30,1')->group(function () {
     Route::patch('/calendar-slots/status', [AdminCalendarSlotController::class, 'updateStatus'])
         ->middleware('throttle:20,1')
         ->name('api.admin.calendar-slots.status');
+
+    Route::get('/bookings/{id}/details', [AdminBookingInvoiceController::class, 'details'])
+    ->name('api.admin.bookings.details');
+
+    Route::get('/extra-charge-categories', [AdminBookingInvoiceController::class, 'categories'])
+        ->name('api.admin.extra-charge-categories.index');
+    
+    Route::post('/extra-charge-categories', [AdminBookingInvoiceController::class, 'storeCategory'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.extra-charge-categories.store');
+    
+    Route::post('/bookings/{id}/extra-charges', [AdminBookingInvoiceController::class, 'storeCharge'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.bookings.extra-charges.store');
+    
+    Route::patch('/bookings/{id}/extra-charges/{chargeId}', [AdminBookingInvoiceController::class, 'updateCharge'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.bookings.extra-charges.update');
+    
+    Route::delete('/bookings/{id}/extra-charges/{chargeId}', [AdminBookingInvoiceController::class, 'deleteCharge'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.bookings.extra-charges.delete');
 });
 
 /*
