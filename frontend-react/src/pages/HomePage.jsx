@@ -43,7 +43,7 @@ const homePageStyles = String.raw`
   [data-aos="fade-left"]  { transform: translateX(35px); }
   [data-aos="zoom-in"]    { transform: scale(0.94); }
 
-  [data-aos].aos-animate { opacity: 1; transform: none; }
+  [data-aos].aos-animate  { opacity: 1; transform: none; }
 
   .calendar-loading {
     padding: 80px 20px;
