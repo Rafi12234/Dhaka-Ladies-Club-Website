@@ -8,7 +8,7 @@ const CUSTOMER_TOKEN_KEY = "dlc_customer_token_v1";
 const CUSTOMER_USER_KEY = "dlc_customer_user_v1";
 
 const changePasswordStyles = String.raw`
-  *, *::before, *::after {
+  *, *::before, *::after { 
     box-sizing: border-box;
   }
 
