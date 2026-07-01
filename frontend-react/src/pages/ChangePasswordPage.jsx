@@ -5,10 +5,10 @@ import { apiRequest, customerHeaders } from "../services/api";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CUSTOMER_TOKEN_KEY = "dlc_customer_token_v1";
-const CUSTOMER_USER_KEY = "dlc_customer_user_v1";
+const  CUSTOMER_USER_KEY = "dlc_customer_user_v1";
 
 const changePasswordStyles = String.raw`
-  *, *::before, *::after {
+  *, *::before, *::after { 
     box-sizing: border-box;
   }
 
