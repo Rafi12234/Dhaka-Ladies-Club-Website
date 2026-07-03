@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../services/api";
 import Sidebar from "../../components/Sidebar";
@@ -170,6 +170,17 @@ const adminCustomersStyles = String.raw`
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
+  }
+
+  .search-status {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--gold-dark);
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-border);
+    border-radius: 999px;
+    padding: 7px 11px;
+    white-space: nowrap;
   }
 
   .message-banner {
@@ -614,6 +625,7 @@ function IconInfo({ size = 16 }) {
 
 export default function AdminCustomersPage() {
   const navigate = useNavigate();
+  const latestRequestIdRef = useRef(0);
 
   const [admin, setAdmin] = useState(() => getStoredAdmin() || {});
   const [customers, setCustomers] = useState([]);
@@ -637,7 +649,6 @@ export default function AdminCustomersPage() {
   const adminType = admin?.user_type || "—";
 
   const visibleMessage = message.text;
-
   const filteredCustomers = useMemo(() => customers, [customers]);
 
   const showMessage = useCallback((text, type = "error") => {
@@ -671,47 +682,64 @@ export default function AdminCustomersPage() {
   );
 
   const loadCustomers = useCallback(
-    async (page = 1, keyword = activeSearch) => {
+    async (page = 1, keyword = "") => {
+      const requestId = latestRequestIdRef.current + 1;
+      latestRequestIdRef.current = requestId;
+
       clearMessage();
       setIsLoading(true);
 
       try {
+        const cleanKeyword = String(keyword || "").trim();
+
         const query = new URLSearchParams({
           page: String(page),
           per_page: "15",
         });
 
-        if (keyword.trim()) {
-          query.set("search", keyword.trim());
+        if (cleanKeyword) {
+          query.set("search", cleanKeyword);
         }
 
         const result = await requestAdminApi(`/admin/customers?${query.toString()}`, {
           method: "GET",
         });
 
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
         const data = normalizeApiData(result) || {};
 
         setCustomers(Array.isArray(data.customers) ? data.customers : []);
         setSummary(data.summary || {});
-        setPagination(data.pagination || {
-          current_page: 1,
-          last_page: 1,
-          per_page: 15,
-          total: 0,
-        });
+        setPagination(
+          data.pagination || {
+            current_page: 1,
+            last_page: 1,
+            per_page: 15,
+            total: 0,
+          }
+        );
 
         if (data.admin) {
           setAdmin(data.admin);
           localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(data.admin));
         }
       } catch (error) {
+        if (requestId !== latestRequestIdRef.current) {
+          return;
+        }
+
         setCustomers([]);
         handleAdminError(error, "Unable to load customers.");
       } finally {
-        setIsLoading(false);
+        if (requestId === latestRequestIdRef.current) {
+          setIsLoading(false);
+        }
       }
     },
-    [activeSearch, clearMessage, handleAdminError]
+    [clearMessage, handleAdminError]
   );
 
   useEffect(() => {
@@ -725,15 +753,31 @@ export default function AdminCustomersPage() {
     const storedAdmin = getStoredAdmin();
     if (storedAdmin) setAdmin(storedAdmin);
 
-    loadCustomers(1, "");
-
     return () => {
       document.body.classList.remove("admin-layout");
     };
-  }, [loadCustomers, redirectToLogin]);
+  }, [redirectToLogin]);
+
+  useEffect(() => {
+    if (!getAdminToken()) {
+      return;
+    }
+
+    const keyword = searchKeyword.trim();
+
+    const timeoutId = window.setTimeout(() => {
+      setActiveSearch(keyword);
+      loadCustomers(1, keyword);
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [searchKeyword, loadCustomers]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
+
     const keyword = searchKeyword.trim();
     setActiveSearch(keyword);
     loadCustomers(1, keyword);
@@ -742,7 +786,6 @@ export default function AdminCustomersPage() {
   function clearSearch() {
     setSearchKeyword("");
     setActiveSearch("");
-    loadCustomers(1, "");
   }
 
   return (
@@ -785,9 +828,7 @@ export default function AdminCustomersPage() {
                 </button>
               </div>
 
-              <button className="filter-btn" type="submit" disabled={isLoading}>
-                {isLoading ? "Loading..." : "Search"}
-              </button>
+              {isLoading ? <span className="search-status">Searching...</span> : null}
             </form>
           </div>
 
@@ -824,7 +865,9 @@ export default function AdminCustomersPage() {
                 </div>
               </div>
 
-              <span className="record-badge">{recordLabel(pagination.total || filteredCustomers.length)}</span>
+              <span className="record-badge">
+                {recordLabel(pagination.total || filteredCustomers.length)}
+              </span>
             </div>
 
             <div className="table-wrap">
@@ -861,7 +904,9 @@ export default function AdminCustomersPage() {
                       <tr key={customer.id}>
                         <td>
                           <div className="cell-primary">{customer.name || "—"}</div>
-                          <span className="customer-code">{customer.customer_code || `CUST-${customer.id}`}</span>
+                          <span className="customer-code">
+                            {customer.customer_code || `CUST-${customer.id}`}
+                          </span>
                         </td>
 
                         <td>
