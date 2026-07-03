@@ -33,6 +33,15 @@ async function logoutAdminRequest() {
   }
 }
 
+function IconReport({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M7 15l4-4 3 3 5-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function IconBars({ size = 15 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -447,6 +456,15 @@ export default function Sidebar({ admin: adminProp = null }) {
             <IconUsers size={15} />
             Customers
            </Link>
+           <Link
+             to="/admin-reports"
+             className={`sidebar-link ${isActive("/admin-reports") ? "active" : ""}`.trim()}
+             onClick={closeSidebar}
+           >
+            <IconReport size={15} />
+            Reports
+          </Link>
+
 
           <Link
             to="/admin-manual-booking"

@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\HomepageContentController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AdminBookingInvoiceController;
 use App\Http\Controllers\Api\AdminCustomerController;
+use App\Http\Controllers\Api\AdminReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -167,6 +168,14 @@ Route::prefix('admin')->middleware('throttle:30,1')->group(function () {
     Route::delete('/bookings/{id}/extra-charges/{chargeId}', [AdminBookingInvoiceController::class, 'deleteCharge'])
         ->middleware('throttle:20,1')
         ->name('api.admin.bookings.extra-charges.delete');
+    Route::get('/reports/bookings', [AdminReportController::class, 'bookingReport'])
+        ->name('api.admin.reports.bookings');
+
+    Route::get('/reports/revenue', [AdminReportController::class, 'revenueReport'])
+        ->name('api.admin.reports.revenue');
+
+    Route::get('/reports/customers', [AdminReportController::class, 'customerReport'])
+        ->name('api.admin.reports.customers');
 });
 
 /*
