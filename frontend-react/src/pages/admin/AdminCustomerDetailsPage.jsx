@@ -831,7 +831,7 @@ updateCustomerInListCaches(customerId, {
           ) : null}
 
           {isLoading && !customer ? (
-  <div className="panel">
+            <div className="panel">
     <div className="empty-state">Loading customer details...</div>
   </div>
 ) : !customer ? (
