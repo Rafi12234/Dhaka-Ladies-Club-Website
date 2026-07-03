@@ -5,6 +5,9 @@ import Sidebar from "../../components/Sidebar";
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
 const ADMIN_USER_KEY = "dlc_admin_user_v1";
+const CUSTOMER_LIST_CACHE_PREFIX = "dlc_admin_customers_cache_v1";
+const CUSTOMER_LIST_LAST_STATE_KEY = "dlc_admin_customers_last_state_v1";
+const CUSTOMER_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
 
 const adminCustomersStyles = String.raw`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -496,7 +499,95 @@ const adminCustomersStyles = String.raw`
     }
   }
 `;
+function makeCustomerListCacheKey(page = 1, keyword = "") {
+  const cleanKeyword = String(keyword || "").trim().toLowerCase();
 
+  return `${CUSTOMER_LIST_CACHE_PREFIX}:${page}:${cleanKeyword}`;
+}
+
+function readSessionCache(key, ttlMs) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+
+    if (!cached?.saved_at || !cached?.data) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    if (Date.now() - cached.saved_at > ttlMs) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return cached.data;
+  } catch {
+    sessionStorage.removeItem(key);
+    return null;
+  }
+}
+
+function writeSessionCache(key, data) {
+  try {
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        saved_at: Date.now(),
+        data,
+      })
+    );
+  } catch {
+    // Ignore storage errors silently.
+  }
+}
+
+function readCustomerListLastState() {
+  try {
+    const raw = sessionStorage.getItem(CUSTOMER_LIST_LAST_STATE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCustomerListLastState(state) {
+  try {
+    sessionStorage.setItem(CUSTOMER_LIST_LAST_STATE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore storage errors silently.
+  }
+}
+
+function updateCustomerInListCaches(customerId, patch) {
+  try {
+    const id = Number(customerId);
+
+    Object.keys(sessionStorage).forEach((key) => {
+      if (!key.startsWith(`${CUSTOMER_LIST_CACHE_PREFIX}:`)) return;
+
+      const cached = readSessionCache(key, CUSTOMER_LIST_CACHE_TTL_MS);
+      if (!cached?.customers) return;
+
+      const updatedCustomers = cached.customers.map((customer) =>
+        Number(customer.id) === id
+          ? {
+              ...customer,
+              ...patch,
+            }
+          : customer
+      );
+
+      writeSessionCache(key, {
+        ...cached,
+        customers: updatedCustomers,
+      });
+    });
+  } catch {
+    // Ignore cache update errors silently.
+  }
+}
 function getAdminToken() {
   return localStorage.getItem(ADMIN_TOKEN_KEY);
 }
@@ -681,99 +772,146 @@ export default function AdminCustomersPage() {
     [redirectToLogin, showMessage]
   );
 
-  const loadCustomers = useCallback(
-    async (page = 1, keyword = "") => {
-      const requestId = latestRequestIdRef.current + 1;
-      latestRequestIdRef.current = requestId;
+const loadCustomers = useCallback(
+  async (page = 1, keyword = "", options = {}) => {
+    const requestId = latestRequestIdRef.current + 1;
+    latestRequestIdRef.current = requestId;
 
-      clearMessage();
+    const cleanKeyword = String(keyword || "").trim();
+    const cacheKey = makeCustomerListCacheKey(page, cleanKeyword);
+    const cachedData = readSessionCache(cacheKey, CUSTOMER_LIST_CACHE_TTL_MS);
+
+    if (cachedData && !options.forceRefresh) {
+      setCustomers(Array.isArray(cachedData.customers) ? cachedData.customers : []);
+      setSummary(cachedData.summary || {});
+      setPagination(
+        cachedData.pagination || {
+          current_page: page,
+          last_page: 1,
+          per_page: 15,
+          total: 0,
+        }
+      );
+
+      if (cachedData.admin) {
+        setAdmin(cachedData.admin);
+        localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(cachedData.admin));
+      }
+
+      setIsLoading(false);
+    } else {
       setIsLoading(true);
+    }
 
-      try {
-        const cleanKeyword = String(keyword || "").trim();
+    clearMessage();
 
-        const query = new URLSearchParams({
-          page: String(page),
-          per_page: "15",
-        });
+    try {
+      const query = new URLSearchParams({
+        page: String(page),
+        per_page: "15",
+      });
 
-        if (cleanKeyword) {
-          query.set("search", cleanKeyword);
-        }
+      if (cleanKeyword) {
+        query.set("search", cleanKeyword);
+      }
 
-        const result = await requestAdminApi(`/admin/customers?${query.toString()}`, {
-          method: "GET",
-        });
+      const result = await requestAdminApi(`/admin/customers?${query.toString()}`, {
+        method: "GET",
+      });
 
-        if (requestId !== latestRequestIdRef.current) {
-          return;
-        }
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
 
-        const data = normalizeApiData(result) || {};
+      const data = normalizeApiData(result) || {};
 
-        setCustomers(Array.isArray(data.customers) ? data.customers : []);
-        setSummary(data.summary || {});
-        setPagination(
+      const nextData = {
+        admin: data.admin || null,
+        customers: Array.isArray(data.customers) ? data.customers : [],
+        summary: data.summary || {},
+        pagination:
           data.pagination || {
-            current_page: 1,
+            current_page: page,
             last_page: 1,
             per_page: 15,
             total: 0,
-          }
-        );
+          },
+      };
 
-        if (data.admin) {
-          setAdmin(data.admin);
-          localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(data.admin));
-        }
-      } catch (error) {
-        if (requestId !== latestRequestIdRef.current) {
-          return;
-        }
+      setCustomers(nextData.customers);
+      setSummary(nextData.summary);
+      setPagination(nextData.pagination);
 
+      if (nextData.admin) {
+        setAdmin(nextData.admin);
+        localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(nextData.admin));
+      }
+
+      writeSessionCache(cacheKey, nextData);
+      writeCustomerListLastState({
+        page,
+        searchKeyword: cleanKeyword,
+        activeSearch: cleanKeyword,
+      });
+    } catch (error) {
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
+      if (!cachedData) {
         setCustomers([]);
         handleAdminError(error, "Unable to load customers.");
-      } finally {
-        if (requestId === latestRequestIdRef.current) {
-          setIsLoading(false);
-        }
       }
-    },
-    [clearMessage, handleAdminError]
-  );
-
-  useEffect(() => {
-    if (!getAdminToken()) {
-      redirectToLogin();
-      return;
+    } finally {
+      if (requestId === latestRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
+  },
+  [clearMessage, handleAdminError]
+);
 
-    document.body.classList.add("admin-layout");
+useEffect(() => {
+  if (!getAdminToken()) {
+    redirectToLogin();
+    return;
+  }
 
-    const storedAdmin = getStoredAdmin();
-    if (storedAdmin) setAdmin(storedAdmin);
+  document.body.classList.add("admin-layout");
 
-    return () => {
-      document.body.classList.remove("admin-layout");
-    };
-  }, [redirectToLogin]);
+  const storedAdmin = getStoredAdmin();
+  if (storedAdmin) setAdmin(storedAdmin);
 
-  useEffect(() => {
-    if (!getAdminToken()) {
-      return;
-    }
+  const lastState = readCustomerListLastState();
 
-    const keyword = searchKeyword.trim();
+  if (lastState?.searchKeyword) {
+    setSearchKeyword(lastState.searchKeyword);
+    setActiveSearch(lastState.activeSearch || lastState.searchKeyword);
+  } else {
+    loadCustomers(1, "");
+  }
 
-    const timeoutId = window.setTimeout(() => {
-      setActiveSearch(keyword);
-      loadCustomers(1, keyword);
-    }, 350);
+  return () => {
+    document.body.classList.remove("admin-layout");
+  };
+}, [loadCustomers, redirectToLogin]);
 
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [searchKeyword, loadCustomers]);
+useEffect(() => {
+  if (!getAdminToken()) {
+    return;
+  }
+
+  const keyword = searchKeyword.trim();
+
+  const timeoutId = window.setTimeout(() => {
+    setActiveSearch(keyword);
+    loadCustomers(1, keyword);
+  }, 350);
+
+  return () => {
+    window.clearTimeout(timeoutId);
+  };
+}, [searchKeyword, loadCustomers]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();

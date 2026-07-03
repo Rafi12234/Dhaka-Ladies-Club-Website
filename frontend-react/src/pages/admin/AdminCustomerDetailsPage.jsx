@@ -5,6 +5,10 @@ import Sidebar from "../../components/Sidebar";
 
 const ADMIN_TOKEN_KEY = "dlc_admin_token_v1";
 const ADMIN_USER_KEY = "dlc_admin_user_v1";
+const CUSTOMER_DETAILS_CACHE_PREFIX = "dlc_admin_customer_details_cache_v1";
+const CUSTOMER_DETAILS_CACHE_TTL_MS = 5 * 60 * 1000;
+const CUSTOMER_LIST_CACHE_PREFIX = "dlc_admin_customers_cache_v1";
+const CUSTOMER_LIST_CACHE_TTL_MS = 5 * 60 * 1000;
 
 const adminCustomerDetailsStyles = String.raw`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -442,6 +446,76 @@ const adminCustomerDetailsStyles = String.raw`
     }
   }
 `;
+function makeCustomerDetailsCacheKey(customerId) {
+  return `${CUSTOMER_DETAILS_CACHE_PREFIX}:${customerId}`;
+}
+
+function readSessionCache(key, ttlMs) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+
+    if (!cached?.saved_at || !cached?.data) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    if (Date.now() - cached.saved_at > ttlMs) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return cached.data;
+  } catch {
+    sessionStorage.removeItem(key);
+    return null;
+  }
+}
+
+function writeSessionCache(key, data) {
+  try {
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        saved_at: Date.now(),
+        data,
+      })
+    );
+  } catch {
+    // Ignore storage errors silently.
+  }
+}
+
+function updateCustomerInListCaches(customerId, patch) {
+  try {
+    const id = Number(customerId);
+
+    Object.keys(sessionStorage).forEach((key) => {
+      if (!key.startsWith(`${CUSTOMER_LIST_CACHE_PREFIX}:`)) return;
+
+      const cached = readSessionCache(key, CUSTOMER_LIST_CACHE_TTL_MS);
+      if (!cached?.customers) return;
+
+      const updatedCustomers = cached.customers.map((customer) =>
+        Number(customer.id) === id
+          ? {
+              ...customer,
+              ...patch,
+            }
+          : customer
+      );
+
+      writeSessionCache(key, {
+        ...cached,
+        customers: updatedCustomers,
+      });
+    });
+  } catch {
+    // Ignore cache update errors silently.
+  }
+}
 
 function getAdminToken() {
   return localStorage.getItem(ADMIN_TOKEN_KEY);
@@ -616,28 +690,52 @@ export default function AdminCustomerDetailsPage() {
     [redirectToLogin, showMessage]
   );
 
-  const loadCustomerDetails = useCallback(async () => {
-    clearMessage();
+const loadCustomerDetails = useCallback(async () => {
+  clearMessage();
+
+  const cacheKey = makeCustomerDetailsCacheKey(customerId);
+  const cachedData = readSessionCache(cacheKey, CUSTOMER_DETAILS_CACHE_TTL_MS);
+
+  if (cachedData) {
+    setCustomer(cachedData.customer || null);
+    setSummary(cachedData.summary || {});
+    setBookings(Array.isArray(cachedData.bookings) ? cachedData.bookings : []);
+    setPayments(Array.isArray(cachedData.payments) ? cachedData.payments : []);
+    setSelectedStatus(cachedData.customer?.status || "active");
+    setIsLoading(false);
+  } else {
     setIsLoading(true);
+  }
 
-    try {
-      const result = await requestAdminApi(`/admin/customers/${customerId}`, {
-        method: "GET",
-      });
+  try {
+    const result = await requestAdminApi(`/admin/customers/${customerId}`, {
+      method: "GET",
+    });
 
-      const data = normalizeApiData(result) || {};
+    const data = normalizeApiData(result) || {};
 
-      setCustomer(data.customer || null);
-      setSummary(data.summary || {});
-      setBookings(Array.isArray(data.bookings) ? data.bookings : []);
-      setPayments(Array.isArray(data.payments) ? data.payments : []);
-      setSelectedStatus(data.customer?.status || "active");
-    } catch (error) {
+    const nextData = {
+      customer: data.customer || null,
+      summary: data.summary || {},
+      bookings: Array.isArray(data.bookings) ? data.bookings : [],
+      payments: Array.isArray(data.payments) ? data.payments : [],
+    };
+
+    setCustomer(nextData.customer);
+    setSummary(nextData.summary);
+    setBookings(nextData.bookings);
+    setPayments(nextData.payments);
+    setSelectedStatus(nextData.customer?.status || "active");
+
+    writeSessionCache(cacheKey, nextData);
+  } catch (error) {
+    if (!cachedData) {
       handleAdminError(error, "Unable to load customer details.");
-    } finally {
-      setIsLoading(false);
     }
-  }, [clearMessage, customerId, handleAdminError]);
+  } finally {
+    setIsLoading(false);
+  }
+}, [clearMessage, customerId, handleAdminError]);
 
   useEffect(() => {
     if (!getAdminToken()) {
@@ -671,10 +769,25 @@ export default function AdminCustomerDetailsPage() {
 
       const data = normalizeApiData(result) || {};
 
-      setCustomer((current) => ({
-        ...current,
-        status: data.status || selectedStatus,
-      }));
+const nextStatus = data.status || selectedStatus;
+
+const updatedCustomer = {
+  ...customer,
+  status: nextStatus,
+};
+
+setCustomer(updatedCustomer);
+
+writeSessionCache(makeCustomerDetailsCacheKey(customerId), {
+  customer: updatedCustomer,
+  summary,
+  bookings,
+  payments,
+});
+
+updateCustomerInListCaches(customerId, {
+  status: nextStatus,
+});
 
       showMessage(result.message || "Customer status updated successfully.", "success");
     } catch (error) {
@@ -717,7 +830,7 @@ export default function AdminCustomerDetailsPage() {
             </div>
           ) : null}
 
-          {isLoading ? (
+          {isLoading && filteredCustomers.length === 0 ? (
             <div className="panel">
               <div className="empty-state">Loading customer details...</div>
             </div>
