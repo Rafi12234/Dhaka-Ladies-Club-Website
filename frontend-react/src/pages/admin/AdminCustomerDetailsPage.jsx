@@ -830,11 +830,11 @@ updateCustomerInListCaches(customerId, {
             </div>
           ) : null}
 
-          {isLoading && filteredCustomers.length === 0 ? (
-            <div className="panel">
-              <div className="empty-state">Loading customer details...</div>
-            </div>
-          ) : !customer ? (
+          {isLoading && !customer ? (
+  <div className="panel">
+    <div className="empty-state">Loading customer details...</div>
+  </div>
+) : !customer ? (
             <div className="panel">
               <div className="empty-state">Customer not found.</div>
             </div>
