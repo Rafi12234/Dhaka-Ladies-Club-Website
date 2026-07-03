@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\HomepageContentController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AdminBookingInvoiceController;
+use App\Http\Controllers\Api\AdminCustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +115,16 @@ Route::prefix('admin')->middleware('throttle:30,1')->group(function () {
 
     Route::get('/bookings', [AdminDashboardController::class, 'bookings'])
         ->name('api.admin.bookings');
+
+    Route::get('/customers', [AdminCustomerController::class, 'index'])
+        ->name('api.admin.customers.index');
+
+    Route::get('/customers/{customerId}', [AdminCustomerController::class, 'show'])
+        ->name('api.admin.customers.show');
+
+    Route::patch('/customers/{customerId}/status', [AdminCustomerController::class, 'updateStatus'])
+        ->middleware('throttle:20,1')
+        ->name('api.admin.customers.status');
 
     Route::post('/bookings/{id}/approve', [AdminDashboardController::class, 'approveBooking'])
         ->name('api.admin.bookings.approve');

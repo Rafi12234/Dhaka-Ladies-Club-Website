@@ -16,6 +16,8 @@ import AdminManualBookingPage from "./pages/admin/AdminManualBookingPage";
 import AdminHomepageContentPage from "./pages/admin/AdminHomepageContentPage";
 import AdminCalendarSlotsPage from "./pages/admin/AdminCalendarSlotsPage";
 import AdminBookingDetailsPage from "./pages/admin/AdminBookingDetailsPage";
+import AdminCustomersPage from "./pages/admin/AdminCustomersPage";
+import AdminCustomerDetailsPage from "./pages/admin/AdminCustomerDetailsPage";
 
 export default function App() {
   return (
@@ -39,6 +41,8 @@ export default function App() {
         <Route path="/admin-homepage-content" element={<AdminHomepageContentPage />} />
         <Route path="/admin-calendar-slots" element={<AdminCalendarSlotsPage />} />
         <Route path="/admin-booking-details/:bookingId" element={<AdminBookingDetailsPage />} />
+        <Route path="/admin-customers" element={<AdminCustomersPage />} />
+        <Route path="/admin-customers/:customerId" element={<AdminCustomerDetailsPage />} />
 
         {/* Fallback: prevent white blank screen */}
         <Route path="*" element={<Navigate to="/" replace />} />
