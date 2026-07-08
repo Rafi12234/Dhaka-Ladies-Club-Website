@@ -141,6 +141,47 @@ class SslCommerzPaymentController extends Controller
             ], 404);
         }
 
+        $validated = $request->validate([
+    'hold_token' => ['required', 'string', 'max:100'],
+]);
+
+$slot = DB::table('booking_slots')
+    ->where('id', $booking->booking_slot_id)
+    ->where('slot_status', 'payment_in_progress')
+    ->where('hold_booking_id', $booking->id)
+    ->where('hold_token', $validated['hold_token'])
+    ->first();
+
+if (! $slot) {
+    return response()->json([
+        'message' => 'Invalid or expired payment session.',
+    ], 422);
+}
+
+if (! $slot->hold_expires_at || strtotime($slot->hold_expires_at) <= time()) {
+    DB::table('booking_slots')
+        ->where('id', $booking->booking_slot_id)
+        ->update([
+            'slot_status' => 'available',
+            'hold_token' => null,
+            'hold_expires_at' => null,
+            'hold_booking_id' => null,
+            'updated_at' => now(),
+        ]);
+
+    DB::table('bookings')
+        ->where('id', $booking->id)
+        ->whereIn('booking_status', ['pending', 'payment_in_progress'])
+        ->update([
+            'booking_status' => 'cancelled',
+            'updated_at' => now(),
+        ]);
+
+    return response()->json([
+        'message' => 'Session expired. Please select the slot again.',
+    ], 422);
+}
+
         if (in_array($booking->booking_status, ['confirmed', 'cancelled', 'rejected'], true)) {
             return response()->json([
                 'message' => 'This booking cannot be paid because it is already ' . $booking->booking_status . '.',
@@ -531,23 +572,33 @@ class SslCommerzPaymentController extends Controller
                     'updated_at' => now(),
                 ]);
 
-            DB::table('bookings')
-                ->where('id', $booking->id)
-                ->update([
-                    'booking_status' => env('SSLCOMMERZ_SUCCESS_BOOKING_STATUS', 'confirmed'),
-                    'booked_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            $successBookingStatus = env('SSLCOMMERZ_SUCCESS_BOOKING_STATUS', 'pending');
 
-            DB::table('booking_slots')
-                ->where('id', $booking->booking_slot_id)
-                ->update([
-                    'slot_status' => 'booked',
-                    'hold_token' => null,
-                    'hold_expires_at' => null,
-                    'hold_booking_id' => null,
-                    'updated_at' => now(),
-                ]);
+$successSlotStatus = $successBookingStatus === 'confirmed'
+    ? 'booked'
+    : 'pending_approval';
+
+$bookedAt = $successBookingStatus === 'confirmed'
+    ? now()
+    : null;
+
+DB::table('bookings')
+    ->where('id', $booking->id)
+    ->update([
+        'booking_status' => $successBookingStatus,
+        'booked_at' => $bookedAt,
+        'updated_at' => now(),
+    ]);
+
+DB::table('booking_slots')
+    ->where('id', $booking->booking_slot_id)
+    ->update([
+        'slot_status' => $successSlotStatus,
+        'hold_token' => null,
+        'hold_expires_at' => null,
+        'hold_booking_id' => null,
+        'updated_at' => now(),
+    ]);
         });
 
         return [
