@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AdminBookingInvoiceController;
 use App\Http\Controllers\Api\AdminCustomerController;
 use App\Http\Controllers\Api\AdminReportController;
+use App\Http\Controllers\Api\SslCommerzPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -205,6 +206,23 @@ Route::prefix('admin/homepage-content')->middleware('throttle:30,1')->group(func
 
     Route::delete('/gallery/file', [HomepageContentController::class, 'deleteGalleryFile'])
         ->name('api.admin.homepage-content.gallery.delete-file');
+});
+
+Route::prefix('payments/sslcommerz')->middleware('throttle:30,1')->group(function () {
+    Route::post('/bookings/{bookingId}/initiate', [SslCommerzPaymentController::class, 'initiate'])
+        ->name('api.sslcommerz.initiate');
+
+    Route::match(['get', 'post'], '/success', [SslCommerzPaymentController::class, 'success'])
+        ->name('api.sslcommerz.success');
+
+    Route::match(['get', 'post'], '/fail', [SslCommerzPaymentController::class, 'fail'])
+        ->name('api.sslcommerz.fail');
+
+    Route::match(['get', 'post'], '/cancel', [SslCommerzPaymentController::class, 'cancel'])
+        ->name('api.sslcommerz.cancel');
+
+    Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn'])
+        ->name('api.sslcommerz.ipn');
 });
 
 /*
