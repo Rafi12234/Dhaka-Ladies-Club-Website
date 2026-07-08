@@ -1678,94 +1678,90 @@ export default function PaymentPage() {
     }
   }, [isCancelling, navigate, releaseActiveHold, stopPaymentTimer]);
 
-  const submitPayment = useCallback(
-    async (event) => {
-      event.preventDefault();
+const submitPayment = useCallback(
+  async (event) => {
+    event.preventDefault();
 
-      const form = formRef.current;
+    const form = formRef.current;
 
-      if (form && !form.checkValidity()) {
-        form.reportValidity();
-        setPaymentMessage("Please complete all required payment fields.", "error");
-        return;
+    if (form && !form.checkValidity()) {
+      form.reportValidity();
+      setPaymentMessage("Please complete all required payment fields.", "error");
+      return;
+    }
+
+    const activeHold = readJson(ACTIVE_HOLD_KEY);
+
+    if (!activeHold?.booking_id || !activeHold?.hold_token) {
+      setPaymentMessage("Your payment session is missing or expired. Please select a slot again.", "error");
+      return;
+    }
+
+    if (parseServerDateTime(activeHold.hold_expires_at) <= Date.now()) {
+      await handleSessionExpired();
+      return;
+    }
+
+    setIsSubmitting(true);
+    setPaymentMessage("", "");
+
+    try {
+      const token = localStorage.getItem("dlc_customer_token_v1");
+
+      if (!token) {
+        throw new Error("Please login first to continue payment.");
       }
 
-      const activeHold = readJson(ACTIVE_HOLD_KEY);
+      const result = await requestApi(`/payments/sslcommerz/bookings/${activeHold.booking_id}/initiate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          hold_token: activeHold.hold_token,
 
-      if (!activeHold?.booking_id || !activeHold?.hold_token) {
-        setPaymentMessage("Your payment session is missing or expired. Please select a slot again.", "error");
-        return;
+          /*
+           * These fields are kept only because your current UI has this form.
+           * SSLCommerz will handle the real card/banking information on its own secure page.
+           * Backend should not store full card number or CVV anymore.
+           */
+          cardholder_name: paymentForm.cardholder_name.trim(),
+          billing_address: paymentForm.billing_address.trim(),
+        }),
+      });
+
+      const data = normalizeApiData(result);
+
+      if (!data?.gateway_url) {
+        throw new Error("SSLCommerz payment gateway URL was not found.");
       }
 
-      if (parseServerDateTime(activeHold.hold_expires_at) <= Date.now()) {
-        await handleSessionExpired();
-        return;
-      }
-
-      const payload = {
+      saveJson(PENDING_CONFIRMATION_KEY, {
+        status: "pending",
+        message: "Your payment is being processed through SSLCommerz.",
+        submitted_at: new Date().toISOString(),
         booking_id: activeHold.booking_id,
-        hold_token: activeHold.hold_token,
-        cardholder_name: paymentForm.cardholder_name.trim(),
-        card_number: paymentForm.card_number.trim().replace(/\s/g, ""),
-        expiry_date: paymentForm.expiry_date.trim(),
-        cvv: paymentForm.cvv.trim(),
-        billing_address: paymentForm.billing_address.trim(),
-        amount: activeHold.total_amount,
-      };
+        booking_no: activeHold.booking_no || "",
+        customer_name: activeHold.customer_name || "",
+        customer_email: activeHold.customer_email || "",
+        event_title: activeHold.event_title || "",
+        event_type: activeHold.event_type || "",
+        guest_count: activeHold.guest_count || "",
+        booking_date: activeHold.booking_date || "",
+        booking_slot_label: activeHold.booking_slot_label || "",
+        total_amount: activeHold.total_amount || 0,
+      });
 
-      setIsSubmitting(true);
-      setPaymentMessage("", "");
-
-      try {
-        const result = await requestApi("/payments/process", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        const data = normalizeApiData(result);
-
-        stopPaymentTimer();
-
-        saveJson(PENDING_CONFIRMATION_KEY, {
-          status: "pending",
-          message: result?.message || data?.message || "Your booking request is pending admin approval.",
-          submitted_at: new Date().toISOString(),
-          booking_id: data?.booking_id || activeHold.booking_id,
-          booking_no: data?.booking_no || activeHold.booking_no || "",
-          customer_name: activeHold.customer_name || "",
-          customer_email: activeHold.customer_email || "",
-          event_title: activeHold.event_title || "",
-          event_type: activeHold.event_type || "",
-          guest_count: activeHold.guest_count || "",
-          booking_date: activeHold.booking_date || "",
-          booking_slot_label: activeHold.booking_slot_label || "",
-          total_amount: activeHold.total_amount || payload.amount,
-        });
-
-        clearAllBookingStorage();
-
-        setPaymentMessage(
-          result?.message || data?.message || "Your booking request is pending admin approval.",
-          "success"
-        );
-
-        setPaymentForm(initialPaymentForm);
-
-        setTimeout(() => {
-          navigate("/congratulations");
-        }, 1000);
-      } catch (error) {
-        setPaymentMessage(error.message || "Payment failed.", "error");
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [handleSessionExpired, navigate, paymentForm, setPaymentMessage, stopPaymentTimer]
-  );
+      window.location.href = data.gateway_url;
+    } catch (error) {
+      setPaymentMessage(error.message || "Unable to start SSLCommerz payment.", "error");
+      setIsSubmitting(false);
+    }
+  },
+  [handleSessionExpired, paymentForm, setPaymentMessage]
+);
 
   useEffect(() => {
     const handleScroll = () => {
