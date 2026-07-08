@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 export default function PaymentResultPage() {
@@ -8,6 +9,25 @@ export default function PaymentResultPage() {
   const tranId = params.get("tran_id");
 
   const isSuccess = status === "success";
+
+  useEffect(() => {
+    sessionStorage.removeItem("dlc_selected_slot_v2");
+    sessionStorage.removeItem("dlc_booking_draft_v2");
+    sessionStorage.removeItem("dlc_active_hold_v2");
+
+    if (isSuccess) {
+      sessionStorage.setItem(
+        "dlc_booking_pending_v1",
+        JSON.stringify({
+          status: "pending",
+          message: "Your payment was successful and your booking is pending admin approval.",
+          booking_id: bookingId || "",
+          transaction_reference: tranId || "",
+          submitted_at: new Date().toISOString(),
+        })
+      );
+    }
+  }, [isSuccess, bookingId, tranId]);
 
   return (
     <main
@@ -55,7 +75,7 @@ export default function PaymentResultPage() {
 
         <p style={{ color: "#6b7280", lineHeight: 1.7 }}>
           {isSuccess
-            ? "Your booking payment has been completed successfully."
+            ? "Your payment was successful. Your booking is now pending admin approval."
             : "Your payment failed, was cancelled, or could not be verified."}
         </p>
 
@@ -75,20 +95,38 @@ export default function PaymentResultPage() {
           <p><strong>Transaction ID:</strong> {tranId || "N/A"}</p>
         </div>
 
-        <Link
-          to="/"
-          style={{
-            display: "inline-flex",
-            padding: "12px 20px",
-            borderRadius: "999px",
-            background: "#b8860b",
-            color: "#fff",
-            textDecoration: "none",
-            fontWeight: 800,
-          }}
-        >
-          Back to Home
-        </Link>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+          <Link
+            to="/customer-panel"
+            style={{
+              display: "inline-flex",
+              padding: "12px 20px",
+              borderRadius: "999px",
+              background: "#b8860b",
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 800,
+            }}
+          >
+            Go to Customer Panel
+          </Link>
+
+          <Link
+            to="/"
+            style={{
+              display: "inline-flex",
+              padding: "12px 20px",
+              borderRadius: "999px",
+              background: "#fff",
+              color: "#b8860b",
+              border: "1px solid #ead7a6",
+              textDecoration: "none",
+              fontWeight: 800,
+            }}
+          >
+            Back to Home
+          </Link>
+        </div>
       </section>
     </main>
   );
