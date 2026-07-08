@@ -96,6 +96,24 @@ Route::post('/payments/process', [PaymentController::class, 'process'])
     ->middleware('throttle:5,1')
     ->name('api.payments.process');
 
+
+Route::prefix('payments/sslcommerz')->middleware('throttle:30,1')->group(function () {
+    Route::post('/bookings/{bookingId}/initiate', [SslCommerzPaymentController::class, 'initiate'])
+        ->name('api.sslcommerz.initiate');
+
+    Route::match(['get', 'post'], '/success', [SslCommerzPaymentController::class, 'success'])
+        ->name('api.sslcommerz.success');
+
+    Route::match(['get', 'post'], '/fail', [SslCommerzPaymentController::class, 'fail'])
+        ->name('api.sslcommerz.fail');
+
+    Route::match(['get', 'post'], '/cancel', [SslCommerzPaymentController::class, 'cancel'])
+        ->name('api.sslcommerz.cancel');
+
+    Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn'])
+        ->name('api.sslcommerz.ipn');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Admin APIs
@@ -208,22 +226,6 @@ Route::prefix('admin/homepage-content')->middleware('throttle:30,1')->group(func
         ->name('api.admin.homepage-content.gallery.delete-file');
 });
 
-Route::prefix('payments/sslcommerz')->middleware('throttle:30,1')->group(function () {
-    Route::post('/bookings/{bookingId}/initiate', [SslCommerzPaymentController::class, 'initiate'])
-        ->name('api.sslcommerz.initiate');
-
-    Route::match(['get', 'post'], '/success', [SslCommerzPaymentController::class, 'success'])
-        ->name('api.sslcommerz.success');
-
-    Route::match(['get', 'post'], '/fail', [SslCommerzPaymentController::class, 'fail'])
-        ->name('api.sslcommerz.fail');
-
-    Route::match(['get', 'post'], '/cancel', [SslCommerzPaymentController::class, 'cancel'])
-        ->name('api.sslcommerz.cancel');
-
-    Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn'])
-        ->name('api.sslcommerz.ipn');
-});
 
 /*
 |--------------------------------------------------------------------------
